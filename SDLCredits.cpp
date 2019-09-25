@@ -115,7 +115,7 @@ int main() {
     //Ai subteam
     gTex.push_back(loadImage("slides/mdcredit.PNG"));
     gTex.push_back(loadImage("slides/connor_schwartz_credit.png"));
-    // gTex.push_back(loadImage("slides/brandon"));
+    gTex.push_back(loadImage("slides/Brandon's Credit 1.png"));
     gTex.push_back(loadImage("slides/jeroen_credit1280x720.png"));
 
 	SDL_RenderClear(gRenderer);
@@ -156,9 +156,9 @@ int main() {
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(5000);
 
-    // SDL_RenderCopy(gRenderer, gTex[9], NULL, NULL);
-	// SDL_RenderPresent(gRenderer);
-	// SDL_Delay(5000);
+     SDL_RenderCopy(gRenderer, gTex[9], NULL, NULL);
+	 SDL_RenderPresent(gRenderer);
+	 SDL_Delay(5000);
 
 	close();
 }
