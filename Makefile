@@ -4,7 +4,7 @@ all: SDLCredits.cpp
 	g++ -o SDLCredits $(LINKER_FLAGS) SDLCredits.cpp
 
 dilan: SDLCredits.cpp
-	g++ SDLCredits.cpp $(LINKER_FLAGS) $$(sdl2-config --cflags --libs) -std=c++11 -o SDLCredits
+	g++ SDLCredits.cpp $(LINKER_FLAGS) $$(sdl2-config --cflags --libs) -std=c++11 -o SDLCredits.o
 
 clean:
 	rm SDLCredits.o
