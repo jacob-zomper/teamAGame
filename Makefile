@@ -6,5 +6,8 @@ all: SDLCredits.cpp
 dilan: SDLCredits.cpp
 	g++ SDLCredits.cpp $(LINKER_FLAGS) $$(sdl2-config --cflags --libs) -std=c++11 -o SDLCredits
 
+connor: SDLCredits.cpp
+	g++ SDLCredits.cpp $(LINKER_FLAGS) -std=c++11 -o SDLCredits
+
 clean:
 	rm SDLCredits.o
