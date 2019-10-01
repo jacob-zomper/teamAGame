@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = 05_optimized_surface_loading_and_soft_stretching.cpp
+OBJS = game_loop.cpp
 
 #CC specifies which compiler we're using
 CC = g++
@@ -19,7 +19,7 @@ COMPILER_FLAGS = -w -Wl,-subsystem,windows
 LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2
 
 #OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = soft
+OBJ_NAME = gameplay
 
 #This is the target that compiles our executable
 all : $(OBJS)
