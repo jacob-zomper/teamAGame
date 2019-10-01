@@ -18,6 +18,77 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
+// X and y positions of the camera
+int camX = 0;
+int camY = 640;
+
+class MapBlocks
+{
+	class Block
+	{
+	public:
+		// absolute coordinates of each block
+		int BLOCK_ABS_X;
+		int BLOCK_ABS_Y;
+
+		// coordinates of each block relative to camera
+		int BLOCK_REL_X;
+		int BLOCK_REL_Y;
+
+		int BLOCK_SPRITE; // Map to which sprite image this block will use.
+
+
+		Block()
+		{
+			BLOCK_ABS_X = rand() % LEVEL_WIDTH;
+			BLOCK_ABS_Y = rand() % LEVEL_HEIGHT;
+
+			// These should be the same first
+			BLOCK_REL_X = BLOCK_ABS_X;
+			BLOCK_REL_Y = BLOCK_ABS_Y;
+		}
+	};
+
+public:
+	static const int BLOCKS_N = 10000;
+	static const int BLOCK_HEIGHT = 20;
+	static const int BLOCK_WIDTH = 20;
+	Block *blocks_arr;
+
+	MapBlocks()
+	{
+		blocks_arr = new Block[BLOCKS_N];
+		int i;
+		for (i = 0; i < BLOCKS_N; i++)
+		{
+			blocks_arr[i] = Block(); // Initiating each block
+		}
+	}
+
+	void moveBlocks()
+	{
+		int i;
+		for (i = 0; i < BLOCKS_N; i++)
+		{
+			blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
+			blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
+		}
+	}
+
+	void render()
+	{
+		//Draw player as cyan rectangle
+		int i;
+		for (i = 0; i < BLOCKS_N; i++)
+		{
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+			SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
+			SDL_RenderFillRect(gRenderer, &fillRect);
+		}
+
+	}
+
+};
 
 class Player
 {
@@ -73,6 +144,7 @@ class Player
 			x_pos += x_vel;
 			y_pos += y_vel;
 			
+			// Move the player horizontally
 			if (x_pos < 0) {
 				x_pos = 0;
 				x_vel = 0;
@@ -81,13 +153,34 @@ class Player
 				x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
 				x_vel = 0;
 			}
-			if (y_pos < 0) {
+			
+			// Move the player vertically. 
+			// If they are near the top of the screen, scroll up
+			if (y_pos < SCREEN_HEIGHT / 10 && camY > 0) {
+				y_pos = SCREEN_HEIGHT / 10;
+				camY += y_vel;
+			}
+			// Stop the player if they hit the top of the level
+			else if (y_pos < 0) {
 				y_pos = 0;
 				y_vel = 0;
 			}
+			// If they are near the bottom of the screen, scroll down
+			else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT) {
+				y_pos = (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT;
+				camY += y_vel;
+			}
+			// Stop the player if they hit the bottom
 			else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT) {
 				y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
 				y_vel = 0;
+			}
+			
+			if (camY < 0) {
+				camY = 0;
+			}
+			else if (camY > LEVEL_HEIGHT - SCREEN_HEIGHT) {
+				camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 			}
 		}
 
@@ -159,6 +252,8 @@ int main() {
 	
 	//Start the player on the left side of the screen
 	Player * player = new Player(SCREEN_WIDTH/4 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2);
+	MapBlocks *blocks = new MapBlocks();
+
 	SDL_Event e;
 	bool gameon = true;
 	while(gameon) {
@@ -166,6 +261,7 @@ int main() {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
 			}
+			// If a key is pressed, have the Player class handle it
 			else if (e.type == SDL_KEYDOWN) {
 				player->handleEvent(e);
 			}
@@ -175,13 +271,25 @@ int main() {
 		// Move player
 		player->move();
 		
-		// Draw box
-		// Clear black
+		//Move Blocks
+		blocks->moveBlocks();
+
+		// Clear the screen
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderClear(gRenderer);
+		
+		// Draw the player
 		player->render();
+		blocks->render();
+		
 		
 		SDL_RenderPresent(gRenderer);
+		
+		// Scroll 5 pixels to the side, unless the end of the level has been reached
+		camX += 10;
+		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
+			camX = LEVEL_WIDTH - SCREEN_WIDTH;
+		}
 	}
 
 	// Out of game loop, clean up
