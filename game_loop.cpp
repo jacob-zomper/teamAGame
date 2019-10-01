@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -30,7 +30,7 @@ class Player
         static const int PLAYER_HEIGHT = 20;
 
         //Maximum axis velocity of the player
-        static const int MAX_PLAYER_VEL = 10;
+        static const int MAX_PLAYER_VEL = 5;
 
         //Initializes the variables
         Player(int xPos, int yPos)
@@ -42,25 +42,45 @@ class Player
         //Takes key presses and adjusts the player's velocity
         void handleEvent( SDL_Event& e )
 		{
-			switch(e.key.keysym.sym) {
-				case SDLK_w:
-					y_vel -= 1;
-					break;
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+				switch(e.key.keysym.sym) {
+					case SDLK_w:
+						y_vel -= MAX_PLAYER_VEL;
+						break;
 
-				case SDLK_a:
-					x_vel -= 1;
-					break;
+					case SDLK_a:
+						x_vel -= MAX_PLAYER_VEL;
+						break;
 
-				case SDLK_s:
-					y_vel += 1;
-					break;
+					case SDLK_s:
+						y_vel += MAX_PLAYER_VEL;
+						break;
 
-				case SDLK_d:
-					x_vel += 1;
-					break;
+					case SDLK_d:
+						x_vel += MAX_PLAYER_VEL;
+						break;
+				}
+			} else if (e.type == SDL_KEYUP) {
+					switch(e.key.keysym.sym) {
+						case SDLK_w:
+							y_vel += MAX_PLAYER_VEL;
+							break;
+
+						case SDLK_a:
+							x_vel += MAX_PLAYER_VEL;
+							break;
+
+						case SDLK_s:
+							y_vel -= MAX_PLAYER_VEL;
+							break;
+
+						case SDLK_d:
+							x_vel -= MAX_PLAYER_VEL;
+							break;
+					}
 			}
 		}
-		
+
         //Moves the player
         void move()
 		{
@@ -72,10 +92,10 @@ class Player
 				x_vel = MAX_PLAYER_VEL;
 			else if (x_vel < -MAX_PLAYER_VEL)
 				x_vel = -MAX_PLAYER_VEL;
-			
+
 			x_pos += x_vel;
 			y_pos += y_vel;
-			
+
 			// Move the player horizontally
 			if (x_pos < 0) {
 				x_pos = 0;
@@ -85,8 +105,8 @@ class Player
 				x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
 				x_vel = 0;
 			}
-			
-			// Move the player vertically. 
+
+			// Move the player vertically.
 			// If they are near the top of the screen, scroll up
 			if (y_pos < SCREEN_HEIGHT / 10 && camY > 0) {
 				y_pos = SCREEN_HEIGHT / 10;
@@ -107,7 +127,7 @@ class Player
 				y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
 				y_vel = 0;
 			}
-			
+
 			if (camY < 0) {
 				camY = 0;
 			}
@@ -230,7 +250,7 @@ bool init() {
 	if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
 	}
-	
+
 	gWindow = SDL_CreateWindow("Hello world!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (gWindow == nullptr) {
 		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
@@ -239,14 +259,14 @@ bool init() {
 
 	// Adding VSync to avoid absurd framerates
 	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (gRenderer == nullptr) {	
+	if (gRenderer == nullptr) {
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
 	}
 
 	// Set renderer draw/clear color
 	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-			
+
 	return true;
 }
 
@@ -266,7 +286,7 @@ int main() {
 		close();
 		return 1;
 	}
-	
+
 	//Start the player on the left side of the screen
 	Player * player = new Player(SCREEN_WIDTH/4 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2);
 	MapBlocks *blocks = new MapBlocks();
@@ -278,30 +298,29 @@ int main() {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
 			}
-			// If a key is pressed, have the Player class handle it
-			else if (e.type == SDL_KEYDOWN) {
-				player->handleEvent(e);
-			}
 			
+			player->handleEvent(e);
+
+
 		}
 
 		// Move player
 		player->move();
-		
+
 		//Move Blocks
 		blocks->moveBlocksAndCheckCollision(player);
 
 		// Clear the screen
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
-		
+
 		// Draw the player
 		player->render();
 		blocks->render();
-		
-		
+
+
 		SDL_RenderPresent(gRenderer);
-		
+
 		// Scroll 5 pixels to the side, unless the end of the level has been reached
 		camX += 10;
 		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
@@ -312,4 +331,3 @@ int main() {
 	// Out of game loop, clean up
 	close();
 }
-
