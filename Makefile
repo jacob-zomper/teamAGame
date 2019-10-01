@@ -1,16 +1,26 @@
-LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
+#OBJS specifies which files to compile as part of the project
+OBJS = 05_optimized_surface_loading_and_soft_stretching.cpp
 
-all: SDLCredits.cpp
-	g++ -o SDLCredits $(LINKER_FLAGS) SDLCredits.cpp
+#CC specifies which compiler we're using
+CC = g++
 
-dilan: SDLCredits.cpp
-	g++ SDLCredits.cpp $(LINKER_FLAGS) $$(sdl2-config --cflags --libs) -std=c++11 -o SDLCredits
+#INCLUDE_PATHS specifies the additional include paths we'll need
+INCLUDE_PATHS = -IC:\mingw_dev_lib\include\SDL2
 
-connor: SDLCredits.cpp
-	g++ SDLCredits.cpp $(LINKER_FLAGS) -std=c++11 -o SDLCredits
+#LIBRARY_PATHS specifies the additional library paths we'll need
+LIBRARY_PATHS = -LC:\mingw_dev_lib\lib
 
-kenneth: SDLCredits.cpp
-	g++ SDLCredits.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o SDLCredits
+#COMPILER_FLAGS specifies the additional compilation options we're using
+# -w suppresses all warnings
+# -Wl,-subsystem,windows gets rid of the console window
+COMPILER_FLAGS = -w -Wl,-subsystem,windows
 
-clean:
-	rm SDLCredits.o
+#LINKER_FLAGS specifies the libraries we're linking against
+LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2
+
+#OBJ_NAME specifies the name of our exectuable
+OBJ_NAME = soft
+
+#This is the target that compiles our executable
+all : $(OBJS)
+	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
