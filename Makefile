@@ -9,5 +9,8 @@ dilan: SDLCredits.cpp
 connor: SDLCredits.cpp
 	g++ SDLCredits.cpp $(LINKER_FLAGS) -std=c++11 -o SDLCredits
 
+kenneth: SDLCredits.cpp
+	g++ SDLCredits.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o SDLCredits
+
 clean:
 	rm SDLCredits.o
