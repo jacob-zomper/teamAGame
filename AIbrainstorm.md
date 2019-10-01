@@ -3,7 +3,7 @@ AI Brainstrom:
 
 
 Goals:
-	
+
 	* Rockets that track player
 		* could be a special type of "bullet"
 		* or could be a special type of "enemy"
@@ -13,7 +13,7 @@ Goals:
 	* AI dodges incoming fire from player
 
 "Classes":
-	
+
 	* Enemy Class
 		* more like an interface probably. header file
 		* defines enemy functionality such as:
@@ -33,4 +33,20 @@ Goals:
 					* Possible method of decision-making - have enemy predict the future by "running" a few seconds of gameplay, and selecting moves that are likely to result in the player's death
 					* Possible method of decision-making - some type of enemy cooperation, i.e. enemies fire at the same time as each other to maximize chance of hitting player
 					* Could have "kamikaze" planes that fly close to the player and ranged planes that stay farther away
+					* Possible method of decision-making - have enemies be aware of each other and use this to fly in more complex patterns after the enemy in open air
 		* Rocket would probably be one of these
+
+	* Some enemies restricted to certain areas of the screen
+		* Some enemies stay back (right side of screen)
+		* some move forward and attack player 
+			* "kamikaze" planes
+
+	* Week 10/2 - 10/9:
+		*using enemy_test as our test environment, create a working enemy that moves about the screen and shoots bullets.
+			*Requirements
+				* implementation of an Enemy
+					* sprite (Matt)
+					* movement (Brandon)
+					* shoot (Conner)
+				* implementation of a bullet (Jeroen)
+					* movement

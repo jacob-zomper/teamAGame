@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -18,6 +18,9 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
+// X and y positions of the camera
+int camX = 0;
+int camY = 640;
 
 class Player
 {
@@ -73,6 +76,7 @@ class Player
 			x_pos += x_vel;
 			y_pos += y_vel;
 			
+			// Move the player horizontally
 			if (x_pos < 0) {
 				x_pos = 0;
 				x_vel = 0;
@@ -81,13 +85,34 @@ class Player
 				x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
 				x_vel = 0;
 			}
-			if (y_pos < 0) {
+			
+			// Move the player vertically. 
+			// If they are near the top of the screen, scroll up
+			if (y_pos < SCREEN_HEIGHT / 10 && camY > 0) {
+				y_pos = SCREEN_HEIGHT / 10;
+				camY += y_vel;
+			}
+			// Stop the player if they hit the top of the level
+			else if (y_pos < 0) {
 				y_pos = 0;
 				y_vel = 0;
 			}
+			// If they are near the bottom of the screen, scroll down
+			else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT) {
+				y_pos = (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT;
+				camY += y_vel;
+			}
+			// Stop the player if they hit the bottom
 			else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT) {
 				y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
 				y_vel = 0;
+			}
+			
+			if (camY < 0) {
+				camY = 0;
+			}
+			else if (camY > LEVEL_HEIGHT - SCREEN_HEIGHT) {
+				camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 			}
 		}
 
@@ -166,6 +191,7 @@ int main() {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
 			}
+			// If a key is pressed, have the Player class handle it
 			else if (e.type == SDL_KEYDOWN) {
 				player->handleEvent(e);
 			}
@@ -175,13 +201,21 @@ int main() {
 		// Move player
 		player->move();
 		
-		// Draw box
-		// Clear black
+		// Clear the screen
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderClear(gRenderer);
+		
+		// Draw the player
 		player->render();
 		
+		
 		SDL_RenderPresent(gRenderer);
+		
+		// Scroll 5 pixels to the side, unless the end of the level has been reached
+		camX += 10;
+		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
+			camX = LEVEL_WIDTH - SCREEN_WIDTH;
+		}
 	}
 
 	// Out of game loop, clean up
