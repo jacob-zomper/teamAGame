@@ -2,10 +2,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
-constexpr int SCREEN_WIDTH = 640;
-constexpr int SCREEN_HEIGHT = 480;
+constexpr int SCREEN_WIDTH = 1280;
+constexpr int SCREEN_HEIGHT = 720;
+constexpr int LEVEL_WIDTH = 10000;
+constexpr int LEVEL_HEIGHT = 2000;
 constexpr int BOX_WIDTH = 20;
 constexpr int BOX_HEIGHT = 20;
 
@@ -16,6 +18,98 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
+
+class Player
+{
+	public:
+		//The dimensions of the player
+        static const int PLAYER_WIDTH = 20;
+        static const int PLAYER_HEIGHT = 20;
+
+        //Maximum axis velocity of the player
+        static const int MAX_PLAYER_VEL = 10;
+
+        //Initializes the variables
+        Player(int xPos, int yPos)
+		{
+			x_pos = xPos;
+			y_pos = yPos;
+		}
+
+        //Takes key presses and adjusts the player's velocity
+        void handleEvent( SDL_Event& e )
+		{
+			switch(e.key.keysym.sym) {
+				case SDLK_w:
+					y_vel -= 1;
+					break;
+
+				case SDLK_a:
+					x_vel -= 1;
+					break;
+
+				case SDLK_s:
+					y_vel += 1;
+					break;
+
+				case SDLK_d:
+					x_vel += 1;
+					break;
+			}
+		}
+		
+        //Moves the player
+        void move()
+		{
+			if (y_vel > MAX_PLAYER_VEL)
+				y_vel = MAX_PLAYER_VEL;
+			else if (y_vel < -MAX_PLAYER_VEL)
+				y_vel = -MAX_PLAYER_VEL;
+			if (x_vel > MAX_PLAYER_VEL)
+				x_vel = MAX_PLAYER_VEL;
+			else if (x_vel < -MAX_PLAYER_VEL)
+				x_vel = -MAX_PLAYER_VEL;
+			
+			x_pos += x_vel;
+			y_pos += y_vel;
+			
+			if (x_pos < 0) {
+				x_pos = 0;
+				x_vel = 0;
+			}
+			else if (x_pos > SCREEN_WIDTH - PLAYER_WIDTH) {
+				x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
+				x_vel = 0;
+			}
+			if (y_pos < 0) {
+				y_pos = 0;
+				y_vel = 0;
+			}
+			else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT) {
+				y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
+				y_vel = 0;
+			}
+		}
+
+        //Shows the player on the screen relative to the camera
+        void render()
+		{
+			//Draw player as cyan rectangle
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
+			SDL_Rect fillRect = {x_pos, y_pos, BOX_WIDTH, BOX_HEIGHT};
+			SDL_RenderFillRect(gRenderer, &fillRect);
+		}
+
+        //Position accessors
+        int getPosX();
+        int getPosY();
+	private:
+		//The X and Y offsets of the player (ON SCREEN)
+        int x_pos, y_pos;
+
+        //The velocity of the player
+        int x_vel, y_vel;
+};
 
 bool init() {	
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -63,16 +157,8 @@ int main() {
 		return 1;
 	}
 	
-	// Current position to render the box
-	// Start off with it in the middle
-	int x_pos = SCREEN_WIDTH/2 - BOX_WIDTH/2;
-	int y_pos = SCREEN_HEIGHT/2 - BOX_HEIGHT/2;
-
-	// Current velocity of the box
-	// Start off at reset
-	int x_vel = 0;
-	int y_vel = 0;
-
+	//Start the player on the left side of the screen
+	Player * player = new Player(SCREEN_WIDTH/4 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2);
 	SDL_Event e;
 	bool gameon = true;
 	while(gameon) {
@@ -80,43 +166,25 @@ int main() {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
 			}
-			else if(e.type == SDL_KEYDOWN) {
-				switch(e.key.keysym.sym) {
-					case SDLK_w:
-						y_vel -= 1;
-						break;
-
-					case SDLK_a:
-						x_vel -= 1;
-						break;
-
-					case SDLK_s:
-						y_vel += 1;
-						break;
-
-					case SDLK_d:
-						x_vel += 1;
-						break;
-				}
+			else if (e.type == SDL_KEYDOWN) {
+				player->handleEvent(e);
 			}
 			
 		}
 
-		// Move box
-		x_pos += x_vel;
-		y_pos += y_vel;
+		// Move player
+		player->move();
 		
 		// Draw box
 		// Clear black
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderClear(gRenderer);
-		// Cyan box
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-		SDL_Rect fillRect = {x_pos, y_pos, BOX_WIDTH, BOX_HEIGHT};
-		SDL_RenderFillRect(gRenderer, &fillRect);
+		player->render();
+		
 		SDL_RenderPresent(gRenderer);
 	}
 
 	// Out of game loop, clean up
 	close();
 }
+
