@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
 CFLAGS = -I/usr/include/sdl
 
@@ -23,7 +23,6 @@ jerry_lin_enemy_test: enemy_test.cpp
 clean:
 	rm SDLCredits.o
 
-=======
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
 CFLAGS = -I/usr/include/sdl
 
@@ -50,4 +49,3 @@ jerry_lin_enemy_test: enemy_test.cpp
 
 clean:
 	rm SDLCredits.o
->>>>>>> 2f372c93a2b5c068bbf3b7aa67e63d126c1951de
