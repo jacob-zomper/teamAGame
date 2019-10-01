@@ -3,9 +3,10 @@
 #include <vector>
 #include <string>
 #include <SDL2/SDL.h>
+#include "bullet.cpp"
 
-constexpr int SCREEN_WIDTH = 640;
-constexpr int SCREEN_HEIGHT = 480;
+constexpr int SCREEN_WIDTH = 1280;
+constexpr int SCREEN_HEIGHT = 720;
 constexpr int BOX_WIDTH = 20;
 constexpr int BOX_HEIGHT = 20;
 
@@ -63,60 +64,20 @@ int main() {
 		return 1;
 	}
 	
-	// Current position to render the box
-	// Start off with it in the middle
-	int x_pos = SCREEN_WIDTH/2 - BOX_WIDTH/2;
-	int y_pos = SCREEN_HEIGHT/2 - BOX_HEIGHT/2;
-
-	// Current velocity of the box
-	// Start off at reset
-	int x_vel = 0;
-	int y_vel = 0;
-
+	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	SDL_Event e;
 	bool gameon = true;
-	while(gameon) {
+	while(gameon) {	
 		while(SDL_PollEvent(&e)) {
-			if (e.type == SDL_QUIT) {
-				gameon = false;
-			}
-			else if(e.type == SDL_KEYDOWN) {
-				switch(e.key.keysym.sym) {
-					case SDLK_w:
-						y_vel -= 1;
-						break;
-
-					case SDLK_a:
-						x_vel -= 1;
-						break;
-
-					case SDLK_s:
-						y_vel += 1;
-						break;
-
-					case SDLK_d:
-						x_vel += 1;
-						break;
+				if (e.type == SDL_QUIT) {
+					gameon = false;
 				}
-			}
-			
-		}
-
-		// Move box
-		x_pos += x_vel;
-		y_pos += y_vel;
-		
-		// Draw box
-		// Clear black
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-		SDL_RenderClear(gRenderer);
-		// Cyan box
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-		SDL_Rect fillRect = {x_pos, y_pos, BOX_WIDTH, BOX_HEIGHT};
-		SDL_RenderFillRect(gRenderer, &fillRect);
-		SDL_RenderPresent(gRenderer);
-	}
+		}	
+		b->renderBullet(gRenderer);
+		b->move();
 
 	// Out of game loop, clean up
+	
+	}
 	close();
 }
