@@ -8,8 +8,7 @@ constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
-constexpr int BOX_WIDTH = 20;
-constexpr int BOX_HEIGHT = 20;
+constexpr int SCROLL_SPEED = 7;
 
 // Function declarations
 bool init();
@@ -99,11 +98,9 @@ class Player
 			// Move the player horizontally
 			if (x_pos < 0) {
 				x_pos = 0;
-				x_vel = 0;
 			}
 			else if (x_pos > SCREEN_WIDTH - PLAYER_WIDTH) {
 				x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
-				x_vel = 0;
 			}
 
 			// Move the player vertically.
@@ -115,7 +112,6 @@ class Player
 			// Stop the player if they hit the top of the level
 			else if (y_pos < 0) {
 				y_pos = 0;
-				y_vel = 0;
 			}
 			// If they are near the bottom of the screen, scroll down
 			else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT) {
@@ -125,7 +121,6 @@ class Player
 			// Stop the player if they hit the bottom
 			else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT) {
 				y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
-				y_vel = 0;
 			}
 
 			if (camY < 0) {
@@ -141,13 +136,15 @@ class Player
 		{
 			//Draw player as cyan rectangle
 			SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-			SDL_Rect fillRect = {x_pos, y_pos, BOX_WIDTH, BOX_HEIGHT};
+			SDL_Rect fillRect = {x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
 			SDL_RenderFillRect(gRenderer, &fillRect);
 		}
 
-        //Position accessors
+        //Position and velocity accessors
         int getPosX(){ return x_pos; };
         int getPosY(){ return y_pos; };
+        int getVelX(){ return x_vel; };
+        int getVelY(){ return y_vel; };
 		void setPosX(int x) { x_pos = x; }
 		void setPosY(int y) { y_pos = y; }
 	private:
@@ -215,9 +212,15 @@ public:
 		{
 			blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
 			blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
+			// If there's a collision, cancel the player's move. If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
 			if(checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT))
 			{
-				p->setPosX(p->getPosX() - p->MAX_PLAYER_VEL);
+				p->setPosX(p->getPosX() - p->getVelX());
+				p->setPosY(p->getPosY() - p->getVelY());
+				if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT)) {
+					p->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - p->PLAYER_WIDTH, 0));
+					p->setPosY(p->getPosY() + p->getVelY());
+				}
 			}
 		}
 	}
@@ -288,12 +291,19 @@ int main() {
 	}
 
 	//Start the player on the left side of the screen
-	Player * player = new Player(SCREEN_WIDTH/4 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2);
+	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2);
 	MapBlocks *blocks = new MapBlocks();
 
 	SDL_Event e;
 	bool gameon = true;
 	while(gameon) {
+
+		// Scroll SCROLL_SPEED pixels to the side, unless the end of the level has been reached
+		camX += SCROLL_SPEED;
+		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
+			camX = LEVEL_WIDTH - SCREEN_WIDTH;
+		}
+
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
@@ -320,12 +330,6 @@ int main() {
 
 
 		SDL_RenderPresent(gRenderer);
-
-		// Scroll 5 pixels to the side, unless the end of the level has been reached
-		camX += 10;
-		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
-			camX = LEVEL_WIDTH - SCREEN_WIDTH;
-		}
 	}
 
 	// Out of game loop, clean up
