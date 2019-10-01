@@ -22,6 +22,74 @@ SDL_Renderer* gRenderer = nullptr;
 int camX = 0;
 int camY = 640;
 
+class MapBlocks
+{
+	class Block
+	{
+	public:
+		// absolute coordinates of each block
+		int BLOCK_ABS_X;
+		int BLOCK_ABS_Y;
+
+		// coordinates of each block relative to camera
+		int BLOCK_REL_X;
+		int BLOCK_REL_Y;
+
+		int BLOCK_SPRITE; // Map to which sprite image this block will use.
+
+
+		Block()
+		{
+			BLOCK_ABS_X = rand() % LEVEL_WIDTH;
+			BLOCK_ABS_Y = rand() % LEVEL_HEIGHT;
+
+			// These should be the same first
+			BLOCK_REL_X = BLOCK_ABS_X;
+			BLOCK_REL_Y = BLOCK_ABS_Y;
+		}
+	};
+
+public:
+	static const int BLOCKS_N = 10000;
+	static const int BLOCK_HEIGHT = 20;
+	static const int BLOCK_WIDTH = 20;
+	Block *blocks_arr;
+
+	MapBlocks()
+	{
+		blocks_arr = new Block[BLOCKS_N];
+		int i;
+		for (i = 0; i < BLOCKS_N; i++)
+		{
+			blocks_arr[i] = Block(); // Initiating each block
+		}
+	}
+
+	void moveBlocks()
+	{
+		int i;
+		for (i = 0; i < BLOCKS_N; i++)
+		{
+			blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
+			blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
+		}
+	}
+
+	void render()
+	{
+		//Draw player as cyan rectangle
+		int i;
+		for (i = 0; i < BLOCKS_N; i++)
+		{
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+			SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
+			SDL_RenderFillRect(gRenderer, &fillRect);
+		}
+
+	}
+
+};
+
 class Player
 {
 	public:
@@ -184,6 +252,8 @@ int main() {
 	
 	//Start the player on the left side of the screen
 	Player * player = new Player(SCREEN_WIDTH/4 - BOX_WIDTH/2, SCREEN_HEIGHT/2 - BOX_HEIGHT/2);
+	MapBlocks *blocks = new MapBlocks();
+
 	SDL_Event e;
 	bool gameon = true;
 	while(gameon) {
@@ -201,12 +271,16 @@ int main() {
 		// Move player
 		player->move();
 		
+		//Move Blocks
+		blocks->moveBlocks();
+
 		// Clear the screen
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderClear(gRenderer);
 		
 		// Draw the player
 		player->render();
+		blocks->render();
 		
 		
 		SDL_RenderPresent(gRenderer);
