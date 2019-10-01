@@ -34,3 +34,18 @@ Goals:
 					* Possible method of decision-making - some type of enemy cooperation, i.e. enemies fire at the same time as each other to maximize chance of hitting player
 					* Could have "kamikaze" planes that fly close to the player and ranged planes that stay farther away
 		* Rocket would probably be one of these
+
+	* Some enemies restricted to certain areas of the screen
+		* Some enemies stay back (right side of screen)
+		* some move forward and attack player 
+			* "kamikaze" planes
+
+	* Week 10/2 - 10/9:
+		*using enemy_test as our test environment, create a working enemy that moves about the screen and shoots bullets.
+			*Requirements
+				* implementation of an Enemy
+					* sprite (Matt)
+					* movement (Brandon)
+					* shoot (Conner)
+				* implementation of a bullet (Jeroen)
+					* movement
