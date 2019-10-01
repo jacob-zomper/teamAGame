@@ -13,8 +13,11 @@ connor: SDLCredits.cpp
 kenneth: SDLCredits.cpp
 	g++ SDLCredits.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o SDLCredits
 
-jerry_lin: game_loop.cpp
+jerry_lin_game: game_loop.cpp
 	clang++ game_loop.cpp -L/usr/include/SDL2 $(LINKER_FLAGS) $(CFLAGS)  -o game
+
+jerry_lin_enemy_test: enemy_test.cpp
+	clang++ enemy_test.cpp -L/usr/include/SDL2 $(LINKER_FLAGS) $(CFLAGS)  -o enemy_test
 
 clean:
 	rm SDLCredits.o
