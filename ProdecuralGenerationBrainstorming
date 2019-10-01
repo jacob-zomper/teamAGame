@@ -1,0 +1,23 @@
+Prodecural Generation Brainstorming
+
+Goals:
+	* Random level generation
+
+	* Create a mapping system that allows for switching between cave and open air
+
+
+	* Cave system will be randomly generated with obstacles (stalagmites/stalactites).
+
+	* Randomness of AA guns on the ground and rockets/planes that are shot at the player
+
+Strategies for procedural generation:
+
+	* Noise functions:
+		* Perlin noise
+
+Classes:
+	AA Guns:
+		* Detect player but bullets do not track
+		* Aiming to intercept the player in flight
+		*Randomness of shooting delay/ bullet speed
+
