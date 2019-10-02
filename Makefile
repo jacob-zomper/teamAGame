@@ -2,6 +2,7 @@
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
 CFLAGS = -I/usr/include/sdl
 
+
 all: SDLCredits.cpp game_loop.cpp
 	g++ -o SDLCredits $(LINKER_FLAGS) SDLCredits.cpp
 	g++ -o game_loop $(LINKER_FLAGS) game_loop.cpp
@@ -21,6 +22,11 @@ jerry_lin_game: game_loop.cpp
 
 jerry_lin_enemy_test: enemy_test.cpp
 	clang++ enemy_test.cpp -L/usr/include/SDL2 $(LINKER_FLAGS) $(CFLAGS)  -o enemy_test
+
+brandon: SDLCredits.cpp game_loop.cpp
+	g++ SDLCredits.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o credits
+	g++ game_loop.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o game_loop
+
 
 clean:
 	rm SDLCredits.o
