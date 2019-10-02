@@ -1,4 +1,4 @@
-Prodecural Generation Brainstorming
+Procedural Generation Brainstorming
 
 Goals:
 	* Random level generation
@@ -11,15 +11,15 @@ Strategies for procedural generation:
 	* Noise functions:
 		* Perlin noise for terrain
 			Amount of open air between top and bottom of cave could be changed for difficulty scaling
-	* Swithcing from cave to open air & placement of AA guns could be a simple randomness function
+	* Switching from cave to open air & placement of AA guns could be a simple randomness function
 	* The frequency of AA guns could be changed as a difficulty option.
 
 
 
 
 Classes:
-	AA Guns:
+
+	* AA Guns
 		* Detect player but bullets do not track
 		* Aiming to intercept the player in flight
-		*Randomness of shooting delay/ bullet speed
-
+		* Randomness of shooting delay/ bullet speed
