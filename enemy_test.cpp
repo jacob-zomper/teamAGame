@@ -57,6 +57,15 @@ void close() {
 	SDL_Quit();
 }
 
+void moveDummy(int* y, int* yVel){
+
+	*y += *yVel;
+
+	if(*y==0 || *y==SCREEN_HEIGHT-50){
+		*yVel = -*yVel;
+	}
+}
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -65,6 +74,15 @@ int main() {
 	}
 	
 	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+	
+
+	//variables for dummy
+	int x = 50;
+	int y = SCREEN_HEIGHT/2;
+	int xVel=0;
+	int yVel=-5;
+	
+
 	SDL_Event e;
 	bool gameon = true;
 	while(gameon) {	
@@ -72,12 +90,40 @@ int main() {
 				if (e.type == SDL_QUIT) {
 					gameon = false;
 				}
-		}	
-		b->renderBullet(gRenderer);
-		b->move();
+		}
 
-	// Out of game loop, clean up
+		//move the bullet
+		b->move();
+		moveDummy(&y,&yVel);
+
+		//clear the screen
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+		SDL_RenderClear(gRenderer);
+
+		//render the bullet
+		b->renderBullet(gRenderer);
+		
+		
+		//render the dummy box
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		SDL_Rect dummy = {x,y,50,50};
+		SDL_RenderFillRect(gRenderer, &dummy);
+		//put it on the screen
+		SDL_RenderPresent(gRenderer);
+
+
+		// if the bullet reaches the end of the screen
+		// destroy it and make a new bullet
+		if(b->getX()==0 || SDL_HasIntersection(b->getHitbox(),&dummy))
+		{
+			delete b;
+			b = new Bullet(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+		}
+
+		
+
 	
 	}
+	//out of game loop, clean up
 	close();
 }
