@@ -14,9 +14,6 @@ Strategies for procedural generation:
 	* Swithcing from cave to open air & placement of AA guns could be a simple randomness function
 	* The frequency of AA guns could be changed as a difficulty option.
 
-
-
-
 Classes:
 	AA Guns:
 		* Detect player but bullets do not track
