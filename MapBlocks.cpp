@@ -4,13 +4,14 @@
 #include "iostream"
 #include <vector>
 
+WallBlock::WallBlock(){};
 
-Block::Block()
+FlyingBlock::FlyingBlock()
 {
-    Block(1, 1);
+    FlyingBlock(1, 1);
 }
 
-Block::Block(int LEVEL_WIDTH, int LEVEL_HEIGHT)
+FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT)
 {
     BLOCK_ABS_X = rand() % LEVEL_WIDTH;
     BLOCK_ABS_Y = rand() % LEVEL_HEIGHT;
@@ -28,12 +29,12 @@ MapBlocks::MapBlocks()
 MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT)
 {
 
-    blocks_arr = new Block[BLOCKS_N];
+    blocks_arr = new FlyingBlock[BLOCKS_N];
 
     int i;
     for (i = 0; i < BLOCKS_N; i++)
     {
-        blocks_arr[i] = Block(LEVEL_WIDTH, LEVEL_HEIGHT); // Initiating each block
+        blocks_arr[i] = FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT); // Initiating each FlyingBlock
     }
 }
 
@@ -73,7 +74,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     int i;
     for (i = 0; i < BLOCKS_N; i++)
     {
-        // Only render the block if will be screen
+        // Only render the FlyingBlock if will be screen
         if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT)
         {
             SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
@@ -81,5 +82,17 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
     }
+
+    // Render walls
+    for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
+    {
+        SDL_SetRenderDrawColor(gRenderer, 0xCC, 0x66, 0x00, 0xFF);
+        SDL_Rect fillRectWall1 = { i, SCREEN_HEIGHT - WallBlock::block_side, WallBlock::block_side, WallBlock::block_side };
+        SDL_RenderFillRect(gRenderer, &fillRectWall1);
+
+        SDL_Rect fillRectWall2 = {i, 0, WallBlock::block_side, WallBlock::block_side};
+        SDL_RenderFillRect(gRenderer, &fillRectWall2);
+    }
+
 }
 

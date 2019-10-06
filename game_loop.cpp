@@ -76,6 +76,7 @@ int main() {
 
 	SDL_Event e;
 	bool gameon = true;
+
 	while(gameon) {
 
 		// Scroll SCROLL_SPEED pixels to the side, unless the end of the level has been reached
