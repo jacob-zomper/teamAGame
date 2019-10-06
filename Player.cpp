@@ -5,6 +5,8 @@ Player::Player(int xPos, int yPos)
 {
     x_pos = xPos;
     y_pos = yPos;
+    x_vel = 0;
+    y_vel = 0;
 }
 
 //Takes key presses and adjusts the player's velocity
