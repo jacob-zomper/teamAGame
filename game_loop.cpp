@@ -24,7 +24,7 @@ int camX = 0;
 int camY = 640;
 
 
-bool init() {	
+bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		return false;
@@ -88,7 +88,7 @@ int main() {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
 			}
-			
+
 			player->handleEvent(e);
 
 
@@ -110,6 +110,12 @@ int main() {
 
 
 		SDL_RenderPresent(gRenderer);
+
+		// Scroll 5 pixels to the side, unless the end of the level has been reached
+		camX += 10;
+		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
+			camX = LEVEL_WIDTH - SCREEN_WIDTH;
+		}
 	}
 
 	// Out of game loop, clean up
