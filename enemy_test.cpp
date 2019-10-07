@@ -3,14 +3,13 @@
 #include <vector>
 #include <string>
 #include <SDL.h>
-#include "MapBlocks.h"
-#include "Player.h"
+#include "bullet.cpp"
+#include "enemy.cpp"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
-constexpr int LEVEL_WIDTH = 100000;
-constexpr int LEVEL_HEIGHT = 2000;
-constexpr int SCROLL_SPEED = 7;
+constexpr int BOX_WIDTH = 20;
+constexpr int BOX_HEIGHT = 20;
 
 // Function declarations
 bool init();
@@ -19,10 +18,6 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
-// X and y positions of the camera
-int camX = 0;
-int camY = 640;
-
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -63,62 +58,76 @@ void close() {
 	SDL_Quit();
 }
 
+// void moveDummy(int* y, int* yVel){
+//
+// 	*y += *yVel;
+//
+// 	if(*y==0 || *y==SCREEN_HEIGHT-50){
+// 		*yVel = -*yVel;
+// 	}
+// }
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
 		close();
 		return 1;
 	}
-	
-	//Start the player on the left side of the screen
-	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2);
-	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
+
+	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2);
+	en->setyVelo(-5);
+
+	//variables for dummy
+	// int x = 50;
+	// int y = SCREEN_HEIGHT/2;
+	// int xVel=0;
+	// int yVel=-5;
+
 
 	SDL_Event e;
 	bool gameon = true;
-
 	while(gameon) {
-
-		// Scroll SCROLL_SPEED pixels to the side, unless the end of the level has been reached
-		camX += SCROLL_SPEED;
-		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
-			camX = LEVEL_WIDTH - SCREEN_WIDTH;
-		}
-
 		while(SDL_PollEvent(&e)) {
-			if (e.type == SDL_QUIT) {
-				gameon = false;
-			}
-
-			player->handleEvent(e);
-
-
+				if (e.type == SDL_QUIT) {
+					gameon = false;
+				}
 		}
 
-		// Move player
-		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
+		//move the bullet
+		b->move();
+		//moveDummy(&y,&yVel);
+		en->move();
 
-		//Move Blocks
-		blocks->moveBlocksAndCheckCollision(player, camX, camY);
 
-		// Clear the screen
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		//clear the screen
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderClear(gRenderer);
 
-		// Draw the player
-		player->render(gRenderer);
-		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		//render the bullet
+		b->renderBullet(gRenderer);
 
 
+		//render the dummy box
+		// SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		// SDL_Rect dummy = {x,y,50,50};
+		// SDL_RenderFillRect(gRenderer, &dummy);
+		// //put it on the screen
+		en->renderEnemy(gRenderer);
 		SDL_RenderPresent(gRenderer);
 
-		// Scroll 5 pixels to the side, unless the end of the level has been reached
-		camX += 10;
-		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
-			camX = LEVEL_WIDTH - SCREEN_WIDTH;
+		// if the bullet reaches the end of the screen
+		// destroy it and make a new bullet
+		if(b->getX()==0 || SDL_HasIntersection(b->getHitbox(),en->getHitbox()))
+		{
+			delete b;
+			b = new Bullet(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
 		}
-	}
 
-	// Out of game loop, clean up
+
+
+
+	}
+	//out of game loop, clean up
 	close();
 }
