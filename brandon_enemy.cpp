@@ -3,9 +3,10 @@
 #include <iostream> // for testing
 
 
-Enemy::Enemy(int x, int y) :xPos{x}, yPos{y},width{20},height{20},xVelo{2},yVelo{2}{
+Enemy::Enemy(int x, int y) :xPos{x}, yPos{y},width{20},height{20},xVelo{2},yVelo{0}{
   enemy_sprite = {xPos, yPos, width, height};
   enemy_hitbox = enemy_sprite;
+  setyVelo(0);
 };
 
 void Enemy::renderEnemy(SDL_Renderer* gRenderer){
@@ -31,7 +32,7 @@ if(yPos < (player_y - height))
   yPos -= yVelo;
 
 // move the enemy up while the player is moving up 
-if(yPos > (player_y))
+if(yPos > (player_y + height))
   yPos += yVelo;
 
  enemy_sprite = {xPos,yPos,width,height};
