@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include "Enemy.h"
+#include <iostream> // for testing
 
 
 Enemy::Enemy(int x, int y) :xPos{x}, yPos{y},width{20},height{20},xVelo{0},yVelo{0}{
@@ -12,16 +13,18 @@ void Enemy::renderEnemy(SDL_Renderer* gRenderer){
   SDL_RenderFillRect(gRenderer, &enemy_sprite);
 }
 
-void Enemy::move()
+void Enemy::move(int player_x, int player_y)
 {
-  // yPos += yVelo;
-  // if(yPos==0 || yPos==720-height)
-  // {
-  //   yVelo = -yVelo;
-  // }
-  // enemy_sprite = {xPos,yPos,width,height};
-  // enemy_hitbox = enemy_sprite;
+  /*
+   Want to follow the player around the map by using the player's position
+  1. Get player's position and print to the screen where the player is moving
+  
+  */
+ //printf("in the move fuction");
+ printf("Here is the players position: %d %d\n", player_x, player_y);
+ enemy_sprite = {xPos,yPos,width,height};
 }
+
 
 int Enemy::getX(){
   return xPos;

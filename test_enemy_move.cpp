@@ -103,7 +103,7 @@ int main() {
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
 		// Move the enemy
-		en->move();
+		en->move(player->getPosX(), player->getPosY());
 
 		//Move Blocks
 		//blocks->moveBlocksAndCheckCollision(player, camX, camY);

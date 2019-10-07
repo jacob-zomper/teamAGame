@@ -14,7 +14,9 @@ class Enemy
         void renderEnemy(SDL_Renderer* gRenderer);
 
         //Moves the enemy
-        void move();
+       // void move();
+        //For testing purposes
+        void move(int x, int y);
 
         //Position and velocity accessors
         int getX();
