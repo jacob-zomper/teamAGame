@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.php": "html",
+        "string": "cpp",
+        "iosfwd": "cpp",
+        "iostream": "cpp",
+        "algorithm": "cpp",
+        "new": "cpp"
+    }
+}
