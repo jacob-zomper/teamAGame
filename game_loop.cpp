@@ -10,7 +10,7 @@ constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
-constexpr int SCROLL_SPEED = 7;
+constexpr int SCROLL_SPEED = 420;
 
 // Function declarations
 bool init();
@@ -19,9 +19,14 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
+
 // X and y positions of the camera
-int camX = 0;
-int camY = 640;
+double camX = 0;
+double camY = 640;
+
+// Scrolling-related times so that scroll speed is independent of framerate
+int time_since_horiz_scroll;
+int last_horiz_scroll = SDL_GetTicks();
 
 
 bool init() {
@@ -79,11 +84,13 @@ int main() {
 
 	while(gameon) {
 
-		// Scroll SCROLL_SPEED pixels to the side, unless the end of the level has been reached
-		camX += SCROLL_SPEED;
+		// Scroll to the side, unless the end of the level has been reached
+		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
+		camX += (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
 			camX = LEVEL_WIDTH - SCREEN_WIDTH;
 		}
+		last_horiz_scroll = SDL_GetTicks();
 
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
@@ -111,12 +118,6 @@ int main() {
 
 
 		SDL_RenderPresent(gRenderer);
-
-		// Scroll 5 pixels to the side, unless the end of the level has been reached
-		camX += 10;
-		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
-			camX = LEVEL_WIDTH - SCREEN_WIDTH;
-		}
 	}
 
 	// Out of game loop, clean up

@@ -68,8 +68,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     else if (x_vel < -MAX_PLAYER_VEL)
         x_vel = -MAX_PLAYER_VEL;
 
-    x_pos += x_vel;
-    y_pos += y_vel;
+	time_since_move = SDL_GetTicks() - last_move;
+    x_pos += (x_vel * time_since_move) / 1000;
+    y_pos += (y_vel * time_since_move) / 1000;
 
     // Move the player horizontally
     if (x_pos < 0)
@@ -86,7 +87,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     if (y_pos < SCREEN_HEIGHT / 10 && camY > 0)
     {
         y_pos = SCREEN_HEIGHT / 10;
-        camY += y_vel;
+        camY += (y_vel * time_since_move) / 1000;
     }
     // Stop the player if they hit the top of the level
     else if (y_pos < 0)
@@ -97,7 +98,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
     {
         y_pos = (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT;
-        camY += y_vel;
+        camY += (y_vel * time_since_move) / 1000;
     }
     // Stop the player if they hit the bottom
     else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
@@ -113,6 +114,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     {
         camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
     }
+	last_move = SDL_GetTicks();
 }
 
 //Shows the player on the screen relative to the camera
@@ -120,7 +122,7 @@ void Player::render(SDL_Renderer *gRenderer)
 {
     //Draw player as cyan rectangle
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-    SDL_Rect fillRect = {x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
+    SDL_Rect fillRect = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
     SDL_RenderFillRect(gRenderer, &fillRect);
 }
 
@@ -131,3 +133,9 @@ int Player::getVelX() { return x_vel; };
 int Player::getVelY() { return y_vel; };
 void Player::setPosX(int x) { x_pos = x; }
 void Player::setPosY(int y) { y_pos = y; }
+
+// Methods that can be used to undo the user's moves when dealing with collisions
+void Player::undoXMove() {x_pos -= (x_vel * time_since_move) / 1000;}
+void Player::undoYMove() {y_pos -= (y_vel * time_since_move) / 1000;}
+void Player::redoXMove() {x_pos += (x_vel * time_since_move) / 1000;}
+void Player::redoYMove() {y_pos += (y_vel * time_since_move) / 1000;}
