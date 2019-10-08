@@ -11,7 +11,7 @@
 	};
 
 	void Bullet::renderBullet(SDL_Renderer* gRenderer){
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderFillRect(gRenderer, &bullet_sprite);
 	}
 

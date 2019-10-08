@@ -73,7 +73,7 @@
 
     Bullet* Enemy::shoot()
     {
-        Bullet* b = new Bullet(xPos+width+5,yPos+height/2,-5);
+        Bullet* b = new Bullet(xPos+width+5,yPos+height/2,-300);
 
         return b;
     }
