@@ -26,8 +26,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{100},height{75},xVelo{0},yVelo{0}{
-      enemy_sprite = {(int) xPos, (int) yPos, width, height};
+    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},xVelo{xvel},yVelo{yvel}{
+	  enemy_sprite = {(int) xPos, (int) yPos, width, height};
       enemy_hitbox = enemy_sprite;
       time_since_move = SDL_GetTicks();
       sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
@@ -59,11 +59,11 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
        
       // move the enemy down while the player is moving down
       if(yPos < (player_y - height))
-        yPos -= (double) (yVelo * time_since_move) / 1000;
+        yPos += (double) (yVelo * time_since_move) / 1000;
 
       // move the enemy up while the player is moving up 
       if(yPos > (player_y + height))
-        yPos += (double) (yVelo * time_since_move) / 1000;
+        yPos -= (double) (yVelo * time_since_move) / 1000;
 
        enemy_sprite = {(int)xPos,(int)yPos,width,height};
        last_move = SDL_GetTicks();
@@ -77,6 +77,14 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     int Enemy::getY(){
       return (int) yPos;
     }
+	
+	int Enemy::getWidth() {
+		return width;
+	}
+	
+	int Enemy::getHeight() {
+		return height;
+	}
 
     void Enemy::setyVelo(int y){
       yVelo = y;
@@ -85,6 +93,28 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     void Enemy::setxVelo(int x) {
       xVelo = x;
     }
+	
+    void Enemy::setPosX(int x) {
+		xPos = x;
+	}
+    
+	void Enemy::setPosY(int y) {
+		yPos = y;
+	}
+	
+	// Methods that can be used to undo the enemy's moves when dealing with collisions
+	void Enemy::undoXMove() {
+		xPos -= (double) (xVelo * time_since_move) / 1000;
+	}
+	void Enemy::undoYMove() {
+		yPos -= (double) (yVelo * time_since_move) / 1000;
+	}
+	void Enemy::redoXMove() {
+		xPos += (double) (xVelo * time_since_move) / 1000;
+	}
+	void Enemy::redoYMove() {
+		yPos += (double) (yVelo * time_since_move) / 1000;
+	}
 
     SDL_Rect* Enemy::getHitbox(){
       return &enemy_hitbox;
