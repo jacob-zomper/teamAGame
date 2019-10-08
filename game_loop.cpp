@@ -5,7 +5,7 @@
 #include <SDL.h>
 #include "MapBlocks.h"
 #include "Player.h"
-#include "enemy.cpp"
+#include "Enemy.h"
 #include "bullet.h"
 
 constexpr int SCREEN_WIDTH = 1280;
@@ -112,7 +112,7 @@ int main() {
 		}
 
 		//move enemy
-		en->move();
+		en->move(player->getPosX(), player->getPosY());
 
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
