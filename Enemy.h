@@ -28,8 +28,8 @@ class Enemy
     private:
     
         //Position and size of the enemy sprite on screen
-        int xPos;
-        int yPos;
+        double xPos;
+        double yPos;
         const int width;
         const int height;
 
@@ -41,6 +41,10 @@ class Enemy
         SDL_Rect enemy_sprite;
         //defines the hitbox of the enemy
         SDL_Rect enemy_hitbox;
+		
+		// Move times, used for handling framerate-independent movement
+		int time_since_move;
+		int last_move;
 };
 
 #endif

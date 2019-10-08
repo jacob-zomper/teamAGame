@@ -24,6 +24,9 @@ SDL_Renderer* gRenderer = nullptr;
 int camX = 0;
 int camY = 640;
 
+// Scrolling-related times so that scroll speed is independent of framerate
+int time_since_horiz_scroll;
+int last_horiz_scroll = SDL_GetTicks();
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -42,7 +45,7 @@ bool init() {
 	}
 
 	// Adding VSync to avoid absurd framerates
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (gRenderer == nullptr) {
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
@@ -75,7 +78,7 @@ int main() {
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2);
 	//MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
 	Enemy * en = new Enemy(50, SCREEN_HEIGHT/2);
-	en->setyVelo(-5);
+	en->setyVelo(-300);
 	
 
 	SDL_Event e;
@@ -120,11 +123,13 @@ int main() {
 
 		SDL_RenderPresent(gRenderer);
 
-		// Scroll 5 pixels to the side, unless the end of the level has been reached
-		camX += 10;
+		// Scroll to the side, unless the end of the level has been reached
+		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
+		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
 			camX = LEVEL_WIDTH - SCREEN_WIDTH;
 		}
+		last_horiz_scroll = SDL_GetTicks();
 	}
 
 	// Out of game loop, clean up

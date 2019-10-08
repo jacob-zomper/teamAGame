@@ -15,7 +15,7 @@ public:
 	
 	// Move times, needed for framerate-independent movement speeds
 	int time_since_move;
-	int last_move;
+	int last_move = SDL_GetTicks();
 
     //Initializes the variables
     Player(int xPos, int yPos);
