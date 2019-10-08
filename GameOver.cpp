@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include "Player.h"
 #include "MapBlocks.h"
+#include <SDL_image.h>
 
 GameOver::GameOver(){};
 
@@ -22,32 +23,14 @@ void GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks)
         int x, y;
         SDL_GetMouseState(&x, &y);
 
-        //Check if mouse is in button
-        bool inside = true;
+        bool inside_button = true;
 
-        //Mouse is left of the button
-        if (x < RESTART_BUTTON_X)
-        {
-            inside = false;
-        }
-        //Mouse is right of the button
-        else if (x > RESTART_BUTTON_X + RESTART_BUTTON_WIDTH)
-        {
-            inside = false;
-        }
-        //Mouse above the button
-        else if (y < RESTART_BUTTON_Y)
-        {
-            inside = false;
-        }
-        //Mouse below the button
-        else if (y > RESTART_BUTTON_Y + RESTART_BUTTON_HEIGHT)
-        {
-            inside = false;
-        }
+        if (x < RESTART_BUTTON_X){ inside_button = false; }
+        else if (x > RESTART_BUTTON_X + RESTART_BUTTON_WIDTH){ inside_button = false; }
+        else if (y < RESTART_BUTTON_Y){ inside_button = false; }
+        else if (y > RESTART_BUTTON_Y + RESTART_BUTTON_HEIGHT){ inside_button = false; }
 
-        //Mouse is inside button
-        if(inside){ restart(player, map_blocks); }
+        if (inside_button && e.type == SDL_MOUSEBUTTONUP){ restart(player, map_blocks); }
     }
 }
 
@@ -58,15 +41,20 @@ void GameOver::render(SDL_Renderer *gRenderer)
     SDL_Rect fillRectOverlay = {0, 0, 1280, 720};
     SDL_RenderFillRect(gRenderer, &fillRectOverlay);
 
-    SDL_SetRenderDrawColor(gRenderer, 0x4F, 0xa7, 0x00, 0xFF);
+    // SDL_SetRenderDrawColor(gRenderer, 0x4F, 0xa7, 0x00, 0xFF);
     SDL_Rect fillRectButton = {RESTART_BUTTON_X, RESTART_BUTTON_Y, RESTART_BUTTON_WIDTH, RESTART_BUTTON_HEIGHT};
-    SDL_RenderFillRect(gRenderer, &fillRectButton);
+    // SDL_RenderFillRect(gRenderer, &fillRectButton);
 
+    SDL_Texture *button_texture = nullptr;
+    SDL_Surface *button_image_surface = IMG_Load("sprites/restart_button.png");
+    button_texture = SDL_CreateTextureFromSurface(gRenderer, button_image_surface);
+    SDL_FreeSurface(button_image_surface);
+    SDL_RenderCopyEx(gRenderer, button_texture, nullptr, &fillRectButton, 0.0, nullptr, SDL_FLIP_NONE);
 }
 
 void GameOver::restart(Player *player, MapBlocks *map_blocks)
 {
-    map_blocks->BLOCKS_N = 1000;
+    map_blocks->BLOCKS_N = map_blocks->BLOCKS_STARTING_N;
     map_blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
     isGameOver = false;
 }
