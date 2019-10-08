@@ -30,6 +30,8 @@ public:
     //Position and velocity accessors
     int getPosX();
     int getPosY();
+    void setVelX(int vel_x);
+    void setVelY(int vel_y);
     int getVelX();
     int getVelY();
     void setPosX(int x);
