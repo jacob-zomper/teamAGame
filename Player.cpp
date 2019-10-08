@@ -31,6 +31,8 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     y_vel = 0;
 	sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
 	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+	gBackground = loadImage("sprites/cave.png", gRenderer);
+    bg_X = 0;
 	last_move = SDL_GetTicks();
 }
 
@@ -96,6 +98,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 	time_since_move = SDL_GetTicks() - last_move;
     x_pos += (double) (x_vel * time_since_move) / 1000;
     y_pos += (double) (y_vel * time_since_move) / 1000;
+    bg_X += (double) (time_since_move) / 10;
 
     // Move the player horizontally
     if (x_pos < 0)
@@ -143,8 +146,13 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 }
 
 //Shows the player on the screen relative to the camera
-void Player::render(SDL_Renderer *gRenderer)
+void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT)
 {
+	SDL_Rect bgRect = {-((int)bg_X % SCREEN_WIDTH), 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+    bgRect.x += SCREEN_WIDTH;
+    SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+    
     SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
 	// Alternates through the two sprites every ANIMATION_FREQ ticks
     if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
@@ -158,6 +166,8 @@ void Player::render(SDL_Renderer *gRenderer)
 //Position and velocity accessors
 int Player::getPosX() { return x_pos; };
 int Player::getPosY() { return y_pos; };
+void Player::setVelX(int vel_x) { x_vel = vel_x; };
+void Player::setVelY(int vel_y) { y_vel = vel_y; };
 int Player::getVelX() { return x_vel; };
 int Player::getVelY() { return y_vel; };
 void Player::setPosX(int x) { x_pos = x; }
