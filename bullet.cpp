@@ -1,4 +1,4 @@
-
+# include <SDL.h>
 
 
 
@@ -12,7 +12,8 @@ public:
 	Bullet(int x, int y) :xPos{x}, yPos{y},width{5},height{5}{
 		bullet_sprite = {xPos, yPos,width, height};
 		hitbox = bullet_sprite;
-		xVel = 5;
+		xVel = 300;
+		time_since_move = SDL_GetTicks();
 	};
 
 	void renderBullet(SDL_Renderer* gRenderer){
@@ -21,7 +22,8 @@ public:
 	}
 
 	void move(){
-		xPos -= xVel;
+		time_since_move = SDL_GetTicks() - last_move;
+		xPos -= (double) (time_since_move * xVel) / 1000;
 		bullet_sprite ={xPos,yPos,width,height};
 		hitbox = bullet_sprite;
 	}
@@ -59,7 +61,11 @@ private:
 	int xVel;
 
 	SDL_Rect bullet_sprite;
-	SDL_Rect hitbox;	
-
+	SDL_Rect hitbox;
+	
+	// Time variables, used to handle framerate-independent motion
+	int time_since_move;
+	int last_move;
+	
 
 };
