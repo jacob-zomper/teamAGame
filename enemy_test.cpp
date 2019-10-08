@@ -4,6 +4,7 @@
 #include <string>
 #include <SDL.h>
 #include "Enemy.h"
+#include "bullet.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -73,13 +74,8 @@ int main() {
 		return 1;
 	}
 
-<<<<<<< HEAD
-	//Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2);
-=======
-	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2, SDL_Renderer *gRenderer);
->>>>>>> 3ddbac3637d9a9e42c5e64357b6a4ec76cc405fc
+	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 300);
+	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
 	en->setyVelo(-300);
 
 	//variables for dummy

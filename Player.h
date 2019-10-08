@@ -1,11 +1,15 @@
 #ifndef Player_H
 #define Player_H
 
+#include <iostream>
+#include <string>
 #include <SDL.h>
+#include <SDL_image.h>
 
 class Player
 {
 public:
+
     //The dimensions of the player
     static const int PLAYER_WIDTH = 125;
     static const int PLAYER_HEIGHT = 53;
@@ -23,6 +27,9 @@ public:
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
 	SDL_Texture* gBackground;
+	
+	// Used to load sprites
+	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     //Initializes the variables
     Player(int xPos, int yPos, SDL_Renderer *gRenderer);

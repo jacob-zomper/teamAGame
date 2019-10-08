@@ -105,7 +105,7 @@ int main() {
 	GameOver *game_over = new GameOver();
 
 	//start enemy on left side behind player
-	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, gRenderer);
+	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
 
 	//initialize a vector of bullets
 	Bullet* b= nullptr;
@@ -156,8 +156,10 @@ int main() {
 		en->move(player->getPosX(), player->getPosY());
 
 		
-		//Move Blocks
-		blocks->moveBlocksAndCheckCollision(player, camX, camY);
+		//Move Blocks and check collisions
+		blocks->moveBlocks(camX, camY);
+		blocks->checkCollision(player);
+		blocks->checkCollision(en);
 
 		//shoot once
 		if(shootOnce)

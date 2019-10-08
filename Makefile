@@ -7,7 +7,7 @@ BULLET_CLASS = -c bullet.cpp -o bullet.o
 ENEMY_CLASS = -c enemy.cpp -o enemy.o
 GAMEOVER_CLASS = -c GameOver.cpp -o GameOver.o
 
-INCLUDED_CLASSES = Player.o MapBlocks.o bullet.o enemy.o GameOver.o
+INCLUDED_CLASSES = Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp
 
 all: SDLCredits.cpp game_loop.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
@@ -49,15 +49,17 @@ brandon_enemy: test_enemy_move.cpp
 	g++ -c brandon_enemy.cpp -o brandon_enemy.o -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 	g++ $(INCLUDED_CLASSES) brandon_enemy.o test_enemy_move.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o test_enemy_move
 
-
-jake: SDLCredits.cpp
-	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config -- --libs) -std=c++11 -o game_loop
-	
 jake: SDLCredits.cpp game_loop.cpp 
+	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(PLAYER_CLASS) 
+	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(MAPBLOCKS_CLASS) 
+	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(BULLET_CLASS)
+	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(ENEMY_CLASS)
+	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(GAMEOVER_CLASS)
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop
 
 cleanjake:
 	rm game_loop
+	rm *.o
 
 clean:
 	rm *.o
