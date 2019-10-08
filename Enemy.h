@@ -25,7 +25,7 @@ class Enemy
         void setyVelo(int y);
         void setxVelo(int x);
         SDL_Rect* getHitbox();
-        void shoot(Bullet* b);
+        Bullet* shoot();
     
     private:
     

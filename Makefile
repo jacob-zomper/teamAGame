@@ -41,7 +41,7 @@ brandon: SDLCredits.cpp game_loop.cpp
 	g++ enemy_test.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib   -o enemy_test
 
 brandon_enemy: test_enemy_move.cpp
-	g++ -c enemy.cpp -o enemy.o -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
+	g++ -c brandon_enemy.cpp -o brandon_enemy.o -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 	g++ $(INCLUDED_CLASSES) brandon_enemy.o test_enemy_move.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o test_enemy_move
 
 

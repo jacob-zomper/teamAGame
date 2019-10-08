@@ -85,7 +85,7 @@ int main() {
 	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2);
 
 	//initialize a vector of bullets
-	Bullet* b = nullptr;
+	Bullet* b= nullptr;
 
 	SDL_Event e;
 	bool gameon = true;
@@ -120,25 +120,25 @@ int main() {
 		//Move Blocks
 		blocks->moveBlocksAndCheckCollision(player, camX, camY);
 
-		if(b!=nullptr)
+		//shoot once
+		if(shootOnce)
 		{
-			b->move();
+			b = en->shoot();
+			shootOnce=false;
 		}
+			
+		b->move();
 
 		// Clear the screen
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
-		//shoot once
-		if(shootOnce)
-		{
-			en->shoot(b);
-			shootOnce=false;
-		}
+		
 
 		// Draw the player and the enemy
 		player->render(gRenderer);
 		en->renderEnemy(gRenderer);
+		b->renderBullet(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
 

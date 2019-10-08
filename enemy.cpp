@@ -60,7 +60,9 @@
     }
 
 
-    void Enemy::shoot(Bullet* b)
+    Bullet* Enemy::shoot()
     {
-      
+        Bullet* b = new Bullet(xPos+width+5,yPos+height/2,-5);
+
+        return b;
     }
