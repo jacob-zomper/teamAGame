@@ -78,7 +78,6 @@ int main() {
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	//MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
 	Enemy * en = new Enemy(50, SCREEN_HEIGHT/2, gRenderer);
-	en->setyVelo(-300);
 	
 
 	SDL_Event e;
@@ -116,7 +115,7 @@ int main() {
 		SDL_RenderClear(gRenderer);
 
 		// Draw the player
-		player->render(gRenderer);
+		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		en->renderEnemy(gRenderer);
 		//blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
