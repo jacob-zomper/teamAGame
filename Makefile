@@ -5,10 +5,8 @@ CFLAGS = -I/usr/include/SDL2
 INCLUDED_CLASSES = Player.cpp MapBlocks.cpp
 
 all: SDLCredits.cpp game_loop.cpp
-	g++ $(PLAYER_CLASS) $(LINKER_FLAGS)
-	g++ $(MAPBLOCKS_CLASS) $(LINKER_FLAGS)
 	g++ -o SDLCredits $(LINKER_FLAGS) SDLCredits.cpp
-	g++ -o game_loop $(LINKER_FLAGS) $(INCLUDED_CLASSES) game_loop.cpp
+	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
 
 dilan: SDLCredits.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop.o
