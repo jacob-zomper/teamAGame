@@ -34,6 +34,11 @@ private:
 
     SDL_Rect bullet_sprite;
     SDL_Rect hitbox;
+
+    //timing variables
+    int time_since_move;
+        int last_move;
+
 };
 
 #endif

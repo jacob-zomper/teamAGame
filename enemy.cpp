@@ -3,19 +3,30 @@
 #include "Enemy.h"
 
 
-    Enemy::Enemy(int x, int y) :xPos{x}, yPos{y},width{20},height{20},xVelo{2},yVelo{0}{
-    enemy_sprite = {xPos, yPos, width, height};
-    enemy_hitbox = enemy_sprite;
-    setyVelo(0);
-    };
 
-      void Enemy::renderEnemy(SDL_Renderer* gRenderer){
+    Enemy::Enemy(int x, int y) :xPos{static_cast<double>(x)}, yPos{static_cast<double>(y)},width{20},height{20},xVelo{0},yVelo{0}{
+      enemy_sprite = {static_cast<int>(xPos), static_cast<int>(yPos), width, height};
+      enemy_hitbox = enemy_sprite;
+      time_since_move = SDL_GetTicks();
+    }
+
+    void Enemy::renderEnemy(SDL_Renderer* gRenderer){
       SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
       SDL_RenderFillRect(gRenderer, &enemy_sprite);
     }
 
     void Enemy::move(int player_x, int player_y)
     {
+
+      time_since_move = SDL_GetTicks() - last_move;
+      yPos += (double) (yVelo * time_since_move) / 1000;
+      if(yPos<=0 || yPos>=720-height){
+        yVelo = -yVelo;
+      }
+      enemy_sprite = {static_cast<int>(xPos),static_cast<int>(yPos),width,height};
+      enemy_hitbox = enemy_sprite;
+      last_move = SDL_GetTicks();
+
 
       // move the enemy to the right if the player is moving right
       // want to "collide" when the enemy hits us
@@ -35,16 +46,16 @@
       if(yPos > (player_y + height))
       yPos += yVelo;
 
-      enemy_sprite = {xPos,yPos,width,height};
+      enemy_sprite = {static_cast<int>(xPos),static_cast<int>(yPos),width,height};
     }
 
 
     int Enemy::getX(){
-      return xPos;
+      return static_cast<int>(xPos);
     }
 
     int Enemy::getY(){
-      return yPos;
+      return static_cast<int>(yPos);
     }
 
     void Enemy::setyVelo(int y){

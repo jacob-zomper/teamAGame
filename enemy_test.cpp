@@ -35,7 +35,7 @@ bool init() {
 	}
 
 	// Adding VSync to avoid absurd framerates
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (gRenderer == nullptr) {
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
@@ -75,13 +75,13 @@ int main() {
 
 	//Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2);
-	en->setyVelo(-5);
+	en->setyVelo(-300);
 
 	//variables for dummy
 	// int x = 50;
 	// int y = SCREEN_HEIGHT/2;
 	// int xVel=0;
-	// int yVel=-5;
+	// int yVel=-300;
 
 
 	SDL_Event e;
