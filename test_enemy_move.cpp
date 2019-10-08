@@ -116,7 +116,7 @@ int main() {
 		SDL_RenderClear(gRenderer);
 
 		// Draw the player
-		player->render(gRenderer);
+		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		en->renderEnemy(gRenderer);
 		//blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
