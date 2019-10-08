@@ -57,12 +57,12 @@ void MapBlocks::moveBlocksAndCheckCollision(Player *p, int camX, int camY)
         // If there's a collision, cancel the player's move. If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
         if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT))
         {
-            p->setPosX(p->getPosX() - p->getVelX());
-            p->setPosY(p->getPosY() - p->getVelY());
+            p->undoXMove();
+            p->undoYMove();
             if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT))
             {
                 p->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - p->PLAYER_WIDTH, 0));
-                p->setPosY(p->getPosY() + p->getVelY());
+                p->redoYMove();
             }
         }
     }
