@@ -1,12 +1,37 @@
+#include <iostream>
+#include <string>
 #include <SDL.h>
+#include <SDL_image.h>
 #include "Player.h"
 
-Player::Player(int xPos, int yPos)
+SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer) {
+	SDL_Texture* newText = nullptr;
+
+	SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	if (startSurf == nullptr) {
+		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+		return nullptr;
+	}
+
+	newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	if (newText == nullptr) {
+		std::cout << "Unable to create texture from " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	SDL_FreeSurface(startSurf);
+
+	return newText;
+}
+
+Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
 {
     x_pos = xPos;
     y_pos = yPos;
     x_vel = 0;
     y_vel = 0;
+	sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
+	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+	last_move = SDL_GetTicks();
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -120,10 +145,14 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 //Shows the player on the screen relative to the camera
 void Player::render(SDL_Renderer *gRenderer)
 {
-    //Draw player as cyan rectangle
-    SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-    SDL_Rect fillRect = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
-    SDL_RenderFillRect(gRenderer, &fillRect);
+    SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
+	// Alternates through the two sprites every ANIMATION_FREQ ticks
+    if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+		SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, 0.0, nullptr, SDL_FLIP_NONE);
+	}
+	else {
+		SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, 0.0, nullptr, SDL_FLIP_NONE);
+	}
 }
 
 //Position and velocity accessors

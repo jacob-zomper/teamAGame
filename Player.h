@@ -7,18 +7,24 @@ class Player
 {
 public:
     //The dimensions of the player
-    static const int PLAYER_WIDTH = 20;
-    static const int PLAYER_HEIGHT = 20;
+    static const int PLAYER_WIDTH = 200;
+    static const int PLAYER_HEIGHT = 200;
 
     //Maximum axis velocity of the player
     static const int MAX_PLAYER_VEL = 300;
+	static const int ANIMATION_FREQ = 100;
 	
-	// Move times, needed for framerate-independent movement speeds
+	// Move and animation times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
-	int last_move = SDL_GetTicks();
+	int last_move;
+	int last_animate;
+	
+	// Sprites for the player
+	SDL_Texture* sprite1;
+	SDL_Texture* sprite2;
 
     //Initializes the variables
-    Player(int xPos, int yPos);
+    Player(int xPos, int yPos, SDL_Renderer *gRenderer);
 
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
