@@ -2,6 +2,7 @@
 #define Enemy_H
 
 #include <SDL.h>
+#include "bullet.h"
 
 class Enemy
 {
@@ -24,6 +25,7 @@ class Enemy
         void setyVelo(int y);
         void setxVelo(int x);
         SDL_Rect* getHitbox();
+        void shoot(Bullet* b);
     
     private:
     

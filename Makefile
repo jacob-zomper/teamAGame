@@ -1,6 +1,5 @@
 
-LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -L/usr/include/SDL2
-CFLAGS = -L/usr/include/SDL2
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -I/usr/include/SDL2
 
 PLAYER_CLASS = -c Player.cpp -o Player.o
 MAPBLOCKS_CLASS = -c MapBlocks.cpp -o MapBlocks.o
@@ -25,13 +24,15 @@ kenneth: SDLCredits.cpp
 	g++ $(INCLUDED_CLASSES) SDLCredits.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o SDLCredits
 
 jerry_lin_game: game_loop.cpp
-<<<<<<< HEAD
-	clang++ $(PLAYER_CLASS) $(LINKER_FLAGS) $(CFLAGS)
-	clang++ $(MAPBLOCKS_CLASS) $(LINKER_FLAGS) $(CFLAGS)
-	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) $(BULLET_CLASS) $(ENEMY_CLASS)  -o game
+	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS) 
+	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
+	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
+	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
+	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -o game
+
 
 jerry_lin_enemy_test: enemy_test.cpp
-	clang++ enemy_test.cpp $(LINKER_FLAGS) $(CFLAGS)  -o enemy_test
+	clang++ enemy_test.cpp $(LINKER_FLAGS)  -o enemy_test
 
 brandon: SDLCredits.cpp game_loop.cpp
 	g++ SDLCredits.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o credits
@@ -45,7 +46,7 @@ brandon_enemy: test_enemy_move.cpp
 
 
 jake: SDLCredits.cpp
-	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop
+	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config -- --libs) -std=c++11 -o game_loop
 
 clean:
 	rm *.o
