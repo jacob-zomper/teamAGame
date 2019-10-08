@@ -8,8 +8,11 @@ class Enemy
 {
     
     public:
+	
+		SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
+		
         //Initializes the variables, Constructor
-        Enemy(int xPos, int yPos);
+        Enemy(int xPos, int yPos, SDL_Renderer *gRenderer);
 
         //Shows the enemy 
         void renderEnemy(SDL_Renderer* gRenderer);
@@ -26,9 +29,15 @@ class Enemy
         void setxVelo(int x);
         SDL_Rect* getHitbox();
         Bullet* shoot();
-    
+		
+		// Sprites for the enemy
+		SDL_Texture* sprite1;
+		SDL_Texture* sprite2;
     private:
     
+		// Animation frequency of the enemy
+		static const int ANIMATION_FREQ = 100;
+		
         //Position and size of the enemy sprite on screen
         double xPos;
         double yPos;

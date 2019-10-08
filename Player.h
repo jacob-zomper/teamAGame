@@ -7,8 +7,8 @@ class Player
 {
 public:
     //The dimensions of the player
-    static const int PLAYER_WIDTH = 200;
-    static const int PLAYER_HEIGHT = 200;
+    static const int PLAYER_WIDTH = 125;
+    static const int PLAYER_HEIGHT = 53;
 
     //Maximum axis velocity of the player
     static const int MAX_PLAYER_VEL = 300;
@@ -17,7 +17,6 @@ public:
 	// Move and animation times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
 	int last_move;
-	int last_animate;
 	
 	// Sprites for the player
 	SDL_Texture* sprite1;
@@ -36,6 +35,8 @@ public:
     //Position and velocity accessors
     int getPosX();
     int getPosY();
+    void setVelX(int vel_x);
+    void setVelY(int vel_y);
     int getVelX();
     int getVelY();
     void setPosX(int x);

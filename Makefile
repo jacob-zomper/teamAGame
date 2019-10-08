@@ -6,11 +6,9 @@ MAPBLOCKS_CLASS = -c MapBlocks.cpp -o MapBlocks.o
 BULLET_CLASS = -c bullet.cpp -o bullet.o
 ENEMY_CLASS = -c enemy.cpp -o enemy.o
 
-INCLUDED_CLASSES = Player.o MapBlocks.o bullet.o enemy.o
-
+INCLUDED_CLASSES = Player.o MapBlocks.o bullet.o enemy.o GameOver.o
 
 all: SDLCredits.cpp game_loop.cpp
-	g++ -o SDLCredits $(LINKER_FLAGS) SDLCredits.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
 
 dilan: SDLCredits.cpp

@@ -1,18 +1,46 @@
+
 #include "bullet.h"
+#include <iostream>
+#include <string>
 #include <SDL.h>
+#include <SDL_image.h>
 #include "Enemy.h"
 
 
+SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
+	SDL_Texture* newText = nullptr;
+
+	SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	if (startSurf == nullptr) {
+		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+		return nullptr;
+	}
+
+	newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	if (newText == nullptr) {
+		std::cout << "Unable to create texture from " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	SDL_FreeSurface(startSurf);
+
+	return newText;
+}
 
     Enemy::Enemy(int x, int y) :xPos{static_cast<double>(x)}, yPos{static_cast<double>(y)},width{20},height{20},xVelo{0},yVelo{0}{
-      enemy_sprite = {static_cast<int>(xPos), static_cast<int>(yPos), width, height};
+      enemy_sprite = {xPos, yPos, width, height};
       enemy_hitbox = enemy_sprite;
       time_since_move = SDL_GetTicks();
+      sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
+      sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
     }
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
-      SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-      SDL_RenderFillRect(gRenderer, &enemy_sprite);
+      if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+      SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, 0.0, nullptr, SDL_FLIP_NONE);
+      }
+      else {
+        SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, 0.0, nullptr, SDL_FLIP_NONE);
+      }
     }
 
     void Enemy::move(int player_x, int player_y)
