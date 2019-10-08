@@ -6,6 +6,8 @@
 #include <SDL_image.h>
 #include "MapBlocks.h"
 #include "Player.h"
+#include "Enemy.h"
+#include "bullet.h"
 #include "GameOver.h"
 
 constexpr int SCREEN_WIDTH = 1280;
@@ -102,9 +104,17 @@ int main() {
 	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
 	GameOver *game_over = new GameOver();
 
+	//start enemy on left side behind player
+	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+
+	//initialize a vector of bullets
+	Bullet* b= nullptr;
+
+
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
+	bool shootOnce = true;
 
 	while(gameon) {
 
@@ -138,17 +148,39 @@ int main() {
 
 		}
 
+
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
-		//Move Blocks
-		blocks->moveBlocksAndCheckCollision(player, camX, camY);
+		//move enemy
+		en->move(player->getPosX(), player->getPosY());
+
+		
+		//Move Blocks and check collisions
+		blocks->moveBlocks(camX, camY);
+		blocks->checkCollision(player);
+		blocks->checkCollision(en);
+
+		//shoot once
+		if(shootOnce)
+		{
+			b = en->shoot();
+			shootOnce=false;
+		}
+			
+		b->move();
 
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
+		
 
+		
+		//draw the bullet
+		b->renderBullet(gRenderer);
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+		// Draw the enemy
+		en->renderEnemy(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
 		if(game_over->isGameOver)

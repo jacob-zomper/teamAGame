@@ -50,18 +50,27 @@ bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, in
     return true;
 }
 
-void MapBlocks::moveBlocksAndCheckCollision(Player *p, int camX, int camY)
+void MapBlocks::moveBlocks(int camX, int camY)
 {
     int i;
     for (i = 0; i < BLOCKS_N; i++)
     {
         blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
         blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
-        // If there's a collision, cancel the player's move. If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+	}
+}
+
+void MapBlocks::checkCollision(Player *p)
+{
+	int i;
+    for (i = 0; i < BLOCKS_N; i++)
+    {
+        // If there's a collision, cancel the player's move
+		if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
             p->undoXMove();
             p->undoYMove();
+			// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
             if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
             {
                 p->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - p->PLAYER_WIDTH, 0));
@@ -70,6 +79,27 @@ void MapBlocks::moveBlocksAndCheckCollision(Player *p, int camX, int camY)
         }
     }
 }
+
+void MapBlocks::checkCollision(Enemy *e)
+{
+	int i;
+    for (i = 0; i < BLOCKS_N; i++)
+    {
+        // If there's a collision, cancel the enemy's move
+		if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+        {
+            e->undoXMove();
+            e->undoYMove();
+			// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
+            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+            {
+                e->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - e->getWidth(), 0));
+                e->redoYMove();
+            }
+        }
+    }
+}
+
 
 void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRenderer)
 {

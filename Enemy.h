@@ -1,7 +1,11 @@
 #ifndef Enemy_H
 #define Enemy_H
 
+#include <iostream>
+#include <string>
 #include <SDL.h>
+#include <SDL_image.h>
+#include "bullet.h"
 
 class Enemy
 {
@@ -11,7 +15,7 @@ class Enemy
 		SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 		
         //Initializes the variables, Constructor
-        Enemy(int xPos, int yPos, SDL_Renderer *gRenderer);
+        Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer);
 
         //Shows the enemy 
         void renderEnemy(SDL_Renderer* gRenderer);
@@ -21,17 +25,28 @@ class Enemy
         //For testing purposes
         void move(int x, int y);
 
-        //Position and velocity accessors
+        //Position, dimensions, and velocity accessors
         int getX();
         int getY();
+		int getWidth();
+		int getHeight();
         void setyVelo(int y);
         void setxVelo(int x);
+		void setPosX(int x);
+		void setPosY(int y);
+		
+		// Methods that can be used to undo the enemy's moves when dealing with collisions
+		void undoXMove();
+		void undoYMove();
+		void redoXMove();
+		void redoYMove();
+		
         SDL_Rect* getHitbox();
+        Bullet* shoot();
 		
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
-    
     private:
     
 		// Animation frequency of the enemy
