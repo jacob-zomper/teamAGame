@@ -7,8 +7,11 @@ class Enemy
 {
     
     public:
+	
+		SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
+		
         //Initializes the variables, Constructor
-        Enemy(int xPos, int yPos);
+        Enemy(int xPos, int yPos, SDL_Renderer *gRenderer);
 
         //Shows the enemy 
         void renderEnemy(SDL_Renderer* gRenderer);

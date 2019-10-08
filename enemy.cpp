@@ -5,7 +5,7 @@
 #include "Enemy.h"
 
 
-SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer) {
+SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	SDL_Texture* newText = nullptr;
 
 	SDL_Surface* startSurf = IMG_Load(fname.c_str());
@@ -24,7 +24,7 @@ SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-Enemy::Enemy(int x, int y) :xPos{x}, yPos{y},width{125},height{53},xVelo{0},yVelo{0}{
+Enemy::Enemy(int x, int y, SDL_Renderer *gRenderer) :xPos{x}, yPos{y},width{125},height{53},xVelo{0},yVelo{0}{
   enemy_sprite = {xPos, yPos, width, height};
   enemy_hitbox = enemy_sprite;
   time_since_move = SDL_GetTicks();
