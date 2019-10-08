@@ -6,6 +6,7 @@
 #include <SDL_image.h>
 #include "MapBlocks.h"
 #include "Player.h"
+#include "GameOver.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -104,8 +105,9 @@ int main() {
 	gBackground = loadImage("sprites/cave.png");
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
-	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	GameOver *game_over = new GameOver();
 
+	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
 
@@ -124,7 +126,19 @@ int main() {
 				gameon = false;
 			}
 
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+			{
+				if(e.key.keysym.sym == SDLK_7)
+				{
+					game_over->isGameOver = true;
+				}
+			}
+
 			player->handleEvent(e);
+			if(game_over->isGameOver)
+			{
+				game_over->handleEvent(e, player, blocks);
+			}
 
 
 		}
@@ -143,6 +157,11 @@ int main() {
 		player->render(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
+		if(game_over->isGameOver)
+		{
+			game_over->stopGame(player, blocks);
+			game_over->render(gRenderer);
+		}
 
 		SDL_RenderPresent(gRenderer);
 	}
