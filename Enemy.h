@@ -24,9 +24,16 @@ class Enemy
         void setyVelo(int y);
         void setxVelo(int x);
         SDL_Rect* getHitbox();
+		
+		// Sprites for the enemy
+		SDL_Texture* sprite1;
+		SDL_Texture* sprite2;
     
     private:
     
+		// Animation frequency of the enemy
+		static const int ANIMATION_FREQ = 100;
+		
         //Position and size of the enemy sprite on screen
         double xPos;
         double yPos;
