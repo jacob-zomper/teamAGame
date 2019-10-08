@@ -75,7 +75,7 @@ int main() {
 	}
 
 	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2);
+	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2, SDL_Renderer *gRenderer);
 	en->setyVelo(-300);
 
 	//variables for dummy

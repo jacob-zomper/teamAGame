@@ -2,10 +2,9 @@
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -L/usr/include/SDL2
 CFLAGS = -I/usr/include/SDL2
 
-INCLUDED_CLASSES = Player.cpp MapBlocks.cpp
+INCLUDED_CLASSES = Player.cpp MapBlocks.cpp GameOver.cpp
 
 all: SDLCredits.cpp game_loop.cpp
-	g++ -o SDLCredits $(LINKER_FLAGS) SDLCredits.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
 
 dilan: SDLCredits.cpp
@@ -37,6 +36,9 @@ brandon_enemy: test_enemy_move.cpp
 
 jake: SDLCredits.cpp game_loop.cpp 
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop
+
+cleanjake:
+	rm game_loop
 
 clean:
 	rm *.o

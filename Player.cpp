@@ -166,6 +166,8 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 //Position and velocity accessors
 int Player::getPosX() { return x_pos; };
 int Player::getPosY() { return y_pos; };
+void Player::setVelX(int vel_x) { x_vel = vel_x; };
+void Player::setVelY(int vel_y) { y_vel = vel_y; };
 int Player::getVelX() { return x_vel; };
 int Player::getVelY() { return y_vel; };
 void Player::setPosX(int x) { x_pos = x; }
