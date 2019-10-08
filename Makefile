@@ -1,11 +1,13 @@
 
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -L/usr/include/SDL2
-CFLAGS = -I/usr/include/SDL2
+CFLAGS = -L/usr/include/SDL2
 
 PLAYER_CLASS = -c Player.cpp -o Player.o
 MAPBLOCKS_CLASS = -c MapBlocks.cpp -o MapBlocks.o
+BULLET_CLASS = -c bullet.cpp -o bullet.o
+ENEMY_CLASS = -c enemy.cpp -o enemy.o
 
-INCLUDED_CLASSES = Player.o MapBlocks.o
+INCLUDED_CLASSES = Player.o MapBlocks.o bullet.o enemy.o
 
 all: SDLCredits.cpp game_loop.cpp
 	g++ $(PLAYER_CLASS) $(LINKER_FLAGS)
@@ -32,7 +34,7 @@ kenneth: SDLCredits.cpp
 jerry_lin_game: game_loop.cpp
 	clang++ $(PLAYER_CLASS) $(LINKER_FLAGS) $(CFLAGS)
 	clang++ $(MAPBLOCKS_CLASS) $(LINKER_FLAGS) $(CFLAGS)
-	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) $(CFLAGS)  -o game
+	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) $(BULLET_CLASS) $(ENEMY_CLASS)  -o game
 
 jerry_lin_enemy_test: enemy_test.cpp
 	clang++ enemy_test.cpp $(LINKER_FLAGS) $(CFLAGS)  -o enemy_test

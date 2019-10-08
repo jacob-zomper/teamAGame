@@ -1,15 +1,16 @@
+#include "bullet.h"
 
 class Enemy
 {
 
   public:
-    Enemy(int x, int y) :xPos{x}, yPos{y},width{20},height{20},xVelo{0},yVelo{0}{
+    Enemy(int x, int y) :xPos{x}, yPos{y},width{20},height{20},xVelo{0},yVelo{5}{
       enemy_sprite = {xPos, yPos, width, height};
       enemy_hitbox = enemy_sprite;
     };
 
     void renderEnemy(SDL_Renderer* gRenderer){
-      SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+      SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0xFF, 0xFF);
       SDL_RenderFillRect(gRenderer, &enemy_sprite);
     }
 
@@ -42,6 +43,13 @@ class Enemy
       return &enemy_hitbox;
     }
 
+    void shoot(Bullet* b){
+      int shotX = xPos+(width);
+      int shotY = yPos-(height/2);
+
+      b= new Bullet(shotX,shotY,-10);
+    }
+
   private:
 
     //Position and size of the enemy sprite on screen
@@ -53,6 +61,7 @@ class Enemy
     //Velocity of the enemy
     int xVelo;
     int yVelo;
+
 
     //defines the enemy asset
     SDL_Rect enemy_sprite;

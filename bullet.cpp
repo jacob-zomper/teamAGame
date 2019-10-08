@@ -1,4 +1,4 @@
-
+#include "bullet.h"
 
 
 
@@ -9,14 +9,14 @@ class Bullet
 
 public:
 
-	Bullet(int x, int y) :xPos{x}, yPos{y},width{5},height{5}{
+	Bullet(int x, int y, int vel) :xPos{x}, yPos{y},width{5},height{5}{
 		bullet_sprite = {xPos, yPos,width, height};
 		hitbox = bullet_sprite;
-		xVel = 5;
+		xVel = vel;
 	};
 
 	void renderBullet(SDL_Renderer* gRenderer){
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderFillRect(gRenderer, &bullet_sprite);
 	}
 
@@ -37,8 +37,6 @@ public:
 	SDL_Rect* getHitbox(){
 		return &hitbox;
 	}
-
-
 
 
 
