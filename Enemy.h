@@ -2,6 +2,7 @@
 #define Enemy_H
 
 #include <SDL.h>
+#include "bullet.h"
 
 class Enemy
 {
@@ -27,11 +28,11 @@ class Enemy
         void setyVelo(int y);
         void setxVelo(int x);
         SDL_Rect* getHitbox();
+        Bullet* shoot();
 		
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
-    
     private:
     
 		// Animation frequency of the enemy
