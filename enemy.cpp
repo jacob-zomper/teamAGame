@@ -26,8 +26,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y, SDL_Renderer *gRenderer) :xPos{static_cast<double>(x)}, yPos{static_cast<double>(y)},width{20},height{20},xVelo{0},yVelo{0}{
-      enemy_sprite = {static_cast<int>(xPos), static_cast<int>(yPos), width, height};
+    Enemy::Enemy(int x, int y, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{100},height{75},xVelo{0},yVelo{0}{
+      enemy_sprite = {(int) xPos, (int) yPos, width, height};
       enemy_hitbox = enemy_sprite;
       time_since_move = SDL_GetTicks();
       sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
@@ -41,6 +41,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
       else {
         SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, 0.0, nullptr, SDL_FLIP_NONE);
       }
+      enemy_hitbox=enemy_sprite;
     }
 
     void Enemy::move(int player_x, int player_y)
@@ -48,42 +49,39 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
       time_since_move = SDL_GetTicks() - last_move;
       yPos += (double) (yVelo * time_since_move) / 1000;
-      if(yPos<=0 || yPos>=720-height){
-        yVelo = -yVelo;
-      }
-      enemy_sprite = {static_cast<int>(xPos),static_cast<int>(yPos),width,height};
-      enemy_hitbox = enemy_sprite;
       last_move = SDL_GetTicks();
 
 
       // move the enemy to the right if the player is moving right
       // want to "collide" when the enemy hits us
       if(xPos < (player_x - width))
-      xPos += xVelo;
+        xPos += (double) (xVelo*time_since_move)/1000;
+      
 
       // move the enemy to the right if the player is moving right
       // want to "collide" when the enemy hits us
       if(xPos > (player_x + width))
-      xPos -= xVelo;
+      xPos -= (double) (xVelo*time_since_move)/1000;
 
       // move the enemy down while the player is moving down
       if(yPos < (player_y - height))
-      yPos -= yVelo;
+      yPos -= (double) (yVelo*time_since_move)/1000;
 
       // move the enemy up while the player is moving up 
       if(yPos > (player_y + height))
-      yPos += yVelo;
+      yPos += (double) (yVelo*time_since_move)/1000;
 
-      enemy_sprite = {static_cast<int>(xPos),static_cast<int>(yPos),width,height};
+      enemy_sprite = {(int) xPos,(int) yPos,width,height};
+      enemy_hitbox = enemy_sprite;
     }
 
 
     int Enemy::getX(){
-      return static_cast<int>(xPos);
+      return (int) xPos;
     }
 
     int Enemy::getY(){
-      return static_cast<int>(yPos);
+      return (int) yPos;
     }
 
     void Enemy::setyVelo(int y){

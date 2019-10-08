@@ -148,12 +148,14 @@ int main() {
 
 		}
 
-		//move enemy
-		en->move(player->getPosX(), player->getPosY());
 
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
+		//move enemy
+		en->move(player->getPosX(), player->getPosY());
+
+		
 		//Move Blocks
 		blocks->moveBlocksAndCheckCollision(player, camX, camY);
 
@@ -170,12 +172,13 @@ int main() {
 		SDL_RenderClear(gRenderer);
 		
 
-		// Draw the player and the enemy
-		player->render(gRenderer);
-		en->renderEnemy(gRenderer);
+		
+		//draw the bullet
 		b->renderBullet(gRenderer);
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+		// Draw the enemy
+		en->renderEnemy(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
 		if(game_over->isGameOver)

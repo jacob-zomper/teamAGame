@@ -31,8 +31,13 @@ jerry_lin_game: game_loop.cpp
 	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -o game
 
 
-jerry_lin_enemy_test: enemy_test.cpp
-	clang++ enemy_test.cpp $(LINKER_FLAGS)  -o enemy_test
+jerry_lin_enemy_test: test_enemy_move.cpp
+	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS) 
+	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
+	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
+	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
+	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
+	clang++ $(INCLUDED_CLASSES) test_enemy_move.cpp $(LINKER_FLAGS)  -o enemy_test
 
 brandon: SDLCredits.cpp game_loop.cpp
 	g++ SDLCredits.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o credits
