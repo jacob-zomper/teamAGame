@@ -43,6 +43,10 @@ brandon: SDLCredits.cpp game_loop.cpp
 	g++ SDLCredits.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o credits
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o game_loop
 
+jake: SDLCredits.cpp
+	g++ $(PLAYER_CLASS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs)
+	g++ $(MAPBLOCKS_CLASS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs)
+	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop
 
 clean:
 	rm *.o
