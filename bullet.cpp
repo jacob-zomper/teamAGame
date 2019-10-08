@@ -1,6 +1,6 @@
 
 #include "bullet.h"
-# include <SDL.h>
+#include <SDL.h>
 
 
 	Bullet::Bullet(int x, int y,int vel) :xPos{x}, yPos{y},width{5},height{5}{
