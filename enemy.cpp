@@ -5,6 +5,7 @@
 Enemy::Enemy(int x, int y) :xPos{x}, yPos{y},width{20},height{20},xVelo{0},yVelo{0}{
   enemy_sprite = {xPos, yPos, width, height};
   enemy_hitbox = enemy_sprite;
+  time_since_move = SDL_GetTicks();
 };
 
 void Enemy::renderEnemy(SDL_Renderer* gRenderer){
@@ -13,12 +14,14 @@ void Enemy::renderEnemy(SDL_Renderer* gRenderer){
 }
 
 void Enemy::move(){
-  yPos += yVelo;
-  if(yPos==0 || yPos==720-height){
+  time_since_move = SDL_GetTicks() - last_move;
+  yPos += (double) (yVelo * time_since_move) / 1000;
+  if(yPos<=0 || yPos>=720-height){
     yVelo = -yVelo;
   }
   enemy_sprite = {xPos,yPos,width,height};
   enemy_hitbox = enemy_sprite;
+  last_move = SDL_GetTicks();
 }
 
 int Enemy::getX(){
