@@ -26,8 +26,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y) :xPos{static_cast<double>(x)}, yPos{static_cast<double>(y)},width{20},height{20},xVelo{0},yVelo{0}{
-      enemy_sprite = {xPos, yPos, width, height};
+    Enemy::Enemy(int x, int y, SDL_Renderer *gRenderer) :xPos{static_cast<double>(x)}, yPos{static_cast<double>(y)},width{20},height{20},xVelo{0},yVelo{0}{
+      enemy_sprite = {static_cast<int>(xPos), static_cast<int>(yPos), width, height};
       enemy_hitbox = enemy_sprite;
       time_since_move = SDL_GetTicks();
       sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);

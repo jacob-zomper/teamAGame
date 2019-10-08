@@ -5,6 +5,7 @@ PLAYER_CLASS = -c Player.cpp -o Player.o
 MAPBLOCKS_CLASS = -c MapBlocks.cpp -o MapBlocks.o
 BULLET_CLASS = -c bullet.cpp -o bullet.o
 ENEMY_CLASS = -c enemy.cpp -o enemy.o
+GAMEOVER_CLASS = -c GameOver.cpp -o GameOver.o
 
 INCLUDED_CLASSES = Player.o MapBlocks.o bullet.o enemy.o GameOver.o
 
@@ -26,6 +27,7 @@ jerry_lin_game: game_loop.cpp
 	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
 	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
 	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
+	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
 	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -o game
 
 

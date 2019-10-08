@@ -110,7 +110,7 @@ int main() {
 	GameOver *game_over = new GameOver();
 
 	//start enemy on left side behind player
-	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2);
+	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, gRenderer);
 
 	//initialize a vector of bullets
 	Bullet* b= nullptr;
