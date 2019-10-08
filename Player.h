@@ -11,7 +11,11 @@ public:
     static const int PLAYER_HEIGHT = 20;
 
     //Maximum axis velocity of the player
-    static const int MAX_PLAYER_VEL = 5;
+    static const int MAX_PLAYER_VEL = 300;
+	
+	// Move times, needed for framerate-independent movement speeds
+	int time_since_move;
+	int last_move;
 
     //Initializes the variables
     Player(int xPos, int yPos);
@@ -30,10 +34,16 @@ public:
     int getVelY();
     void setPosX(int x);
     void setPosY(int y);
+	
+	// Methods that can be used to undo the user's moves when dealing with collisions
+	void undoXMove();
+	void undoYMove();
+	void redoXMove();
+	void redoYMove();
 
 private:
     //The X and Y offsets of the player (ON SCREEN)
-    int x_pos, y_pos;
+    double x_pos, y_pos;
 
     //The velocity of the player
     int x_vel, y_vel;
