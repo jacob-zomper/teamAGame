@@ -22,7 +22,6 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
-SDL_Texture* gBackground;
 
 // X and y positions of the camera
 double camX = 0;
@@ -88,9 +87,6 @@ void close() {
 	gRenderer = nullptr;
 
 	// Quit SDL subsystems
-	SDL_DestroyTexture(gBackground);
-	gBackground = nullptr;
-
 	SDL_Quit();
 }
 
@@ -102,7 +98,6 @@ int main() {
 	}
 	
 	//Start the player on the left side of the screen
-	gBackground = loadImage("sprites/cave.png");
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
 	GameOver *game_over = new GameOver();
@@ -151,10 +146,9 @@ int main() {
 
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
-		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 
 		// Draw the player
-		player->render(gRenderer);
+		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
 		if(game_over->isGameOver)
