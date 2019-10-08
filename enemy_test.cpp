@@ -3,8 +3,7 @@
 #include <vector>
 #include <string>
 #include <SDL.h>
-#include "bullet.cpp"
-#include "enemy.cpp"
+#include "Enemy.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -74,8 +73,13 @@ int main() {
 		return 1;
 	}
 
+<<<<<<< HEAD
+	//Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2);
+=======
 	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2, SDL_Renderer *gRenderer);
+>>>>>>> 3ddbac3637d9a9e42c5e64357b6a4ec76cc405fc
 	en->setyVelo(-300);
 
 	//variables for dummy
@@ -87,6 +91,7 @@ int main() {
 
 	SDL_Event e;
 	bool gameon = true;
+	bool shootOnce = true;
 	while(gameon) {
 		while(SDL_PollEvent(&e)) {
 				if (e.type == SDL_QUIT) {
@@ -95,7 +100,7 @@ int main() {
 		}
 
 		//move the bullet
-		b->move();
+		//b->move();
 		//moveDummy(&y,&yVel);
 		en->move();
 
@@ -105,7 +110,7 @@ int main() {
 		SDL_RenderClear(gRenderer);
 
 		//render the bullet
-		b->renderBullet(gRenderer);
+		//b->renderBullet(gRenderer);
 
 
 		//render the dummy box
@@ -113,16 +118,19 @@ int main() {
 		// SDL_Rect dummy = {x,y,50,50};
 		// SDL_RenderFillRect(gRenderer, &dummy);
 		// //put it on the screen
+		
+		
+		if(shootOnce)
+		{
+			en->shoot();
+			shootOnce = false;
+		}
+
 		en->renderEnemy(gRenderer);
 		SDL_RenderPresent(gRenderer);
 
 		// if the bullet reaches the end of the screen
 		// destroy it and make a new bullet
-		if(b->getX()==0 || SDL_HasIntersection(b->getHitbox(),en->getHitbox()))
-		{
-			delete b;
-			b = new Bullet(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
-		}
 
 
 
