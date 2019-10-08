@@ -27,7 +27,6 @@ jerry_lin_enemy_test: enemy_test.cpp
 brandon: SDLCredits.cpp game_loop.cpp
 	g++ SDLCredits.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o credits
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o game_loop
-	g++ $(INCLUDED_CLASSES) test_enemy_move.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o test_enemy_move
 	g++ enemy_test.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib   -o enemy_test
 
 brandon_enemy: test_enemy_move.cpp

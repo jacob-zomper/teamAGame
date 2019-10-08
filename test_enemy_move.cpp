@@ -74,7 +74,7 @@ int main() {
 	//Start the player on the left side of the screen
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2);
 	//MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
-	Enemy * en = new Enemy(50, SCREEN_HEIGHT/2);
+	Enemy * en = new Enemy(SCREEN_WIDTH, SCREEN_HEIGHT);
 	en->setyVelo(-5);
 	
 

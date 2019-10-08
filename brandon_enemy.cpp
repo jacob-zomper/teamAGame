@@ -19,7 +19,7 @@ void Enemy::move(int player_x, int player_y)
   
  // move the enemy to the right if the player is moving right
  // want to "collide" when the enemy hits us
- if(xPos < (player_x - width))
+ if(xPos < (player_x - width) )
    xPos += xVelo;
  
  // move the enemy to the right if the player is moving right
@@ -36,8 +36,20 @@ if(yPos > (player_y + height))
   yPos += yVelo;
 
  enemy_sprite = {xPos,yPos,width,height};
+
+ //printf("%d\n", checkCollision(player_x, player_y));
 }
 
+bool Enemy::checkCollision(int player_x,int player_y)
+ {
+    if(xPos < (player_x - width) || xPos > (player_x + width))
+      return true;
+    
+    if(yPos < (player_y - height) || yPos > (player_y + width))
+      return true;
+
+    return false;
+ }
 
 int Enemy::getX(){
   return xPos;

@@ -18,6 +18,8 @@ class Enemy
         //For testing purposes
         void move(int x, int y);
 
+        bool checkCollision(int player_xpos, int player_ypos);
+
         //Position and velocity accessors
         int getX();
         int getY();
