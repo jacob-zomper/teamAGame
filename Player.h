@@ -18,10 +18,12 @@ public:
 	int time_since_move;
 	int last_move;
 	int last_animate;
+    double bg_X;
 	
 	// Sprites for the player
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
+	SDL_Texture* gBackground;
 
     //Initializes the variables
     Player(int xPos, int yPos, SDL_Renderer *gRenderer);
@@ -32,7 +34,7 @@ public:
     void move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY);
 
     //Shows the player on the screen relative to the camera
-    void render(SDL_Renderer *gRenderer);
+    void render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT);
     //Position and velocity accessors
     int getPosX();
     int getPosY();
