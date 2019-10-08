@@ -3,8 +3,10 @@
 #include <vector>
 #include <string>
 #include <SDL.h>
+#include <SDL_image.h>
 #include "MapBlocks.h"
 #include "Player.h"
+#include "GameOver.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -14,6 +16,7 @@ constexpr int SCROLL_SPEED = 420;
 
 // Function declarations
 bool init();
+SDL_Texture* loadImage(std::string fname);
 void close();
 
 // Globals
@@ -39,14 +42,14 @@ bool init() {
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
 	}
 
-	gWindow = SDL_CreateWindow("Hello world!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	gWindow = SDL_CreateWindow("TeamAGame", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (gWindow == nullptr) {
 		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
 	}
 
 	// Adding VSync to avoid absurd framerates
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (gRenderer == nullptr) {
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
@@ -56,6 +59,25 @@ bool init() {
 	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 
 	return true;
+}
+
+SDL_Texture* loadImage(std::string fname) {
+	SDL_Texture* newText = nullptr;
+
+	SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	if (startSurf == nullptr) {
+		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+		return nullptr;
+	}
+
+	newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	if (newText == nullptr) {
+		std::cout << "Unable to create texture from " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	SDL_FreeSurface(startSurf);
+
+	return newText;
 }
 
 void close() {
@@ -76,9 +98,11 @@ int main() {
 	}
 	
 	//Start the player on the left side of the screen
-	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2);
+	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
+	GameOver *game_over = new GameOver();
 
+	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
 
@@ -86,7 +110,7 @@ int main() {
 
 		// Scroll to the side, unless the end of the level has been reached
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
-		camX += (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
+		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
 			camX = LEVEL_WIDTH - SCREEN_WIDTH;
 		}
@@ -97,7 +121,19 @@ int main() {
 				gameon = false;
 			}
 
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+			{
+				if(e.key.keysym.sym == SDLK_7)
+				{
+					game_over->isGameOver = true;
+				}
+			}
+
 			player->handleEvent(e);
+			if(game_over->isGameOver)
+			{
+				game_over->handleEvent(e, player, blocks);
+			}
 
 
 		}
@@ -109,13 +145,17 @@ int main() {
 		blocks->moveBlocksAndCheckCollision(player, camX, camY);
 
 		// Clear the screen
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
 		// Draw the player
-		player->render(gRenderer);
+		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
+		if(game_over->isGameOver)
+		{
+			game_over->stopGame(player, blocks);
+			game_over->render(gRenderer);
+		}
 
 		SDL_RenderPresent(gRenderer);
 	}

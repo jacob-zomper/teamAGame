@@ -22,6 +22,9 @@ public:
     int BLOCK_REL_X;
     int BLOCK_REL_Y;
 
+    int BLOCK_HEIGHT;
+    int BLOCK_WIDTH;
+
     int BLOCK_SPRITE; // Map to which sprite image this FlyingBlock will use.
 
     FlyingBlock();
@@ -32,7 +35,8 @@ class MapBlocks
 {
 
 public:
-    static const int BLOCKS_N = 1000;
+    static const int BLOCKS_STARTING_N = 500;
+    int BLOCKS_N = 500;
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
     FlyingBlock *blocks_arr;

@@ -7,8 +7,11 @@ class Enemy
 {
     
     public:
+	
+		SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
+		
         //Initializes the variables, Constructor
-        Enemy(int xPos, int yPos);
+        Enemy(int xPos, int yPos, SDL_Renderer *gRenderer);
 
         //Shows the enemy 
         void renderEnemy(SDL_Renderer* gRenderer);
@@ -26,12 +29,19 @@ class Enemy
         void setyVelo(int y);
         void setxVelo(int x);
         SDL_Rect* getHitbox();
+		
+		// Sprites for the enemy
+		SDL_Texture* sprite1;
+		SDL_Texture* sprite2;
     
     private:
     
+		// Animation frequency of the enemy
+		static const int ANIMATION_FREQ = 100;
+		
         //Position and size of the enemy sprite on screen
-        int xPos;
-        int yPos;
+        double xPos;
+        double yPos;
         const int width;
         const int height;
 
@@ -43,6 +53,10 @@ class Enemy
         SDL_Rect enemy_sprite;
         //defines the hitbox of the enemy
         SDL_Rect enemy_hitbox;
+		
+		// Move times, used for handling framerate-independent movement
+		int time_since_move;
+		int last_move;
 };
 
 #endif
