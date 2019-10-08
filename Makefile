@@ -51,5 +51,8 @@ jake: SDLCredits.cpp
 jake: SDLCredits.cpp game_loop.cpp 
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop
 
+cleanjake:
+	rm game_loop
+
 clean:
 	rm *.o
