@@ -22,6 +22,9 @@ public:
     int BLOCK_REL_X;
     int BLOCK_REL_Y;
 
+    int BLOCK_HEIGHT;
+    int BLOCK_WIDTH;
+
     int BLOCK_SPRITE; // Map to which sprite image this FlyingBlock will use.
 
     FlyingBlock();
