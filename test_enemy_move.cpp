@@ -5,12 +5,13 @@
 #include <SDL.h>
 #include "MapBlocks.h"
 #include "Player.h"
+#include "Enemy.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
-constexpr int SCROLL_SPEED = 420;
+constexpr int SCROLL_SPEED = 7;
 
 // Function declarations
 bool init();
@@ -19,15 +20,13 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
-
 // X and y positions of the camera
-double camX = 0;
-double camY = 640;
+int camX = 0;
+int camY = 640;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
 int last_horiz_scroll = SDL_GetTicks();
-
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -39,7 +38,7 @@ bool init() {
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
 	}
 
-	gWindow = SDL_CreateWindow("TeamAGame", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	gWindow = SDL_CreateWindow("Hello world!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (gWindow == nullptr) {
 		std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
@@ -76,21 +75,22 @@ int main() {
 	}
 	
 	//Start the player on the left side of the screen
-	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
+	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2);
+	//MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
+	Enemy * en = new Enemy(50, SCREEN_HEIGHT/2);
+	en->setyVelo(-300);
+	
 
 	SDL_Event e;
 	bool gameon = true;
 
 	while(gameon) {
 
-		// Scroll to the side, unless the end of the level has been reached
-		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
-		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
-		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
-			camX = LEVEL_WIDTH - SCREEN_WIDTH;
-		}
-		last_horiz_scroll = SDL_GetTicks();
+		// // Scroll SCROLL_SPEED pixels to the side, unless the end of the level has been reached
+		// camX += SCROLL_SPEED;
+		// if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
+		// 	camX = LEVEL_WIDTH - SCREEN_WIDTH;
+		// }
 
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
@@ -105,8 +105,11 @@ int main() {
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
+		// Move the enemy
+		en->move(player->getPosX(), player->getPosY());
+
 		//Move Blocks
-		blocks->moveBlocksAndCheckCollision(player, camX, camY);
+		//blocks->moveBlocksAndCheckCollision(player, camX, camY);
 
 		// Clear the screen
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -114,10 +117,19 @@ int main() {
 
 		// Draw the player
 		player->render(gRenderer);
-		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		en->renderEnemy(gRenderer);
+		//blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
 
 		SDL_RenderPresent(gRenderer);
+
+		// Scroll to the side, unless the end of the level has been reached
+		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
+		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
+		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
+			camX = LEVEL_WIDTH - SCREEN_WIDTH;
+		}
+		last_horiz_scroll = SDL_GetTicks();
 	}
 
 	// Out of game loop, clean up

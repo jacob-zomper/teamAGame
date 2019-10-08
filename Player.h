@@ -7,14 +7,24 @@ class Player
 {
 public:
     //The dimensions of the player
-    static const int PLAYER_WIDTH = 20;
-    static const int PLAYER_HEIGHT = 20;
+    static const int PLAYER_WIDTH = 200;
+    static const int PLAYER_HEIGHT = 200;
 
     //Maximum axis velocity of the player
-    static const int MAX_PLAYER_VEL = 5;
+    static const int MAX_PLAYER_VEL = 300;
+	static const int ANIMATION_FREQ = 100;
+	
+	// Move and animation times, needed for framerate-independent movement and animation speeds
+	int time_since_move;
+	int last_move;
+	int last_animate;
+	
+	// Sprites for the player
+	SDL_Texture* sprite1;
+	SDL_Texture* sprite2;
 
     //Initializes the variables
-    Player(int xPos, int yPos);
+    Player(int xPos, int yPos, SDL_Renderer *gRenderer);
 
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
@@ -30,10 +40,16 @@ public:
     int getVelY();
     void setPosX(int x);
     void setPosY(int y);
+	
+	// Methods that can be used to undo the user's moves when dealing with collisions
+	void undoXMove();
+	void undoYMove();
+	void redoXMove();
+	void redoYMove();
 
 private:
     //The X and Y offsets of the player (ON SCREEN)
-    int x_pos, y_pos;
+    double x_pos, y_pos;
 
     //The velocity of the player
     int x_vel, y_vel;
