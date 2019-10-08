@@ -19,6 +19,9 @@ FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT)
     // These should be the same first
     BLOCK_REL_X = BLOCK_ABS_X;
     BLOCK_REL_Y = BLOCK_ABS_Y;
+
+    BLOCK_WIDTH = 25 + (rand() % 100);
+    BLOCK_HEIGHT = 25 + (rand() % 100);
 }
 
 MapBlocks::MapBlocks()
@@ -55,11 +58,11 @@ void MapBlocks::moveBlocksAndCheckCollision(Player *p, int camX, int camY)
         blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
         blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
         // If there's a collision, cancel the player's move. If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
             p->undoXMove();
             p->undoYMove();
-            if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT))
+            if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
             {
                 p->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - p->PLAYER_WIDTH, 0));
                 p->redoYMove();
@@ -78,7 +81,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT)
         {
             SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-            SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
+            SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
     }
