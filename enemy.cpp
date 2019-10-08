@@ -46,33 +46,27 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
     void Enemy::move(int player_x, int player_y)
     {
-
-      time_since_move = SDL_GetTicks() - last_move;
-      yPos += (double) (yVelo * time_since_move) / 1000;
-      last_move = SDL_GetTicks();
-
-
-      // move the enemy to the right if the player is moving right
-      // want to "collide" when the enemy hits us
-      if(xPos < (player_x - width))
-        xPos += (double) (xVelo*time_since_move)/1000;
-      
-
-      // move the enemy to the right if the player is moving right
-      // want to "collide" when the enemy hits us
-      if(xPos > (player_x + width))
-      xPos -= (double) (xVelo*time_since_move)/1000;
-
+        time_since_move = SDL_GetTicks() - last_move;
+       // move the enemy to the right if the player is moving right
+       // want to "collide" when the enemy hits us
+       if(xPos < (player_x - width))
+         xPos += (double) (xVelo * time_since_move) / 1000;
+       
+       // move the enemy to the right if the player is moving right
+       // want to "collide" when the enemy hits us
+       if(xPos > (player_x + width))
+         xPos -= (double) (xVelo * time_since_move) / 1000;
+       
       // move the enemy down while the player is moving down
       if(yPos < (player_y - height))
-      yPos -= (double) (yVelo*time_since_move)/1000;
+        yPos -= (double) (yVelo * time_since_move) / 1000;
 
       // move the enemy up while the player is moving up 
       if(yPos > (player_y + height))
-      yPos += (double) (yVelo*time_since_move)/1000;
+        yPos += (double) (yVelo * time_since_move) / 1000;
 
-      enemy_sprite = {(int) xPos,(int) yPos,width,height};
-      enemy_hitbox = enemy_sprite;
+       enemy_sprite = {(int)xPos,(int)yPos,width,height};
+       last_move = SDL_GetTicks();
     }
 
 
