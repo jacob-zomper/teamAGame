@@ -3,8 +3,8 @@
 #include <vector>
 #include <string>
 #include <SDL.h>
-#include "bullet.cpp"
-#include "enemy.cpp"
+#include "Enemy.h"
+#include "bullet.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -36,7 +36,7 @@ bool init() {
 	}
 
 	// Adding VSync to avoid absurd framerates
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (gRenderer == nullptr) {
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
@@ -74,19 +74,20 @@ int main() {
 		return 1;
 	}
 
-	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2);
-	en->setyVelo(-5);
+	Bullet* b = new Bullet(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 300);
+	Enemy* en = new Enemy(50, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+	en->setyVelo(-300);
 
 	//variables for dummy
 	// int x = 50;
 	// int y = SCREEN_HEIGHT/2;
 	// int xVel=0;
-	// int yVel=-5;
+	// int yVel=-300;
 
 
 	SDL_Event e;
 	bool gameon = true;
+	bool shootOnce = true;
 	while(gameon) {
 		while(SDL_PollEvent(&e)) {
 				if (e.type == SDL_QUIT) {
@@ -95,7 +96,7 @@ int main() {
 		}
 
 		//move the bullet
-		b->move();
+		//b->move();
 		//moveDummy(&y,&yVel);
 		en->move();
 
@@ -105,7 +106,7 @@ int main() {
 		SDL_RenderClear(gRenderer);
 
 		//render the bullet
-		b->renderBullet(gRenderer);
+		//b->renderBullet(gRenderer);
 
 
 		//render the dummy box
@@ -113,16 +114,19 @@ int main() {
 		// SDL_Rect dummy = {x,y,50,50};
 		// SDL_RenderFillRect(gRenderer, &dummy);
 		// //put it on the screen
+		
+		
+		if(shootOnce)
+		{
+			en->shoot();
+			shootOnce = false;
+		}
+
 		en->renderEnemy(gRenderer);
 		SDL_RenderPresent(gRenderer);
 
 		// if the bullet reaches the end of the screen
 		// destroy it and make a new bullet
-		if(b->getX()==0 || SDL_HasIntersection(b->getHitbox(),en->getHitbox()))
-		{
-			delete b;
-			b = new Bullet(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
-		}
 
 
 
