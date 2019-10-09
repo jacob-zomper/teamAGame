@@ -1,4 +1,3 @@
-
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -I/usr/include/SDL2
 
 PLAYER_CLASS = -c Player.cpp -o Player.o
