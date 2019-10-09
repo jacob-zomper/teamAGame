@@ -4,6 +4,7 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "MapBlocks.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -27,12 +28,17 @@ SDL_Renderer* gRenderer = nullptr;
 
 // X and y positions of the camera
 double camX = 0;
-double camY = 640;
+double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
 int last_horiz_scroll = SDL_GetTicks();
 
+/*framerate timer
+Uint32 fps_last_time = SDL_GetTicks();
+Uint32 fps_cur_time = 0;
+int framecount;
+*/
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -183,11 +189,30 @@ int main() {
 		en->renderEnemy(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
+/*
+		framecount++;
+		fps_cur_time=SDL_GetTicks();
+		if (fps_cur_time - fps_last_time > 1000) {
+			std::string fps= std::to_string(framecount / ((fps_cur_time - fps_last_time) / 1000.0));
+			TTF_Font* Sans = TTF_OpenFont("Sans.ttf",14);
+			SDL_Color Black = {000,000,000};
+			SDL_Surface* fps_message = TTF_RenderText_Solid(Sans, fps.c_str(), Black);
+			SDL_Texture* message = SDL_CreateTextureFromSurface(gRenderer, fps_message);
+			SDL_Rect message_rect = {0,0,75,20};
+			SDL_RenderCopy(gRenderer, message,NULL, &message_rect);
+
+			// reset
+			fps_last_time = fps_cur_time;
+			framecount = 0;
+		}
+*/
 		if(game_over->isGameOver)
 		{
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 		}
+		
+
 
 		SDL_RenderPresent(gRenderer);
 	}
