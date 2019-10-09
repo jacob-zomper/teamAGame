@@ -22,6 +22,9 @@ connor: SDLCredits.cpp game_loop.cpp
 kenneth: SDLCredits.cpp
 	g++ $(INCLUDED_CLASSES) SDLCredits.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o SDLCredits
 
+brian: SDLCredits.cpp
+	g++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o game_loop
+
 jerry_lin_game: game_loop.cpp
 	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS) 
 	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
