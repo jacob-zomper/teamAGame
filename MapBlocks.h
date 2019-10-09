@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include "Player.h"
+#include "Enemy.h"
 
 class WallBlock
 {
@@ -45,7 +46,9 @@ public:
     MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
-    void moveBlocksAndCheckCollision(Player *p, int camX, int camY);
+    void moveBlocks(int camX, int camY);
+	void checkCollision(Player *p);
+	void checkCollision(Enemy *e);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
 };
 
