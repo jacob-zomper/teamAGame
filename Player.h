@@ -1,14 +1,18 @@
 #ifndef Player_H
 #define Player_H
 
+#include <iostream>
+#include <string>
 #include <SDL.h>
+#include <SDL_image.h>
 
 class Player
 {
 public:
+
     //The dimensions of the player
-    static const int PLAYER_WIDTH = 200;
-    static const int PLAYER_HEIGHT = 200;
+    static const int PLAYER_WIDTH = 125;
+    static const int PLAYER_HEIGHT = 53;
 
     //Maximum axis velocity of the player
     static const int MAX_PLAYER_VEL = 300;
@@ -17,11 +21,15 @@ public:
 	// Move and animation times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
 	int last_move;
-	int last_animate;
+  double bg_X;
 	
 	// Sprites for the player
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
+	SDL_Texture* gBackground;
+	
+	// Used to load sprites
+	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     //Initializes the variables
     Player(int xPos, int yPos, SDL_Renderer *gRenderer);
@@ -32,10 +40,12 @@ public:
     void move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY);
 
     //Shows the player on the screen relative to the camera
-    void render(SDL_Renderer *gRenderer);
+    void render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT);
     //Position and velocity accessors
     int getPosX();
     int getPosY();
+    void setVelX(int vel_x);
+    void setVelY(int vel_y);
     int getVelX();
     int getVelY();
     void setPosX(int x);

@@ -4,8 +4,12 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "MapBlocks.h"
 #include "Player.h"
+#include "Enemy.h"
+#include "bullet.h"
+#include "GameOver.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -21,16 +25,20 @@ void close();
 // Globals
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
-SDL_Texture* gBackground;
 
 // X and y positions of the camera
 double camX = 0;
-double camY = 640;
+double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
 int last_horiz_scroll = SDL_GetTicks();
 
+/*framerate timer
+Uint32 fps_last_time = SDL_GetTicks();
+Uint32 fps_cur_time = 0;
+int framecount;
+*/
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -87,9 +95,6 @@ void close() {
 	gRenderer = nullptr;
 
 	// Quit SDL subsystems
-	SDL_DestroyTexture(gBackground);
-	gBackground = nullptr;
-
 	SDL_Quit();
 }
 
@@ -101,13 +106,21 @@ int main() {
 	}
 	
 	//Start the player on the left side of the screen
-	gBackground = loadImage("sprites/cave.png");
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
-	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	GameOver *game_over = new GameOver();
 
+	//start enemy on left side behind player
+	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+
+	//initialize a vector of bullets
+	Bullet* b= nullptr;
+
+
+	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
+	bool shootOnce = true;
 
 	while(gameon) {
 
@@ -124,24 +137,81 @@ int main() {
 				gameon = false;
 			}
 
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+			{
+				if(e.key.keysym.sym == SDLK_7)
+				{
+					game_over->isGameOver = true;
+				}
+			}
+
 			player->handleEvent(e);
+			if(game_over->isGameOver)
+			{
+				game_over->handleEvent(e, player, blocks);
+			}
 
 
 		}
 
+
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
-		//Move Blocks
-		blocks->moveBlocksAndCheckCollision(player, camX, camY);
+		//move enemy
+		en->move(player->getPosX(), player->getPosY());
+
+		
+		//Move Blocks and check collisions
+		blocks->moveBlocks(camX, camY);
+		blocks->checkCollision(player);
+		blocks->checkCollision(en);
+
+		//shoot once
+		if(shootOnce)
+		{
+			b = en->shoot();
+			shootOnce=false;
+		}
+			
+		b->move();
 
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
-		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+		
 
+		
+		//draw the bullet
+		b->renderBullet(gRenderer);
 		// Draw the player
-		player->render(gRenderer);
+		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+		// Draw the enemy
+		en->renderEnemy(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+
+/*
+		framecount++;
+		fps_cur_time=SDL_GetTicks();
+		if (fps_cur_time - fps_last_time > 1000) {
+			std::string fps= std::to_string(framecount / ((fps_cur_time - fps_last_time) / 1000.0));
+			TTF_Font* Sans = TTF_OpenFont("Sans.ttf",14);
+			SDL_Color Black = {000,000,000};
+			SDL_Surface* fps_message = TTF_RenderText_Solid(Sans, fps.c_str(), Black);
+			SDL_Texture* message = SDL_CreateTextureFromSurface(gRenderer, fps_message);
+			SDL_Rect message_rect = {0,0,75,20};
+			SDL_RenderCopy(gRenderer, message,NULL, &message_rect);
+
+			// reset
+			fps_last_time = fps_cur_time;
+			framecount = 0;
+		}
+*/
+		if(game_over->isGameOver)
+		{
+			game_over->stopGame(player, blocks);
+			game_over->render(gRenderer);
+		}
+		
 
 
 		SDL_RenderPresent(gRenderer);
