@@ -72,7 +72,7 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     STALAG_HEIGHT = rand() % 141 + 50;
 
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
-    STALAG_ABS_Y = 72;//growing from top of cave
+    STALAG_ABS_Y = WallBlock::block_side;//growing from top of cave
     //STALAG_ABS_Y= rand() % LEVEL_HEIGHT;
 
     // These should be the same first
