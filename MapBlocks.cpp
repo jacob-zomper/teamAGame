@@ -297,7 +297,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     // Render walls
     for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
     {
-        SDL_SetRenderDrawColor(gRenderer, 0xCC, 0x66, 0x00, 0xFF);
+        SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
         SDL_Rect fillRectWall1 = { i, SCREEN_HEIGHT - WallBlock::block_side, WallBlock::block_side, WallBlock::block_side };
         SDL_RenderFillRect(gRenderer, &fillRectWall1);
 
