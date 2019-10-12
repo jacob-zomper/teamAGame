@@ -31,6 +31,25 @@ public:
     int stalagShapeNum;
 };
 
+class Stalagtite
+{
+public:
+    int STALAG_ABS_Y;
+    int STALAG_ABS_X;
+
+    int STALAG_REL_Y;
+    int STALAG_REL_X;
+
+    int STALAG_HEIGHT;
+    int STALAG_WIDTH;
+
+    Stalagtite();
+    Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+
+    SDL_Texture* sprite;
+    int stalagShapeNum;
+};
+
 class FlyingBlock
 {
 public:
@@ -73,7 +92,8 @@ public:
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
     FlyingBlock *blocks_arr;
-    Stalagmite *stalag_arr;
+    Stalagmite *stalagm_arr;
+    Stalagtite *stalagt_arr;
 
     MapBlocks();
     MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
