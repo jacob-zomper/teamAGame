@@ -45,7 +45,16 @@ public:
     int BLOCK_SPRITE; // Map to which sprite image this FlyingBlock will use.
 
     FlyingBlock();
-    FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT);
+    FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+
+     //Sprites for other Enemies
+    SDL_Texture* sprite1;
+	SDL_Texture* sprite2;
+
+     //defines the enemy asset
+    SDL_Rect FB_sprite;
+    //defines the hitbox of the enemy
+    SDL_Rect FB_hitbox;
 };
 
 class MapBlocks
@@ -64,13 +73,16 @@ public:
     Stalagmite *stalag_arr;
 
     MapBlocks();
-    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT);
+    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+private:
+    //Animation frequency
+    static const int ANIMATION_FREQ = 100;
 };
 
 #endif
