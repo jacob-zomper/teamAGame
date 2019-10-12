@@ -61,6 +61,7 @@ class Enemy
         //Velocity of the enemy
         int xVelo;
         int yVelo;
+        double tiltAngle;
 
         //defines the enemy asset
         SDL_Rect enemy_sprite;
