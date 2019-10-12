@@ -4,6 +4,25 @@
 #include "iostream"
 #include <vector>
 
+SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer) {
+	SDL_Texture* newText = nullptr;
+
+	SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	if (startSurf == nullptr) {
+		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+		return nullptr;
+	}
+
+	newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	if (newText == nullptr) {
+		std::cout << "Unable to create texture from " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	SDL_FreeSurface(startSurf);
+
+	return newText;
+}
+
 WallBlock::WallBlock(){};
 
 Stalagmite::Stalagmite()
@@ -26,10 +45,11 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT)
 
 FlyingBlock::FlyingBlock()
 {
-    FlyingBlock(1, 1);
+    SDL_Renderer *gRenderer= nullptr;
+    FlyingBlock(1, 1, gRenderer);
 }
 
-FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT)
+FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
 {
     BLOCK_ABS_X = rand() % LEVEL_WIDTH;
     BLOCK_ABS_Y = rand() % LEVEL_HEIGHT;
@@ -38,16 +58,26 @@ FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT)
     BLOCK_REL_X = BLOCK_ABS_X;
     BLOCK_REL_Y = BLOCK_ABS_Y;
 
-    BLOCK_WIDTH = 25 + (rand() % 100);
-    BLOCK_HEIGHT = 25 + (rand() % 100);
+    // BLOCK_WIDTH = 25 + (rand() % 100);
+    // BLOCK_HEIGHT = 25 + (rand() % 100);
+    //Standard Enemy plane size
+    BLOCK_WIDTH = 125; 
+    BLOCK_HEIGHT = 53;
+
+    sprite1 = loadImage("sprites/EnemyPlaneK1.png", gRenderer);
+    sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
+    
+    FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
+    FB_hitbox = FB_sprite;
 }
 
 MapBlocks::MapBlocks()
 {
-    MapBlocks(1, 1);
+    SDL_Renderer *gRenderer= nullptr;
+    MapBlocks(1, 1, gRenderer = nullptr);
 }
 
-MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT)
+MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
 {
 
     blocks_arr = new FlyingBlock[BLOCKS_N];
@@ -56,7 +86,7 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT)
     int i;
     for (i = 0; i < BLOCKS_N; i++)
     {
-        blocks_arr[i] = FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT); // Initiating each FlyingBlock
+        blocks_arr[i] = FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer); // Initiating each FlyingBlock
     }
     for (i=0; i < STALAG_N; i++)
     {
@@ -165,16 +195,23 @@ void MapBlocks::checkCollision(Enemy *e)
 
 void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRenderer)
 {
-    //Draw player as cyan rectangle
     int i;
     for (i = 0; i < BLOCKS_N; i++)
     {
         // Only render the FlyingBlock if will be screen
         if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+            
             SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
-            SDL_RenderFillRect(gRenderer, &fillRect);
+            
+            
+            if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+                 SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+            }
+            else {
+                SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite2, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+            }
+            blocks_arr[i].FB_hitbox=blocks_arr[i].FB_sprite;
         }
     }
 
@@ -191,7 +228,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 
     for (i = 0; i < STALAG_N; i++)
     {
-        // Only render the FlyingBlock if will be screen
+        // Only render the Stalag if will be screen
         if (stalag_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalag_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
         {
             SDL_SetRenderDrawColor(gRenderer, 0xCC, 0x66, 0x00, 0xFF);
