@@ -8,6 +8,9 @@ SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	SDL_Texture* newText = nullptr;
 
 	SDL_Surface* startSurf = IMG_Load(fname.c_str());
+    if(gRenderer == nullptr){
+        return nullptr;
+    }
 	if (startSurf == nullptr) {
 		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
 		return nullptr;
