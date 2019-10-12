@@ -27,9 +27,10 @@ WallBlock::WallBlock(){};
 
 Stalagmite::Stalagmite()
 {
-    Stalagmite(1,1);
+    SDL_Renderer *gRenderer= nullptr;
+    Stalagmite(1,1,gRenderer);
 }
-Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT)
+Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
 {
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
     STALAG_ABS_Y = LEVEL_HEIGHT;//growing from bottom of cave
@@ -39,8 +40,22 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT)
     STALAG_REL_X = STALAG_ABS_X;
     STALAG_REL_Y = STALAG_ABS_Y;
 
-    STALAG_WIDTH = 10 + (rand() % 30);
-    STALAG_HEIGHT = 50 + (rand() % 100);
+    STALAG_WIDTH = rand() % 16 + 60;
+    STALAG_HEIGHT = rand() % 141 + 50;
+
+    stalagShapeNum = rand() % 4 + 1;
+    if (stalagShapeNum == 1) {
+        sprite = loadImage("sprites/stalag1.png", gRenderer);
+    }
+    else if (stalagShapeNum == 2) {
+        sprite = loadImage("sprites/stalag2.png", gRenderer);
+    }
+    else if (stalagShapeNum == 3) {
+        sprite = loadImage("sprites/stalag3.png", gRenderer);
+    }
+    else if (stalagShapeNum == 4) {
+        sprite = loadImage("sprites/stalag4.png", gRenderer);
+    }
 }
 
 FlyingBlock::FlyingBlock()
@@ -90,7 +105,7 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
     }
     for (i=0; i < STALAG_N; i++)
     {
-        stalag_arr[i] = Stalagmite(LEVEL_WIDTH,LEVEL_HEIGHT);//Initiate the stalagmites
+        stalag_arr[i] = Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);//Initiate the stalagmites
     }
 }
 
@@ -201,10 +216,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         // Only render the FlyingBlock if will be screen
         if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT)
         {
-            
             SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
-            
-            
             if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
                  SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
             }
@@ -231,9 +243,8 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         // Only render the Stalag if will be screen
         if (stalag_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalag_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_SetRenderDrawColor(gRenderer, 0xCC, 0x66, 0x00, 0xFF);
             SDL_Rect fillRect = {stalag_arr[i].STALAG_REL_X, stalag_arr[i].STALAG_REL_Y, stalag_arr[i].STALAG_WIDTH, stalag_arr[i].STALAG_HEIGHT};
-            SDL_RenderFillRect(gRenderer, &fillRect);
+            SDL_RenderCopyEx(gRenderer, stalag_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
 

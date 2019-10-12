@@ -25,7 +25,10 @@ public:
     int STALAG_WIDTH;
 
     Stalagmite();
-    Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT);
+    Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+
+    SDL_Texture* sprite;
+    int stalagShapeNum;
 };
 
 class FlyingBlock
