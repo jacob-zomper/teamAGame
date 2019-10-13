@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <math.h>
+#include <stdlib.h>
 #include <SDL.h>
 
 // Global variables
@@ -9,7 +10,7 @@ constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 constexpr int PLANE_WIDTH = 40;
 constexpr int PLANE_HEIGHT = 40;
-constexpr int MAX_SPEED = 20;
+constexpr int MAX_SPEED = 5;
 
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
@@ -81,6 +82,8 @@ class Plane
             y_position += get_y_velocity();
         }
 
+        // The following two functions calculate the X and Y velocities based on trigonometry
+
         double get_x_velocity()
         {
             return velocity * cos(pitch * M_PI / 180.0);
@@ -115,7 +118,7 @@ class Plane
         // Returns true if object is at or passed the maximum speed, false otherwise
         bool at_max_speed()
         {
-            if(velocity >= MAX_SPEED)
+            if(abs(velocity) >= MAX_SPEED)
             {
                 return true;
             }
@@ -129,7 +132,10 @@ class Plane
 
         void add_velocity(int value)
         {
-            velocity += value;
+            if(!at_max_speed)
+            {
+                velocity += value;
+            }
         }
 
         void add_pitch(int value)
