@@ -8,7 +8,7 @@
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 constexpr int PLANE_WIDTH = 40;
-constexpr int PLANE_HEIGHT = 10;
+constexpr int PLANE_HEIGHT = 40;
 constexpr int MAX_SPEED = 20;
 
 SDL_Window* gWindow = nullptr;
