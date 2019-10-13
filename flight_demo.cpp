@@ -157,12 +157,12 @@ class Plane
 
         // Getter methods for position and pitch
 
-        int get_x_position()
+        double get_x_position()
         {
             return x_position;
         }
 
-        int get_y_position()
+        double get_y_position()
         {
             return y_position;
         }
@@ -174,7 +174,7 @@ class Plane
 
     private:
         // Position within screen in pixels
-        int x_position, y_position;
+        double x_position, y_position;
 
         // Velocity in pixels per game loop
         int velocity;
