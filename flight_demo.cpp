@@ -232,7 +232,7 @@ int main()
         SDL_RenderClear(gRenderer);
 
         SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-        SDL_Rect fillRect = {plane.get_x_position(), plane.get_y_position(), PLANE_WIDTH, PLANE_HEIGHT};
+        SDL_Rect fillRect = {plane.x_position(), plane.y_position(), PLANE_WIDTH, PLANE_HEIGHT};
         SDL_RenderFillRect(gRenderer, &fillRect);
         SDL_RenderPresent(gRenderer);
     }
