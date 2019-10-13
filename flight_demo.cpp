@@ -247,7 +247,6 @@ int main()
         SDL_RenderFillRect(gRenderer, &fillRect);
         SDL_RenderPresent(gRenderer);
 
-        std::cout << "Pitch: " << plane.get_pitch() << " Velocity: " << plane.get_x_velocity() << "/" << plane.get_y_velocity() << std::endl;
     }
 
     close();
