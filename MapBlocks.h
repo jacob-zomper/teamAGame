@@ -9,6 +9,7 @@ class WallBlock
 {
 public:
     static const int block_side = 72;
+    static const int border = 1;
     WallBlock();
 };
 
