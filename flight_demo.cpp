@@ -72,7 +72,7 @@ void close()
 class Plane
 {
     public:
-        Plane(int xp, int yp, int v, int p) :x_position{xp}, y_position{yp}, velocity{v}, pitch{p} {}
+        Plane(double xp, double yp, int v, int p) :x_position{xp}, y_position{yp}, velocity{v}, pitch{p} {}
 
         // Updates the x and y positions based on current velocity and pitch
         void update_position()
