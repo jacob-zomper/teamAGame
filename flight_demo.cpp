@@ -211,13 +211,13 @@ int main()
                 switch(e.key.keysym.sym)
                 {
                     case SDLK_w:
-                        plane.add_pitch(-5);
+                        plane.add_pitch(-1);
                         break;
                     case SDLK_a:
                         plane.add_velocity(-1);
                         break;
                     case SDLK_s:
-                        plane.add_pitch(5);
+                        plane.add_pitch(1);
                         break;
                     case SDLK_d:
                         plane.add_velocity(1);
@@ -237,7 +237,7 @@ int main()
         SDL_RenderClear(gRenderer);
 
         SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-        SDL_Rect fillRect = {plane.get_x_position(), plane.get_y_position(), PLANE_WIDTH, PLANE_HEIGHT};
+        SDL_Rect fillRect = {(int) plane.get_x_position(), (int) plane.get_y_position(), PLANE_WIDTH, PLANE_HEIGHT};
         SDL_RenderFillRect(gRenderer, &fillRect);
         SDL_RenderPresent(gRenderer);
 
