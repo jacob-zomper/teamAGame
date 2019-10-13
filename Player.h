@@ -22,6 +22,7 @@ public:
 	int time_since_move;
 	int last_move;
   double bg_X;
+    double tiltAngle;
 	
 	// Sprites for the player
 	SDL_Texture* sprite1;

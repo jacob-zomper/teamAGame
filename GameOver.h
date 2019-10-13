@@ -16,10 +16,10 @@ public:
     GameOver();
 
     void stopGame(Player*, MapBlocks*);
-    void handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks);
+    void handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer);
     void render(SDL_Renderer *gRenderer);
 private:
-    void restart(Player *player, MapBlocks *map_blocks);
+    void restart(Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer);
     int LEVEL_WIDTH = 100000;
     int LEVEL_HEIGHT = 2000;
 };
