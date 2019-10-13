@@ -77,8 +77,18 @@ class Plane
         // Updates the x and y positions based on current velocity and pitch
         void update_position()
         {
-            x_position += velocity * cos(pitch * M_PI / 180.0);
-            y_position += velocity * sin(pitch * M_PI / 180.0);
+            x_position += x_velocity();
+            y_position += y_velocity();
+        }
+
+        double x_velocity()
+        {
+            return velocity * cos(pitch * M_PI / 180.0);
+        }
+
+        double y_velocity()
+        {
+            return velocity * sin(pitch * M_PI / 180.0);
         }
 
         // Sets coordinates, velocity, and pitch to starting values
@@ -145,14 +155,14 @@ class Plane
             pitch = p;
         }
 
-        // Getter methods for position
+        // Getter methods for velocities and positions
 
-        int get_x_position()
+        int x_position()
         {
             return x_position;
         }
 
-        int get_y_position()
+        int y_position()
         {
             return y_position;
         }
