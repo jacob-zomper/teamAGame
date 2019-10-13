@@ -155,7 +155,7 @@ class Plane
             pitch = p;
         }
 
-        // Getter methods for position
+        // Getter methods for position and pitch
 
         int get_x_position()
         {
@@ -165,6 +165,11 @@ class Plane
         int get_y_position()
         {
             return y_position;
+        }
+
+        int get_pitch()
+        {
+            return pitch;
         }
 
     private:
@@ -235,6 +240,8 @@ int main()
         SDL_Rect fillRect = {plane.get_x_position(), plane.get_y_position(), PLANE_WIDTH, PLANE_HEIGHT};
         SDL_RenderFillRect(gRenderer, &fillRect);
         SDL_RenderPresent(gRenderer);
+
+        std::cout << "Pitch: " << plane.get_pitch() << " Velocity: " << plane.get_x_velocity() << "/" << plane.get_y_velocity() << endl;
     }
 
     close();
