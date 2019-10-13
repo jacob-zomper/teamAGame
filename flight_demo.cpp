@@ -211,13 +211,13 @@ int main()
                 switch(e.key.keysym.sym)
                 {
                     case SDLK_w:
-                        plane.add_pitch(1);
+                        plane.add_pitch(5);
                         break;
                     case SDLK_a:
                         plane.add_velocity(-1);
                         break;
                     case SDLK_s:
-                        plane.add_pitch(-1);
+                        plane.add_pitch(-5);
                         break;
                     case SDLK_d:
                         plane.add_velocity(1);
