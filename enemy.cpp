@@ -26,7 +26,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},xVelo{xvel},yVelo{yvel}{
+    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
 	  enemy_sprite = {(int) xPos, (int) yPos, width, height};
       enemy_hitbox = enemy_sprite;
       time_since_move = SDL_GetTicks();
@@ -48,29 +48,34 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     void Enemy::move(int player_x, int player_y)
     {
         time_since_move = SDL_GetTicks() - last_move;
+		xVelo = 0;
+		yVelo = 0;
        // move the enemy to the right if the player is moving right
        // want to "collide" when the enemy hits us
         if(xPos < (player_x - width)){
           tiltAngle = 0;
-          xPos += (double) (xVelo * time_since_move) / 1000;
+		  xVelo = maxXVelo;
         }
        // move the enemy to the right if the player is moving right
        // want to "collide" when the enemy hits us
         if(xPos > (player_x + width)){
           tiltAngle = 0;
           xPos -= (double) (xVelo * time_since_move) / 1000;
+		  xVelo = -maxXVelo;
         }
       // move the enemy down while the player is moving down
         if(yPos < (player_y - height)){
           tiltAngle = 15;
-          yPos += (double) (yVelo * time_since_move) / 1000;
+		  yVelo = maxYVelo;
         }
         
       // move the enemy up while the player is moving up 
         if(yPos > (player_y + height)){
           tiltAngle = -15;
-          yPos -= (double) (yVelo * time_since_move) / 1000;
+		  yVelo = -maxYVelo;
         }
+       xPos += (double) (xVelo * time_since_move) / 1000;
+       yPos += (double) (yVelo * time_since_move) / 1000;
        enemy_sprite = {(int)xPos,(int)yPos,width,height};
        last_move = SDL_GetTicks();
     }
@@ -127,9 +132,13 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     }
 
 
-    Bullet* Enemy::shoot()
+    Bullet* Enemy::handleFiring()
     {
-        Bullet* b = new Bullet(xPos+width+5,yPos+height/2,-300);
-
-        return b;
+		time_since_shoot = SDL_GetTicks() - last_shot;
+		if (time_since_shoot > FIRING_FREQ) {
+			Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
+			last_shot = SDL_GetTicks();
+			return b;
+		}
+		return nullptr;
     }
