@@ -122,31 +122,44 @@ FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRende
     FB_hitbox = FB_sprite;
 }
 
-MapBlocks::MapBlocks()
+Explosion::Explosion()
 {
     SDL_Renderer *gRenderer= nullptr;
+    Explosion(1, 1, gRenderer);
+}
+
+Explosion::Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer)
+{
+	// Initialize all necessary variables
+	current_size = (double) INITIAL_EXPLOSION_SIZE;
+	center_x = x_loc;
+	center_y = y_loc;
+	abs_x = center_x - current_size / 2;
+	abs_y = center_y - current_size / 2;
+	explosion_time = SDL_GetTicks();
+}
+
+MapBlocks::MapBlocks()
+{
+    gRenderer= nullptr;
     MapBlocks(1, 1, gRenderer = nullptr);
 }
 
-MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
+MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr)
 {
-
-    blocks_arr = new FlyingBlock[BLOCKS_N];
-    stalagm_arr = new Stalagmite[STALAG_N];
-    stalagt_arr = new Stalagtite[STALAG_N];
-
+	gRenderer = gr;
     int i;
     for (i = 0; i < BLOCKS_N; i++)
     {
-        blocks_arr[i] = FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer); // Initiating each FlyingBlock
+        blocks_arr.push_back(FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer)); // Initiating each FlyingBlock
     }
     for (i=0; i < STALAG_N; i++)
     {
-        stalagm_arr[i] = Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);//Initiate the stalagmites
+        stalagm_arr.push_back(Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer));//Initiate the stalagmites
     }
     for (i=0; i < STALAG_N; i++)
     {
-        stalagt_arr[i] = Stalagtite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);//Initiate the stalagtites
+        stalagt_arr.push_back(Stalagtite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer));//Initiate the stalagtites
     }
 }
 
@@ -162,7 +175,7 @@ bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, in
 void MapBlocks::moveBlocks(int camX, int camY)
 {
     int i;
-    for (i = 0; i < BLOCKS_N; i++)
+    for (i = 0; i < blocks_arr.size(); i++)
     {
         blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
         blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
@@ -177,6 +190,19 @@ void MapBlocks::moveBlocks(int camX, int camY)
         stalagt_arr[i].STALAG_REL_X = stalagt_arr[i].STALAG_ABS_X - camX;
         // stalagt_arr[i].STALAG_REL_Y = stalagt_arr[i].STALAG_ABS_Y-camY - WallBlock::block_side - stalagt_arr[i].STALAG_HEIGHT;
     }
+	for (i = explosion_arr.size() - 1; i >= 0; i--)
+	{
+		explosion_arr[i].current_size = (double) explosion_arr[i].INITIAL_EXPLOSION_SIZE + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].EXPLOSION_SPEED) / 1000;
+		explosion_arr[i].abs_x = explosion_arr[i].center_x - explosion_arr[i].current_size / 2;
+		explosion_arr[i].abs_y = explosion_arr[i].center_y - explosion_arr[i].current_size / 2;
+		explosion_arr[i].rel_x = explosion_arr[i].abs_x - camX;
+		explosion_arr[i].rel_y = explosion_arr[i].abs_y - camY;
+		explosion_arr[i].hitbox = {(int)explosion_arr[i].rel_x, (int)explosion_arr[i].rel_y, (int)explosion_arr[i].current_size, (int)explosion_arr[i].current_size};
+		// If the explosion has reached its maximum size, get rid of it
+		if (explosion_arr[i].current_size >= explosion_arr[i].FINAL_EXPLOSION_SIZE) {
+			explosion_arr.erase(explosion_arr.begin() + i);
+		}
+	}
 }
 
 void MapBlocks::checkCollision(Player *p)
@@ -277,11 +303,41 @@ void MapBlocks::checkCollision(Enemy *e)
     }
 }
 
+// Returns true if the bullet hit something (and was therefore destroyed), and false otherwise
+bool MapBlocks::checkCollision(Bullet *b)
+{
+    for (int i = blocks_arr.size() - 1; i >= 0; i--)
+    {
+        // If there's a collision with one of the planes, destroy the plane and the bullet
+		if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+        {
+			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, gRenderer));
+            blocks_arr.erase(blocks_arr.begin() + i);
+			return true;
+        }
+    }
+    for (int i = 0; i < STALAG_N; i++)
+    {
+        // If there's a collision with a stalagmite or a stalactite, detroy the bullet. The stalag will be fine; stalags are strong.
+        if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        {
+            return true;
+        }
+
+        if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        {
+            return true;
+        }
+    }
+	// Otherwise, the bullet didn't collide with anything and will survive
+	return false;
+}
+
 
 void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRenderer)
 {
     int i;
-    for (i = 0; i < BLOCKS_N; i++)
+    for (i = 0; i < blocks_arr.size(); i++)
     {
         // Only render the FlyingBlock if will be screen
         if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT)
@@ -334,6 +390,11 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
             SDL_RenderCopyEx(gRenderer, stalagt_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         // }
     }
+	
+	for (i = 0; i < explosion_arr.size(); i++) {
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		SDL_RenderFillRect(gRenderer, &explosion_arr[i].hitbox);
+	}
 
 }
 

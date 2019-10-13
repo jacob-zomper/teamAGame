@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "Player.h"
 #include "Enemy.h"
+#include <vector>
 
 class WallBlock
 {
@@ -80,6 +81,36 @@ public:
     SDL_Rect FB_hitbox;
 };
 
+class Explosion
+{
+public:
+	
+	// Variables needed to control the size of the explosion and make it disappear at the right time
+	static const int INITIAL_EXPLOSION_SIZE = 30;
+	static const int FINAL_EXPLOSION_SIZE = 100;
+	static const int EXPLOSION_SPEED = 100;
+	int explosion_time;
+	double current_size;
+	
+	// Absolute location of the explosion's center
+	int center_x;
+	int center_y;
+	
+	// Absolute location of the explosion's top left corner
+	double abs_x;
+	double abs_y;
+	
+	// Location relative to the camera
+	double rel_x;
+	double rel_y;
+	
+	Explosion();
+	Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer);
+	
+	//defines the explosion
+    SDL_Rect hitbox;
+};
+
 class MapBlocks
 {
 
@@ -92,9 +123,13 @@ public:
 
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
-    FlyingBlock *blocks_arr;
-    Stalagmite *stalagm_arr;
-    Stalagtite *stalagt_arr;
+	
+	SDL_Renderer *gRenderer;
+
+    std::vector<FlyingBlock> blocks_arr;
+    std::vector<Stalagmite> stalagm_arr;
+    std::vector<Stalagtite> stalagt_arr;
+    std::vector<Explosion> explosion_arr;
 
     MapBlocks();
     MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
@@ -103,6 +138,7 @@ public:
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
+	bool checkCollision(Bullet *b);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
 private:
     //Animation frequency

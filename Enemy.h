@@ -42,15 +42,16 @@ class Enemy
 		void redoYMove();
 		
         SDL_Rect* getHitbox();
-        Bullet* shoot();
+        Bullet* handleFiring();
 		
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
     private:
     
-		// Animation frequency of the enemy
+		// Animation and shooting frequencies of the enemy
 		static const int ANIMATION_FREQ = 100;
+		static const int FIRING_FREQ = 2000;
 		
         //Position and size of the enemy sprite on screen
         double xPos;
@@ -59,6 +60,8 @@ class Enemy
         const int height;
 
         //Velocity of the enemy
+		int maxXVelo;
+		int maxYVelo;
         int xVelo;
         int yVelo;
         double tiltAngle;
@@ -71,6 +74,10 @@ class Enemy
 		// Move times, used for handling framerate-independent movement
 		int time_since_move;
 		int last_move;
+		
+		// Shooting times, used for handling framerate-independent firing rate
+		int time_since_shoot;
+		int last_shot;
 };
 
 #endif
