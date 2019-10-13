@@ -77,16 +77,16 @@ class Plane
         // Updates the x and y positions based on current velocity and pitch
         void update_position()
         {
-            x_position += x_velocity();
-            y_position += y_velocity();
+            x_position += get_x_velocity();
+            y_position += get_y_velocity();
         }
 
-        double x_velocity()
+        double get_x_velocity()
         {
             return velocity * cos(pitch * M_PI / 180.0);
         }
 
-        double y_velocity()
+        double get_y_velocity()
         {
             return velocity * sin(pitch * M_PI / 180.0);
         }
@@ -155,14 +155,14 @@ class Plane
             pitch = p;
         }
 
-        // Getter methods for velocities and positions
+        // Getter methods for position
 
-        int x_position()
+        int get_x_position()
         {
             return x_position;
         }
 
-        int y_position()
+        int get_y_position()
         {
             return y_position;
         }
@@ -232,7 +232,7 @@ int main()
         SDL_RenderClear(gRenderer);
 
         SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0xFF, 0xFF);
-        SDL_Rect fillRect = {plane.x_position(), plane.y_position(), PLANE_WIDTH, PLANE_HEIGHT};
+        SDL_Rect fillRect = {plane.get_x_position(), plane.get_y_position(), PLANE_WIDTH, PLANE_HEIGHT};
         SDL_RenderFillRect(gRenderer, &fillRect);
         SDL_RenderPresent(gRenderer);
     }
