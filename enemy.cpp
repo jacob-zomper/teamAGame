@@ -32,14 +32,15 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
       time_since_move = SDL_GetTicks();
       sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
       sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
+      tiltAngle = 0;
     }
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
       if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
-      SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, 0.0, nullptr, SDL_FLIP_NONE);
+      SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
       }
       else {
-        SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, 0.0, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
       }
       enemy_hitbox=enemy_sprite;
     }
@@ -49,22 +50,27 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
         time_since_move = SDL_GetTicks() - last_move;
        // move the enemy to the right if the player is moving right
        // want to "collide" when the enemy hits us
-       if(xPos < (player_x - width))
-         xPos += (double) (xVelo * time_since_move) / 1000;
-       
+        if(xPos < (player_x - width)){
+          tiltAngle = 0;
+          xPos += (double) (xVelo * time_since_move) / 1000;
+        }
        // move the enemy to the right if the player is moving right
        // want to "collide" when the enemy hits us
-       if(xPos > (player_x + width))
-         xPos -= (double) (xVelo * time_since_move) / 1000;
-       
+        if(xPos > (player_x + width)){
+          tiltAngle = 0;
+          xPos -= (double) (xVelo * time_since_move) / 1000;
+        }
       // move the enemy down while the player is moving down
-      if(yPos < (player_y - height))
-        yPos += (double) (yVelo * time_since_move) / 1000;
-
+        if(yPos < (player_y - height)){
+          tiltAngle = 15;
+          yPos += (double) (yVelo * time_since_move) / 1000;
+        }
+        
       // move the enemy up while the player is moving up 
-      if(yPos > (player_y + height))
-        yPos -= (double) (yVelo * time_since_move) / 1000;
-
+        if(yPos > (player_y + height)){
+          tiltAngle = -15;
+          yPos -= (double) (yVelo * time_since_move) / 1000;
+        }
        enemy_sprite = {(int)xPos,(int)yPos,width,height};
        last_move = SDL_GetTicks();
     }

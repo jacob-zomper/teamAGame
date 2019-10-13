@@ -107,7 +107,7 @@ int main() {
 	
 	//Start the player on the left side of the screen
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
+	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
 	GameOver *game_over = new GameOver();
 
 	//start enemy on left side behind player
@@ -148,7 +148,7 @@ int main() {
 			player->handleEvent(e);
 			if(game_over->isGameOver)
 			{
-				game_over->handleEvent(e, player, blocks);
+				game_over->handleEvent(e, player, blocks,gRenderer);
 			}
 
 
