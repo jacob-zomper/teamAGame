@@ -114,13 +114,14 @@ int main() {
 	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
 
 	//initialize a vector of bullets
-	Bullet* b= nullptr;
+	std::vector<Bullet*> bullets;
+	
+	Bullet* newBullet;
 
 
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
-	bool shootOnce = true;
 
 	while(gameon) {
 
@@ -136,22 +137,22 @@ int main() {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
 			}
-
-			if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_7)
 			{
-				if(e.key.keysym.sym == SDLK_7)
-				{
-					game_over->isGameOver = true;
+				game_over->isGameOver = true;
+			}
+			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
+				if (player->canFire()) {
+					bullets.push_back(new Bullet(player->getPosX() + player->PLAYER_WIDTH, player->getPosY() + player->PLAYER_HEIGHT/2,400));
 				}
 			}
-
-			player->handleEvent(e);
+			else {
+				player->handleEvent(e);
+			}
 			if(game_over->isGameOver)
 			{
 				game_over->handleEvent(e, player, blocks,gRenderer);
 			}
-
-
 		}
 
 
@@ -160,34 +161,47 @@ int main() {
 
 		//move enemy
 		en->move(player->getPosX(), player->getPosY());
-
+		newBullet = en->handleFiring();
+		if (newBullet != nullptr) {
+			bullets.push_back(newBullet);
+		}
+		
+		//move the bullets
+		for (int i = 0; i < bullets.size(); i++) {
+			bullets[i]->move();
+		}
 		
 		//Move Blocks and check collisions
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
 		blocks->checkCollision(en);
-
-		//shoot once
-		if(shootOnce)
-		{
-			b = en->shoot();
-			shootOnce=false;
+		for (int i = bullets.size() - 1; i >= 0; i--) {
+			// If the bullet leaves the screen or hits something, it is destroyed
+			bool destroyed;
+			if (bullets[i]->getX() > SCREEN_WIDTH) {
+				destroyed = true;
+			}
+			else {
+				destroyed = blocks->checkCollision(bullets[i]);
+			}
+			if (destroyed) {
+				bullets.erase(bullets.begin() + i);
+			}
 		}
-			
-		b->move();
 
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
-		
 
 		
-		//draw the bullet
-		b->renderBullet(gRenderer);
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
 		en->renderEnemy(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		//draw the bullets
+		for (int i = 0; i < bullets.size(); i++) {
+			bullets[i]->renderBullet(gRenderer);
+		}
 
 /*
 		framecount++;

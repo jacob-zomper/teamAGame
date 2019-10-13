@@ -35,6 +35,7 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
+	last_shot = SDL_GetTicks() - SHOOT_FREQ;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -166,6 +167,17 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	else {
 		SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
 	}
+}
+
+// Returns true if the player can fire, false if not enough time has passed
+bool Player::canFire()
+{
+	time_since_move = SDL_GetTicks() - last_shot;
+	if (time_since_move >= SHOOT_FREQ) {
+		last_shot = SDL_GetTicks();
+		return true;
+	}
+	return false;
 }
 
 //Position and velocity accessors
