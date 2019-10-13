@@ -132,7 +132,7 @@ class Plane
 
         void add_velocity(int value)
         {
-            if(!at_max_speed)
+            if(!at_max_speed())
             {
                 velocity += value;
             }
