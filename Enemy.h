@@ -6,7 +6,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "bullet.h"
-
+#include <vector>
+using std::vector;
 class Enemy
 {
     
@@ -42,7 +43,7 @@ class Enemy
 		void redoYMove();
 		
         SDL_Rect* getHitbox();
-        Bullet* shoot();
+        void shoot(vector<Bullet*>* b);
 		
 		// Sprites for the enemy
 		SDL_Texture* sprite1;

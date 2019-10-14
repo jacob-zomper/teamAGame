@@ -144,8 +144,6 @@ int main() {
 			{
 				game_over->handleEvent(e, player, blocks);
 			}
-
-
 		}
 
 

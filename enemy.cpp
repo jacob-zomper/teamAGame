@@ -121,9 +121,14 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     }
 
 
-    Bullet* Enemy::shoot()
+    void Enemy::shoot(vector<Bullet*>* bullets)
     {
-        Bullet* b = new Bullet(xPos+width+5,yPos+height/2,-300);
+        Bullet* b = new Bullet(xPos+width+5,yPos+height/2,0);
 
-        return b;
+        bullets->push_back(b);
+
+        //Bullet b2 = bullets->at(0);
+
+       /* std::cout << "Bullet "<< b->getX()<<"\n";
+        std::cout << b2.getX()<<"\n";*/
     }
