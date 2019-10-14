@@ -14,14 +14,19 @@ public:
     static const int PLAYER_WIDTH = 125;
     static const int PLAYER_HEIGHT = 53;
 
-    //Maximum axis velocity of the player
+    //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
 	static const int ANIMATION_FREQ = 100;
+	static const int SHOOT_FREQ = 2000;
 	
-	// Move and animation times, needed for framerate-independent movement and animation speeds
+	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
 	int last_move;
-  double bg_X;
+	int time_since_shot;
+	int last_shot;
+	
+	double bg_X;
+    double tiltAngle;
 	
 	// Sprites for the player
 	SDL_Texture* sprite1;
@@ -41,7 +46,11 @@ public:
 
     //Shows the player on the screen relative to the camera
     void render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT);
-    //Position and velocity accessors
+    
+	// Returns true if the player can fire, false if not enough time has passed
+	bool canFire();
+	
+	//Position and velocity accessors
     int getPosX();
     int getPosY();
     void setVelX(int vel_x);

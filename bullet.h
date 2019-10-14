@@ -6,6 +6,9 @@
 class Bullet
 {
 public:
+	
+	static const int BULLET_SIZE = 5;
+	
     Bullet(int x, int y, int vel);
 
     void renderBullet(SDL_Renderer* gRenderer);
@@ -15,6 +18,10 @@ public:
     int getX();
 
     int getY();
+	
+	int getWidth();
+	
+	int getHeight();
 
     SDL_Rect* getHitbox();
 
@@ -25,8 +32,8 @@ private:
 
     // x and y position of bullet
     //y will never be updated
-    int xPos;
-    int yPos;
+    double xPos;
+    double yPos;
 
     // velocity of bullet
     // y velocity will always be 0
@@ -37,7 +44,7 @@ private:
 
     //timing variables
     int time_since_move;
-        int last_move;
+    int last_move;
 
 };
 

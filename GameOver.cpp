@@ -13,7 +13,7 @@ void GameOver::stopGame(Player *player, MapBlocks *map_blocks)
     map_blocks->BLOCKS_N = 0;
 }
 
-void GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks)
+void GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer)
 {
 
     //If mouse event happened
@@ -30,7 +30,7 @@ void GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks)
         else if (y < RESTART_BUTTON_Y){ inside_button = false; }
         else if (y > RESTART_BUTTON_Y + RESTART_BUTTON_HEIGHT){ inside_button = false; }
 
-        if (inside_button && e.type == SDL_MOUSEBUTTONUP){ restart(player, map_blocks); }
+        if (inside_button && e.type == SDL_MOUSEBUTTONUP){ restart(player, map_blocks, gRenderer); }
     }
 }
 
@@ -52,9 +52,9 @@ void GameOver::render(SDL_Renderer *gRenderer)
     SDL_RenderCopyEx(gRenderer, button_texture, nullptr, &fillRectButton, 0.0, nullptr, SDL_FLIP_NONE);
 }
 
-void GameOver::restart(Player *player, MapBlocks *map_blocks)
+void GameOver::restart(Player *player, MapBlocks *map_blocks, SDL_Renderer* gRenderer)
 {
     map_blocks->BLOCKS_N = map_blocks->BLOCKS_STARTING_N;
-    map_blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
+    map_blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT,gRenderer);
     isGameOver = false;
 }
