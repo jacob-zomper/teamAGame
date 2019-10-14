@@ -14,9 +14,6 @@ Strategies for procedural generation:
 	* Switching from cave to open air & placement of AA guns could be a simple randomness function
 	* The frequency of AA guns could be changed as a difficulty option.
 
-
-
-
 Classes:
 
 	* AA Guns
