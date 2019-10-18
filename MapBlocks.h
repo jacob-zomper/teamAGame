@@ -50,6 +50,8 @@ public:
 
     SDL_Texture* sprite;
     int stalagShapeNum;
+
+    int beenShot;
 };
 
 class FlyingBlock
