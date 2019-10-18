@@ -5,8 +5,9 @@ MAPBLOCKS_CLASS = -c MapBlocks.cpp -o MapBlocks.o
 BULLET_CLASS = -c bullet.cpp -o bullet.o
 ENEMY_CLASS = -c enemy.cpp -o enemy.o
 GAMEOVER_CLASS = -c GameOver.cpp -o GameOver.o
+CAVESYSTEM_CLASS = -c CaveSystem.cpp -o CaveSystem.o
 
-INCLUDED_CLASSES = Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp
+INCLUDED_CLASSES = CaveSystem.cpp Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp
 
 all: SDLCredits.cpp game_loop.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
@@ -30,6 +31,7 @@ jerry_lin_game: game_loop.cpp
 	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
 	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
 	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
+	clang++ $(LINKER_FLAGS) $(CAVESYSTEM_CLASS)
 	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -o game
 
 
@@ -39,6 +41,7 @@ jerry_lin_enemy_test: test_enemy_move.cpp
 	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
 	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
 	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
+	clang++ $(LINKER_FLAGS) $(CAVESYSTEM_CLASS)
 	clang++ $(INCLUDED_CLASSES) test_enemy_move.cpp $(LINKER_FLAGS)  -o enemy_test
 
 brandon: SDLCredits.cpp game_loop.cpp
@@ -57,6 +60,7 @@ jake: SDLCredits.cpp game_loop.cpp
 	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(BULLET_CLASS)
 	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(ENEMY_CLASS)
 	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(GAMEOVER_CLASS)
+	g++ $(LINKER_FLAGS) -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 $(CAVESYSTEM_CLASS)
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop
 
 cleanjake:

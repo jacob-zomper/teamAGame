@@ -201,7 +201,7 @@ int main() {
 		if(cave_system->isEnabled)
 		{
 			cave_system->moveCaveBlocks(camX, camY);
-			// cave_system->checkCollision();
+			cave_system->checkCollision(player);
 		}
 
 		// Clear the screen

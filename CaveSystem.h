@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <string>
 #include <iostream>
+#include "Player.h"
 
 class CaveBlock
 {
@@ -37,6 +38,7 @@ public:
 
     void render(SDL_Renderer *gRenderer);
     void moveCaveBlocks(int camX, int camY);
+    void checkCollision(Player *p);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
 };
 
