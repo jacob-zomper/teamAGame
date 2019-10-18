@@ -52,6 +52,9 @@ public:
     int stalagShapeNum;
 
     int beenShot;
+    int last_move;
+    int time_since_move;
+    float acceleration;
 };
 
 class FlyingBlock
