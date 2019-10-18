@@ -1,0 +1,569 @@
+[33mcommit 0538eaee415559148691dd3a81d88f4c0a39585d[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Faruk Yucel <fby1@pitt.edu>
+Date:   Wed Oct 9 11:53:22 2019 -0400
+
+    Added flight demo
+
+[33mcommit 19e03868eafa7e325b35ca8609230460bc658af5[m
+Merge: cb4c9ad 5b8612c
+Author: Faruk Yucel <42751540+fby1@users.noreply.github.com>
+Date:   Wed Oct 9 11:44:26 2019 -0400
+
+    Merge pull request #1 from dilan-dio4/master
+    
+    Merge
+
+[33mcommit 5b8612cacb9dcf294b4084608bfbdc85d3af71b0[m
+Merge: b60d5d7 5d6f78e
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Wed Oct 9 11:14:36 2019 -0400
+
+    Merge pull request #46 from bhellested/master
+    
+    updated makefile
+
+[33mcommit 5d6f78ee4739f08d74b0c0f3e5a98196581eecc2[m
+Merge: 44287b7 b60d5d7
+Author: bhellested <55294326+bhellested@users.noreply.github.com>
+Date:   Wed Oct 9 01:13:21 2019 -0400
+
+    Merge branch 'master' into master
+
+[33mcommit 44287b7c1a29c9113bcd9d0752c869409497e1e9[m
+Author: bhellested <55294326+bhellested@users.noreply.github.com>
+Date:   Wed Oct 9 01:06:16 2019 -0400
+
+    added stalagmites to cave
+
+[33mcommit 319ac9a9e4125348bebd7ff1ff9d89eb49f0cf56[m
+Author: bhellested <55294326+bhellested@users.noreply.github.com>
+Date:   Wed Oct 9 01:05:32 2019 -0400
+
+    moved cave to bottom of level
+    
+    started working on an fps display too
+
+[33mcommit c001870a539d59feeaf7e07366dd560dd7d5992c[m
+Author: bhellested <55294326+bhellested@users.noreply.github.com>
+Date:   Tue Oct 8 23:43:28 2019 -0400
+
+    Update Makefile
+
+[33mcommit b60d5d708d0f1cc925a1506fc07c332afc2d8d0d[m
+Merge: 91c127b 3e6ae51
+Author: Tera Coder <TerableCoder@gmail.com>
+Date:   Tue Oct 8 19:30:39 2019 -0400
+
+    Merge pull request #45 from TerableCoder/master
+    
+    update makefile
+
+[33mcommit 3e6ae513d1a0670b848702ae7991458cf474e886[m
+Author: Tera Coder <TerableCoder@gmail.com>
+Date:   Tue Oct 8 19:29:35 2019 -0400
+
+    update makefile
+
+[33mcommit 834a65c909a592dd55a0a81f547f60ac22bea68b[m
+Merge: 5aadcb7 91c127b
+Author: Tera Coder <TerableCoder@gmail.com>
+Date:   Tue Oct 8 19:29:13 2019 -0400
+
+    Merge pull request #3 from dilan-dio4/master
+    
+    update
+
+[33mcommit 9dcbcb9196c8102daa333c2f6ad92a71a76be232[m
+Merge: 716cc7d 91c127b
+Author: bhellested <55294326+bhellested@users.noreply.github.com>
+Date:   Tue Oct 8 17:04:43 2019 -0400
+
+    Merge remote-tracking branch 'upstream/master'
+
+[33mcommit 91c127b04ab0e289937bd9d2f0e09417c57da207[m
+Merge: 3bb4df8 51c91bc
+Author: connorschwartz <46463980+connorschwartz@users.noreply.github.com>
+Date:   Tue Oct 8 16:13:19 2019 -0400
+
+    Merge pull request #44 from connorschwartz/master
+    
+    Got the enemy working in the main game loop
+
+[33mcommit 51c91bcf29d2c2b103aef5f0e563691edc6339d5[m
+Author: connorschwartz <ces133@pitt.edu>
+Date:   Tue Oct 8 16:11:44 2019 -0400
+
+    Got the enemy working in the main game loop
+
+[33mcommit 3bb4df866a39a06150292d86917db3452a8ce36c[m
+Merge: 98bc115 5f02d86
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 15:46:00 2019 -0400
+
+    Merge pull request #43 from jacob-zomper/master
+    
+    Updated makefile
+
+[33mcommit 5f02d86b781ea87597a1d4daf7a07c5bbce9eada[m
+Author: Jacob Zomper <jacob.zomper@gmail.com>
+Date:   Tue Oct 8 15:45:32 2019 -0400
+
+    Update Makefile
+
+[33mcommit 160f6cd07e6642efd0dc4b56eecf51216ccb1c60[m
+Merge: 75c222a 98bc115
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 15:40:57 2019 -0400
+
+    Merge pull request #6 from dilan-dio4/master
+    
+    merge
+
+[33mcommit 98bc115ae34dd552967dabadd116ae0f6239631c[m
+Merge: 2e0c420 92d0fe3
+Author: Jerrybear16 <42783684+Jerrybear16@users.noreply.github.com>
+Date:   Tue Oct 8 15:14:05 2019 -0400
+
+    Merge pull request #42 from Jerrybear16/master
+    
+    Attempted to add enemy to the main game loop
+
+[33mcommit 92d0fe3d987e4ce9a6233dd99cfb810a13864c91[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 12:12:16 2019 -0700
+
+    this is so effed
+
+[33mcommit 486d1b0e68482b8c9a88f65878df64a8d80f09a0[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 12:02:49 2019 -0700
+
+    this is so effed
+
+[33mcommit 46a0190a23bcf4898ec54955aa85e0f402509d5d[m
+Merge: 6d1caed 2e0c420
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 11:04:30 2019 -0700
+
+    pls
+
+[33mcommit 75c222a1730cb243b74494487eee32c397dc7eb6[m
+Merge: 3d7ebfb 2e0c420
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 13:59:52 2019 -0400
+
+    Merge pull request #5 from dilan-dio4/master
+    
+    merge
+
+[33mcommit 2e0c420724a54ce3177db12d36885720c58148e7[m
+Merge: c3457bb 5aadcb7
+Author: Tera Coder <TerableCoder@gmail.com>
+Date:   Tue Oct 8 13:30:44 2019 -0400
+
+    Merge pull request #41 from TerableCoder/master
+    
+    shifting background, moved bg to player class
+
+[33mcommit 5aadcb7bc3abd5972ee889c703314df17c7e19c4[m
+Merge: 00d718b c3457bb
+Author: Tera Coder <TerableCoder@gmail.com>
+Date:   Tue Oct 8 13:30:30 2019 -0400
+
+    Merge branch 'master' into master
+
+[33mcommit 00d718bf5326554882c2b717c22de2309e5ea18c[m
+Author: TerableCoder <KAC311@pitt.edu>
+Date:   Tue Oct 8 13:27:10 2019 -0400
+
+    shifting background, moved bg to player class
+
+[33mcommit 6d1caed9d80d1e5dabe69afa04ce5a84cdc4ee17[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 10:03:55 2019 -0700
+
+    ok now it should be everything
+
+[33mcommit 73ad20b90da12f75c17090633a5aefc0870f6e37[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 10:03:13 2019 -0700
+
+    might be everything
+
+[33mcommit 1ed539dd7f35a4cb34d931ccd81adfbed3707e5f[m
+Merge: 56b618e c3457bb
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 09:57:04 2019 -0700
+
+    Merge branch 'master' of https://github.com/dilan-dio4/teamAGame
+
+[33mcommit 56b618ea2ec17d704e9ef3906e2af05f259362fb[m
+Merge: 3e07e74 3ddbac3
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 09:57:00 2019 -0700
+
+    pls 2
+
+[33mcommit c3457bb8c2c0c4a003d2ad0aaf20bd655271b0ea[m
+Merge: 3ddbac3 9343520
+Author: connorschwartz <46463980+connorschwartz@users.noreply.github.com>
+Date:   Tue Oct 8 12:56:11 2019 -0400
+
+    Merge pull request #40 from connorschwartz/master
+    
+    Removed whitespace from sprites
+
+[33mcommit 93435202858a4267bada0ada99034a98806f7f70[m
+Author: connorschwartz <ces133@pitt.edu>
+Date:   Tue Oct 8 12:55:05 2019 -0400
+
+    Removed whitespace from sprites
+
+[33mcommit 3e07e747462b01d3dc6c89b09deeac4c4f231f2e[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 09:49:35 2019 -0700
+
+    pls
+
+[33mcommit 3ddbac3637d9a9e42c5e64357b6a4ec76cc405fc[m
+Merge: d1950e5 5731689
+Author: connorschwartz <46463980+connorschwartz@users.noreply.github.com>
+Date:   Tue Oct 8 12:49:11 2019 -0400
+
+    Merge pull request #39 from connorschwartz/master
+    
+    Animation and Sprites
+
+[33mcommit d1950e5b6ef7b5f40fa587a092eaa6581949adad[m
+Merge: ceb5d93 96e1b95
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 12:48:49 2019 -0400
+
+    Merge pull request #38 from Dilan1020/master
+    
+    Press 7 to simulate respawn screen
+
+[33mcommit 96e1b95cc058a94ce22c653245232483387c5ef3[m
+Merge: a5a9fa5 ceb5d93
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 12:48:41 2019 -0400
+
+    Merge branch 'master' into master
+
+[33mcommit 57316891d97ede2b2966d3000d034dd5406cefb7[m
+Author: connorschwartz <ces133@pitt.edu>
+Date:   Tue Oct 8 12:48:02 2019 -0400
+
+    More work with animation and sprites
+
+[33mcommit a5a9fa5ef90d7d187cec18d54ccd9a62dd344a61[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 12:47:56 2019 -0400
+
+    Press 7 to simulate respawn screen
+
+[33mcommit 68c9cfed1fd842ce86a78bfc0d331913b6df97cc[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 12:45:51 2019 -0400
+
+    Press 7 to simulate respawn screen
+
+[33mcommit b996bc51d8a1f3cbbc21a46ff93efee3eef0dce7[m
+Merge: d409696 ceb5d93
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 09:40:45 2019 -0700
+
+    Merge branch 'master' of https://github.com/dilan-dio4/teamAGame
+
+[33mcommit 3d7ebfb09983d26b60c677802521863333d1e4ef[m
+Merge: 4f7a058 ceb5d93
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 12:37:23 2019 -0400
+
+    Merge pull request #4 from dilan-dio4/master
+    
+    merge
+
+[33mcommit ceb5d93a3e302758a981f42a6e9232892ec56a6a[m
+Merge: 4cccb07 4f7a058
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 12:35:45 2019 -0400
+
+    Merge pull request #37 from jacob-zomper/master
+    
+    update makefile
+
+[33mcommit d4096962497d9e9480beb640cc91f00fb6f93d36[m
+Merge: bec7964 4cccb07
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 09:32:19 2019 -0700
+
+    Merge branch 'master' of https://github.com/dilan-dio4/teamAGame
+
+[33mcommit bec79647c7406d632d2d717839b8959f8672ccaf[m
+Merge: 1593148 ef73b20
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 09:31:39 2019 -0700
+
+    fixed merge issues
+
+[33mcommit 01293cba4df425702d8330d9dc22b2071d60af79[m
+Author: connorschwartz <ces133@pitt.edu>
+Date:   Tue Oct 8 12:31:06 2019 -0400
+
+    Updated animation and sprites
+
+[33mcommit a3435eb8b5a29da395734d19a6661c16472157fc[m
+Merge: a024c28 ef73b20
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 12:23:29 2019 -0400
+
+    Press 7 to simulate Game Over
+
+[33mcommit a024c28791982d202617f5f32d85fb3837f11c46[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 12:21:26 2019 -0400
+
+    adding game over functionality
+
+[33mcommit 4cccb075d94df5cdcb091369672abb0bd99d6af3[m
+Merge: ef73b20 a59b7ac
+Author: Tera Coder <TerableCoder@gmail.com>
+Date:   Tue Oct 8 12:20:46 2019 -0400
+
+    Merge pull request #36 from TerableCoder/master
+    
+    add bg img
+
+[33mcommit a59b7acce2812b6e7d4cb60b09797b9dc6a543b6[m
+Author: TerableCoder <KAC311@pitt.edu>
+Date:   Tue Oct 8 12:20:12 2019 -0400
+
+    added background image
+
+[33mcommit 4f7a058e1624b63dcc4cd87b4f3d4cf426b684a7[m
+Author: Jacob Zomper <jacob.zomper@gmail.com>
+Date:   Tue Oct 8 12:18:03 2019 -0400
+
+    Update Makefile
+
+[33mcommit 1168f564fe353da360ad0aaa0e75d2430db14e0b[m
+Merge: 21adb5e ef73b20
+Author: Tera Coder <TerableCoder@gmail.com>
+Date:   Tue Oct 8 12:16:50 2019 -0400
+
+    Merge pull request #2 from dilan-dio4/master
+    
+    update
+
+[33mcommit 0c24eab08053cfb10e3e768fb815cc4734400e0e[m
+Merge: 1de6617 ef73b20
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 12:15:09 2019 -0400
+
+    Merge pull request #3 from dilan-dio4/master
+    
+    merge
+
+[33mcommit ef73b20ae5900096534002f154501f771eab0eda[m
+Merge: b31071c cbaa16d
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 12:14:22 2019 -0400
+
+    Merge pull request #35 from connorschwartz/master
+    
+    Player sprite and animation
+
+[33mcommit b31071c0f715d62e3e770436a2d0bf0bd51dc7ca[m
+Merge: ee10605 1de6617
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 12:13:28 2019 -0400
+
+    Merge pull request #34 from jacob-zomper/master
+    
+    Update Makefile
+
+[33mcommit cbaa16d3c63d3efa1079f3ac4ade970289833510[m
+Author: connorschwartz <ces133@pitt.edu>
+Date:   Tue Oct 8 12:13:07 2019 -0400
+
+    Player sprite and animation
+
+[33mcommit 15931481088f82460e5c6478e87c923ef2153f83[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 09:12:58 2019 -0700
+
+    That should be everything
+
+[33mcommit ee10605250d5e70bdec8fd698fd85a3346a18754[m
+Merge: dd2e5fb ad6ec09
+Author: JTrant <47952376+JTrant@users.noreply.github.com>
+Date:   Tue Oct 8 12:08:17 2019 -0400
+
+    Merge pull request #33 from JTrant/master
+    
+    Random block sizes
+
+[33mcommit dd2e5fb893495e570cbe8d1f04bce5a51f4980ea[m
+Author: TerableCoder <KAC311@pitt.edu>
+Date:   Tue Oct 8 11:51:32 2019 -0400
+
+    Change popup name
+
+[33mcommit 818de89567de1e57dceb7608b74120d32e8f6813[m
+Merge: f351d5d e63e5cc
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 11:48:41 2019 -0400
+
+    Merge pull request #32 from connorschwartz/master
+    
+    Framerate-independent movement speeds
+
+[33mcommit ad6ec09357e991264b93aca14e61bb47aa8f7354[m
+Author: JTrant <jtrant13@gmail.com>
+Date:   Tue Oct 8 11:47:46 2019 -0400
+
+    Random block sizes
+
+[33mcommit 52e7519ec169aec1c61303762650ad1154c5529e[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 08:40:02 2019 -0700
+
+    I think I fixed everything I broke
+
+[33mcommit e63e5ccd7e16d70df2a8297caadf93896ee2d423[m
+Author: connorschwartz <ces133@pitt.edu>
+Date:   Tue Oct 8 11:37:51 2019 -0400
+
+    Framerate-independent movement speeds
+
+[33mcommit 2dba809b292e3e76d907cf50aff6d64951760bfb[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 08:28:26 2019 -0700
+
+    ahhhhhhhhh
+
+[33mcommit 1de66171dbd916672c122e222f333f21ab67dbfd[m
+Author: Jacob Zomper <jacob.zomper@gmail.com>
+Date:   Tue Oct 8 11:03:04 2019 -0400
+
+    Update Makefile
+
+[33mcommit 30339a237b08dc9c8f340ede63bf6c214415847f[m
+Merge: edf6b5f f351d5d
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 08:00:19 2019 -0700
+
+    Merge branch 'master' of https://github.com/dilan-dio4/teamAGame
+
+[33mcommit edf6b5f9696227b787aece83c0aaeb8189d18438[m
+Merge: c6b3562 6dd76d5
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 08:00:10 2019 -0700
+
+    fixed merge issues
+
+[33mcommit f351d5d35fc535918d03787925a2653ed52902fd[m
+Merge: 6dd76d5 75a4aa8
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 10:57:42 2019 -0400
+
+    Merge pull request #31 from jacob-zomper/master
+    
+    Added folder for sprites
+
+[33mcommit 75a4aa8cfdfdebf9ead44a6385b88cc34d6a23b6[m
+Author: Jacob Zomper <jacob.zomper@gmail.com>
+Date:   Tue Oct 8 10:56:48 2019 -0400
+
+    Added planbe sprites
+    
+    Added plane sprites
+
+[33mcommit c6b3562e3fe2e484687de4dae7c1c496726323b9[m
+Author: Jerry <jeroenwolfe@gmail.com>
+Date:   Tue Oct 8 07:53:23 2019 -0700
+
+    updates to game loop and bullet
+
+[33mcommit acb54df9ac54d7f4c388f3dfea364ccdceec0bf4[m
+Merge: eb1ecad 6dd76d5
+Author: jacob-zomper <55294435+jacob-zomper@users.noreply.github.com>
+Date:   Tue Oct 8 10:48:01 2019 -0400
+
+    Merge pull request #2 from dilan-dio4/master
+    
+    Merge
+
+[33mcommit 6dd76d5aacc264cb99786d5474306da2e7762ede[m
+Merge: d7d41e9 00fbb96
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 10:31:16 2019 -0400
+
+    Merge pull request #30 from Dilan1020/master
+    
+    updated Makefile
+
+[33mcommit 00fbb962b46ab4397b7d2c17f274d3e41f57912f[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 10:30:53 2019 -0400
+
+    updated Makefile
+
+[33mcommit 716cc7d05f355cdccff0cf5ac6742092e3f3c832[m
+Merge: ff64ff8 d7d41e9
+Author: bhellested <55294326+bhellested@users.noreply.github.com>
+Date:   Tue Oct 8 10:27:01 2019 -0400
+
+    Merge remote-tracking branch 'upstream/master'
+
+[33mcommit d7d41e969bdf715321252ebbfd632843a5df142d[m
+Merge: a823c57 4457d27
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 05:12:34 2019 -0400
+
+    Merge pull request #29 from Dilan1020/master
+    
+    Improved the Makefile
+
+[33mcommit 4457d276e3ba4f7ecee1cb4809029d15a2aee1a7[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 05:11:47 2019 -0400
+
+    cleanup
+
+[33mcommit 0b69f92b86a2762d04b668ece1cf38247554db5a[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 05:10:12 2019 -0400
+
+    clean
+
+[33mcommit a568123ec8e22370b05a748217c5c85ab25d7f55[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 05:03:49 2019 -0400
+
+    Improved Makefile
+
+[33mcommit 92b17548c96fb017a25be51bd333d77a1296e085[m
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 04:56:36 2019 -0400
+
+    pulling from upstream
+
+[33mcommit a823c57bc59ead74b8c3425891063261786b3006[m
+Merge: f3e1358 903d945
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 04:54:28 2019 -0400
+
+    Merge pull request #25 from BetterBrandon/master
+    
+    Created enemy.h file and upadted enemy.cpp
+
+[33mcommit f3e135818341a256a2d617fe5d2dcb549c112026[m
+Merge: 7ac8ebd 97f8149
+Author: Dilan Ozkaynak <dilanjames10@gmail.com>
+Date:   Tue Oct 8 04:54:20 2019 -0400
+
+    Merge pull request #28 from connorschwartz/master
+    
+    Added framerate-independent motion to player and main loop
