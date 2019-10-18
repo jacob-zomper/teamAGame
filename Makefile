@@ -18,8 +18,8 @@ connor: SDLCredits.cpp game_loop.cpp
 	g++ SDLCredits.cpp $(LINKER_FLAGS) -std=c++11 -o SDLCredits
 	g++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -std=c++11 -o game_loop
 
-kenneth: SDLCredits.cpp
-	g++ $(INCLUDED_CLASSES) SDLCredits.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o SDLCredits
+tc: SDLCredits.cpp game_loop.cpp
+	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 
 brian: SDLCredits.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o game_loop
