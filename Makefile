@@ -41,9 +41,15 @@ jerry_lin_enemy_test: test_enemy_move.cpp
 	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
 	clang++ $(INCLUDED_CLASSES) test_enemy_move.cpp $(LINKER_FLAGS)  -o enemy_test
 
+BRANDON_LIB = -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -lSDL2_ttf -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 brandon: SDLCredits.cpp game_loop.cpp
 	g++ SDLCredits.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o credits
-	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o game_loop
+	g++ $(PLAYER_CLASS) $(BRANDON_LIB)
+	g++ $(MAPBLOCKS_CLASS) $(BRANDON_LIB)
+	g++ $(ENEMY_CLASS) $(BRANDON_LIB)
+	g++ $(BULLET_CLASS) $(BRANDON_LIB)
+	g++ $(GAMEOVER_CLASS) $(BRANDON_LIB)
+	g++ $(INCLUDED_CLASSES) game_loop.cpp $(BRANDON_LIB) -o game_loop
 
 brandon_enemy: test_enemy_move.cpp
 	g++ -c brandon_enemy.cpp -o brandon_enemy.o -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
