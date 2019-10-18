@@ -33,7 +33,9 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
 	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
 	gBackground = loadImage("sprites/cave.png", gRenderer);
     bg_X = 0;
+    tiltAngle = 0;
 	last_move = SDL_GetTicks();
+	last_shot = SDL_GetTicks() - SHOOT_FREQ;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -45,6 +47,7 @@ void Player::handleEvent(SDL_Event &e)
         {
         case SDLK_w:
             y_vel -= MAX_PLAYER_VEL;
+            tiltAngle  = -15;
             break;
 
         case SDLK_a:
@@ -53,6 +56,7 @@ void Player::handleEvent(SDL_Event &e)
 
         case SDLK_s:
             y_vel += MAX_PLAYER_VEL;
+            tiltAngle = 15;
             break;
 
         case SDLK_d:
@@ -66,6 +70,7 @@ void Player::handleEvent(SDL_Event &e)
         {
         case SDLK_w:
             y_vel += MAX_PLAYER_VEL;
+            tiltAngle = 0;
             break;
 
         case SDLK_a:
@@ -74,6 +79,7 @@ void Player::handleEvent(SDL_Event &e)
 
         case SDLK_s:
             y_vel -= MAX_PLAYER_VEL;
+            tiltAngle = 0;
             break;
 
         case SDLK_d:
@@ -156,11 +162,22 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
     SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
 	// Alternates through the two sprites every ANIMATION_FREQ ticks
     if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
-		SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, 0.0, nullptr, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
 	}
 	else {
-		SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, 0.0, nullptr, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
 	}
+}
+
+// Returns true if the player can fire, false if not enough time has passed
+bool Player::canFire()
+{
+	time_since_move = SDL_GetTicks() - last_shot;
+	if (time_since_move >= SHOOT_FREQ) {
+		last_shot = SDL_GetTicks();
+		return true;
+	}
+	return false;
 }
 
 //Position and velocity accessors
