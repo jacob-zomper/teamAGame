@@ -51,7 +51,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
         time_since_move = SDL_GetTicks() - last_move;
 		xVelo = 0;
 		yVelo = 0;
-        tiltAngle = 0;
+        // tiltAngle = 0;
 		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
 		int direction = chooseDirection();
 		
@@ -66,12 +66,12 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		// Move up if that's the optimal direction
 		if (direction == 1 || direction == 2 || direction == 3 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
 			yVelo = -maxYVelo;
-			tiltAngle = 15;
+			// tiltAngle = 15;
 		}
 		// Move down if that's the optimal direction
 		if (direction == 5 || direction == 6 || direction == 7 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) < SQUARE_WIDTH / 4))) {
 			yVelo = maxYVelo;
-			tiltAngle = -15;
+			// tiltAngle = -15;
 		}
 		
 		xPos += (double) (xVelo * time_since_move) / 1000;
