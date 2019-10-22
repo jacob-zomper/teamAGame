@@ -112,6 +112,9 @@ public:
 	
 	Explosion();
 	Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer);
+
+    //Explosion sprite
+    SDL_Texture* sprite;
 	
 	//defines the explosion
     SDL_Rect hitbox;

@@ -139,6 +139,7 @@ Explosion::Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer)
 	center_y = y_loc;
 	abs_x = center_x - current_size / 2;
 	abs_y = center_y - current_size / 2;
+    sprite = loadImage("sprites/Explosion.png", gRenderer);
 	explosion_time = SDL_GetTicks();
 }
 
@@ -406,8 +407,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     }
 	
 	for (i = 0; i < explosion_arr.size(); i++) {
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-		SDL_RenderFillRect(gRenderer, &explosion_arr[i].hitbox);
+		SDL_RenderCopyEx(gRenderer, explosion_arr[i].sprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
 	}
 
 }
