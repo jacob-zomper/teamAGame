@@ -50,6 +50,12 @@ public:
 
     SDL_Texture* sprite;
     int stalagShapeNum;
+
+    int beenShot;
+    int last_move;
+    int time_since_move;
+    float acceleration;
+    int terminalVelocityYValue = 360;//This is a guess for the middle of the screen, we can change as necessary
 };
 
 class FlyingBlock
