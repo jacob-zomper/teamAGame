@@ -22,6 +22,8 @@ public:
 	int getWidth();
 	
 	int getHeight();
+	
+	int getXVel();
 
     SDL_Rect* getHitbox();
 

@@ -76,6 +76,11 @@ public:
 
     FlyingBlock();
     FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+	
+	int getRelX();
+	int getRelY();
+	int getAbsX();
+	int getAbsY();
 
      //Sprites for other Enemies
     SDL_Texture* sprite1;
@@ -149,6 +154,8 @@ public:
 	void checkCollision(Enemy *e);
 	bool checkCollision(Bullet *b);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+	
+	std::vector<FlyingBlock> getKamikazes();
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
