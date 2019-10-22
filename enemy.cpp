@@ -53,26 +53,33 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
        // move the enemy to the right if the player is moving right
        // want to "collide" when the enemy hits us
         if(xPos < (player_x - width)){
-          tiltAngle = 0;
 		  xVelo = maxXVelo;
         }
        // move the enemy to the right if the player is moving right
        // want to "collide" when the enemy hits us
         if(xPos > (player_x + width)){
-          tiltAngle = 0;
           xPos -= (double) (xVelo * time_since_move) / 1000;
 		  xVelo = -maxXVelo;
         }
       // move the enemy down while the player is moving down
         if(yPos < (player_y - height)){
-          tiltAngle = 15;
 		  yVelo = maxYVelo;
         }
         
       // move the enemy up while the player is moving up 
         if(yPos > (player_y + height)){
-          tiltAngle = -15;
 		  yVelo = -maxYVelo;
+        }
+
+        if(yVelo<0){
+          tiltAngle = -15;
+        }
+        else if(yVelo>0){
+          tiltAngle = 15;
+        }
+        else
+        {
+          tiltAngle=0;
         }
        xPos += (double) (xVelo * time_since_move) / 1000;
        yPos += (double) (yVelo * time_since_move) / 1000;

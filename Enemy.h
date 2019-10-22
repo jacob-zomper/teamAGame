@@ -52,7 +52,7 @@ class Enemy
     
 		// Animation and shooting frequencies of the enemy
 		static const int ANIMATION_FREQ = 100;
-		static const int FIRING_FREQ = 2000;
+		static const int FIRING_FREQ = 1000;
 		
         //Position and size of the enemy sprite on screen
         double xPos;

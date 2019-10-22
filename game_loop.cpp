@@ -10,6 +10,7 @@
 #include "Enemy.h"
 #include "bullet.h"
 #include "GameOver.h"
+#include "CaveSystem.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -109,6 +110,7 @@ int main() {
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
 	GameOver *game_over = new GameOver();
+	CaveSystem *cave_system = new CaveSystem();
 
 	//start enemy on left side behind player
 	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
@@ -189,6 +191,19 @@ int main() {
 			}
 		}
 
+		if((int) camX % 5500 == 0)
+		{
+			std::cout << "Creating Cave System" << std::endl;
+			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
+			cave_system->isEnabled = true;
+		}
+		
+		if(cave_system->isEnabled)
+		{
+			cave_system->moveCaveBlocks(camX, camY);
+			cave_system->checkCollision(player);
+		}
+
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
@@ -198,6 +213,9 @@ int main() {
 		// Draw the enemy
 		en->renderEnemy(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		if (cave_system->isEnabled)
+			cave_system->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->renderBullet(gRenderer);
