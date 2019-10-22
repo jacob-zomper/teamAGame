@@ -5,6 +5,7 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
+#include "bullet.h"
 
 class Player
 {
@@ -22,8 +23,10 @@ public:
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
 	int last_move;
-	int time_since_shot;
-	int last_shot;
+	int time_since_fshot;
+	int last_fshot;
+	int time_since_bshot;
+	int last_bshot;
 	
 	double bg_X;
     double tiltAngle;
@@ -47,8 +50,9 @@ public:
     //Shows the player on the screen relative to the camera
     void render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT);
     
-	// Returns true if the player can fire, false if not enough time has passed
-	bool canFire();
+	// Creates bullets when the player wants to fire forwards or backwards
+	Bullet* handleForwardFiring();
+	Bullet* handleBackwardFiring();
 	
 	//Position and velocity accessors
     int getPosX();
