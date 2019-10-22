@@ -125,6 +125,11 @@ FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRende
     FB_hitbox = FB_sprite;
 }
 
+int FlyingBlock::getRelX() { return BLOCK_REL_X; }
+int FlyingBlock::getRelY() { return BLOCK_REL_Y; }
+int FlyingBlock::getAbsX() { return BLOCK_ABS_X; }
+int FlyingBlock::getAbsY() { return BLOCK_ABS_Y; }
+
 Explosion::Explosion()
 {
     SDL_Renderer *gRenderer= nullptr;
@@ -412,3 +417,6 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 
 }
 
+std::vector<FlyingBlock> MapBlocks::getKamikazes() {
+	return blocks_arr;
+}
