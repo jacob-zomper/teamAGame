@@ -65,7 +65,8 @@ class Projectile {
 		}
 
 	private:
-		// x and y coordinates, magnitude of velocity, and time the projectile has been in the air (starts at 0)
+		// x and y coordinates, magnitude of velocity, pitch of bullet in degrees,
+		// and time the projectile has been in the air (starts at 0)
 		int x_position, y_position, velocity, pitch, air_time;
 };
 
