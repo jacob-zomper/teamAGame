@@ -6,7 +6,7 @@ BULLET_CLASS = -c bullet.cpp -o bullet.o
 ENEMY_CLASS = -c enemy.cpp -o enemy.o
 GAMEOVER_CLASS = -c GameOver.cpp -o GameOver.o
 
-INCLUDED_CLASSES = Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp
+INCLUDED_CLASSES = Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp CaveSystem.cpp
 
 all: SDLCredits.cpp game_loop.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
