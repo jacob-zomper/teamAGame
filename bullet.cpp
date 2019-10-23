@@ -32,7 +32,7 @@ void Bullet::move(){
 
 	xPos += ((double) time_since_move * xVel) / 1000;
 	yPos += ((double) time_since_move * yVel) / 1000;
-	air_time += (time_since_move / 1000);
+	air_time += (time_since_move / 500);
 
 	bullet_sprite ={(int)xPos,(int)yPos,width,height};
 	hitbox = bullet_sprite;
