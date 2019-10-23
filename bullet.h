@@ -25,6 +25,8 @@ public:
 	
 	int getXVel();
 
+    int getYVal();
+
     int adjusted_x_velocity();
 
     int adjusted_y_velocity();
@@ -37,7 +39,6 @@ private:
     const int height;
 
     // x and y position of bullet
-    //y will never be updated
     double xPos;
     double yPos;
 
