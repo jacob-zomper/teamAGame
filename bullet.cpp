@@ -4,7 +4,6 @@
 #include <SDL.h>
 
 // Math constants
-const int M_PI = atan(1) * 4;
 const int radian_to_degree = 180.0 / M_PI;
 
 // Increase value to have projectile fall slower and have less air resistance (drag)
