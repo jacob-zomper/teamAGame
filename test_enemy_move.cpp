@@ -6,6 +6,7 @@
 #include "MapBlocks.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Kamikaze.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -73,12 +74,12 @@ int main() {
 		close();
 		return 1;
 	}
-	
+
 	//Start the player on the left side of the screen
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	//MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
 	Enemy * en = new Enemy(50, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	
+	Kamikaze* kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
 
 	SDL_Event e;
 	bool gameon = true;
@@ -107,6 +108,8 @@ int main() {
 		// Move the enemy
 		en->move(player->getPosX(), player->getPosY());
 
+		kam->move(player->getPosX(), player->getPosY(), SCREEN_WIDTH);
+
 		//Move Blocks
 		//blocks->moveBlocksAndCheckCollision(player, camX, camY);
 
@@ -117,6 +120,7 @@ int main() {
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		en->renderEnemy(gRenderer);
+		kam->renderKam(SCREEN_WIDTH, gRenderer);
 		//blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 
 

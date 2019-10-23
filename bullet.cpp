@@ -38,6 +38,10 @@
 	int Bullet::getHeight(){
 		return height;
 	}
+	
+	int Bullet::getXVel() {
+		return xVel;
+	}
 
 	SDL_Rect* Bullet::getHitbox(){
 		return &hitbox;

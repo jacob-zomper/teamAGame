@@ -10,6 +10,7 @@
 #include "Enemy.h"
 #include "bullet.h"
 #include "GameOver.h"
+#include "CaveSystem.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -29,6 +30,12 @@ SDL_Renderer* gRenderer = nullptr;
 // X and y positions of the camera
 double camX = 0;
 double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
+
+Player * player;
+MapBlocks *blocks;
+GameOver *game_over;
+CaveSystem *cave_system;
+std::vector<Bullet*> bullets;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
@@ -98,6 +105,30 @@ void close() {
 	SDL_Quit();
 }
 
+// Function that prepares for enemy movement. Put in a separate method to avoid cluttering the main loop
+void moveEnemy(Enemy * en) {
+	int playerX = player->getPosX() + player->PLAYER_WIDTH/2;
+	int playerY = player->getPosY() + player->PLAYER_HEIGHT/2;
+	std::vector<int> bulletX;
+	std::vector<int> bulletY;
+	std::vector<int> bulletVelX;
+	std::vector<int> kamiX;
+	std::vector<int> kamiY;
+	std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
+	for (int i = 0; i < bullets.size(); i++) {
+		bulletX.push_back(bullets[i]->getX());
+		bulletY.push_back(bullets[i]->getY());
+		bulletVelX.push_back(bullets[i]->getXVel());
+	}
+	for (int i = 0; i < kamikazes.size(); i++) {
+		if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
+			kamiX.push_back(kamikazes[i].getRelX() + kamikazes[i].BLOCK_WIDTH/2);
+			kamiY.push_back(kamikazes[i].getRelY() + kamikazes[i].BLOCK_HEIGHT/2);
+		}
+	}
+	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+}
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -106,15 +137,13 @@ int main() {
 	}
 	
 	//Start the player on the left side of the screen
-	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
-	GameOver *game_over = new GameOver();
+	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
+	game_over = new GameOver();
+	cave_system = new CaveSystem();
 
 	//start enemy on left side behind player
 	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-
-	//initialize a vector of bullets
-	std::vector<Bullet*> bullets;
 	
 	Bullet* newBullet;
 
@@ -143,8 +172,15 @@ int main() {
 				game_over->isGameOver = true;
 			}
 			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
-				if (player->canFire()) {
-					bullets.push_back(new Bullet(player->getPosX() + player->PLAYER_WIDTH, player->getPosY() + player->PLAYER_HEIGHT/2,400));
+				newBullet = player->handleForwardFiring();
+				if (newBullet != nullptr) {
+					bullets.push_back(newBullet);
+				}
+			}
+			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_b) {
+				newBullet = player->handleBackwardFiring();
+				if (newBullet != nullptr) {
+					bullets.push_back(newBullet);
 				}
 			}
 			else {
@@ -161,7 +197,7 @@ int main() {
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
 		//move enemy
-		en->move(player->getPosX(), player->getPosY());
+		moveEnemy(en);
 		newBullet = en->handleFiring();
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
@@ -179,7 +215,7 @@ int main() {
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
 			bool destroyed;
-			if (bullets[i]->getX() > SCREEN_WIDTH) {
+			if (bullets[i]->getX() > SCREEN_WIDTH || bullets[i]->getX() < 0) {
 				destroyed = true;
 			}
 			else {
@@ -188,6 +224,19 @@ int main() {
 			if (destroyed) {
 				bullets.erase(bullets.begin() + i);
 			}
+		}
+
+		if((int) camX % 5500 == 0)
+		{
+			std::cout << "Creating Cave System" << std::endl;
+			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
+			cave_system->isEnabled = true;
+		}
+		
+		if(cave_system->isEnabled)
+		{
+			cave_system->moveCaveBlocks(camX, camY);
+			cave_system->checkCollision(player);
 		}
 
 		// Clear the screen
@@ -199,6 +248,9 @@ int main() {
 		// Draw the enemy
 		en->renderEnemy(gRenderer);
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		if (cave_system->isEnabled)
+			cave_system->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->renderBullet(gRenderer);

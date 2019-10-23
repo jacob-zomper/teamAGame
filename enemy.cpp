@@ -2,6 +2,7 @@
 #include "bullet.h"
 #include <iostream>
 #include <string>
+#include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Enemy.h"
@@ -29,10 +30,10 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
 	  enemy_sprite = {(int) xPos, (int) yPos, width, height};
       enemy_hitbox = enemy_sprite;
-      time_since_move = SDL_GetTicks();
       sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
       sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
       tiltAngle = 0;
+	  last_move = SDL_GetTicks();
     }
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
@@ -45,40 +46,171 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
       enemy_hitbox=enemy_sprite;
     }
 
-    void Enemy::move(int player_x, int player_y)
+    void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> kamiX, std::vector<int> kamiY)
     {
         time_since_move = SDL_GetTicks() - last_move;
 		xVelo = 0;
 		yVelo = 0;
-       // move the enemy to the right if the player is moving right
-       // want to "collide" when the enemy hits us
-        if(xPos < (player_x - width)){
-          tiltAngle = 0;
-		  xVelo = maxXVelo;
+        // tiltAngle = 0;
+		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+		int direction = chooseDirection();
+		
+		// Move right if that's the optimal direction
+        if(direction == 3 || direction == 4 || direction == 5 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) < SQUARE_WIDTH / 4))){
+			xVelo = maxXVelo;
         }
-       // move the enemy to the right if the player is moving right
-       // want to "collide" when the enemy hits us
-        if(xPos > (player_x + width)){
-          tiltAngle = 0;
-          xPos -= (double) (xVelo * time_since_move) / 1000;
-		  xVelo = -maxXVelo;
-        }
-      // move the enemy down while the player is moving down
-        if(yPos < (player_y - height)){
-          tiltAngle = 15;
-		  yVelo = maxYVelo;
-        }
-        
-      // move the enemy up while the player is moving up 
-        if(yPos > (player_y + height)){
-          tiltAngle = -15;
-		  yVelo = -maxYVelo;
-        }
-       xPos += (double) (xVelo * time_since_move) / 1000;
-       yPos += (double) (yVelo * time_since_move) / 1000;
-       enemy_sprite = {(int)xPos,(int)yPos,width,height};
-       last_move = SDL_GetTicks();
+		// Move left if that's the optimal direction
+		if (direction == 1 || direction == 8 || direction == 7 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
+			xVelo = -maxXVelo;
+		}
+		// Move up if that's the optimal direction
+		if (direction == 1 || direction == 2 || direction == 3 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
+			yVelo = -maxYVelo;
+			// tiltAngle = 15;
+		}
+		// Move down if that's the optimal direction
+		if (direction == 5 || direction == 6 || direction == 7 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) < SQUARE_WIDTH / 4))) {
+			yVelo = maxYVelo;
+			// tiltAngle = -15;
+		}
+		
+		xPos += (double) (xVelo * time_since_move) / 1000;
+		yPos += (double) (yVelo * time_since_move) / 1000;
+		enemy_sprite = {(int)xPos,(int)yPos,width,height};
+		last_move = SDL_GetTicks();
     }
+	
+	/*
+	Directions are numbered as follows:
+	1	2	3
+	8	0	4
+	7	6	5
+	*/
+	int Enemy::chooseDirection() {
+		current_x_square = (xPos - width/2 - MIN_X) / SQUARE_WIDTH;
+		current_y_square = (yPos - height/2 - MIN_Y) / SQUARE_WIDTH;
+		double minRisk = riskScores[current_x_square][current_y_square];
+		int leastRisky = 0;
+		
+		if (current_y_square > 0) {
+			if (minRisk > riskScores[current_x_square][current_y_square-1]) {
+				leastRisky = 2;
+				minRisk = riskScores[current_x_square][current_y_square-1];
+			}
+			if (current_x_square > 0) {
+				if (minRisk > riskScores[current_x_square-1][current_y_square-1]) {
+					leastRisky = 1;
+					minRisk = riskScores[current_x_square-1][current_y_square-1];
+				}
+			}
+			if (current_x_square < NUM_HORIZONTAL_SQUARES - 1) {
+				if (minRisk > riskScores[current_x_square+1][current_y_square-1]) {
+					leastRisky = 3;
+					minRisk = riskScores[current_x_square+1][current_y_square-1];
+				}
+			}
+		}
+		if (current_y_square < NUM_VERTICAL_SQUARES - 1) {
+			if (minRisk > riskScores[current_x_square][current_y_square+1]) {
+				leastRisky = 6;
+				minRisk = riskScores[current_x_square][current_y_square+1];
+			}
+			if (current_x_square > 0) {
+				if (minRisk > riskScores[current_x_square-1][current_y_square+1]) {
+					leastRisky = 7;
+					minRisk = riskScores[current_x_square-1][current_y_square+1];
+				}
+			}
+			if (current_x_square < NUM_HORIZONTAL_SQUARES - 1) {
+				if (minRisk > riskScores[current_x_square+1][current_y_square+1]) {
+					leastRisky = 5;
+					minRisk = riskScores[current_x_square+1][current_y_square+1];
+				}
+			}
+		}
+		if (current_x_square > 0) {
+			if (minRisk > riskScores[current_x_square-1][current_y_square]) {
+				leastRisky = 8;
+				minRisk = riskScores[current_x_square-1][current_y_square];
+			}
+		}
+		if (current_x_square > 0) {
+			if (minRisk > riskScores[current_x_square+1][current_y_square]) {
+				leastRisky = 4;
+				minRisk = riskScores[current_x_square+1][current_y_square];
+			}
+		}
+		//std::cout << current_x_square << " " << current_y_square << " " << leastRisky << " " << minRisk << std::endl;
+		return leastRisky;
+	}
+	
+	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> kamiX, std::vector<int> kamiY) {
+		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
+			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+				riskScores[i][j] = 0;
+			}
+		}
+		int xBlock;
+		int yBlock;
+		// Factor bullets into the risk score
+		for (int i = 0; i < bulletX.size(); i++) {
+			std::cout << "Made it" << std::endl;
+			xBlock = (bulletX[i] - MIN_X) / SQUARE_WIDTH;
+			yBlock = (bulletY[i] - MIN_Y) / SQUARE_WIDTH;
+			if (bulletVelX[i] < 0) {
+				if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) { 
+					for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
+						riskScores[j][yBlock] += 200;
+					}
+				}
+				if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) { 
+					for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+						riskScores[xBlock][j] += 200;
+					}
+				}
+			}
+		}
+		
+		// Factor kamikazes into the risk score
+		std::cout << "kamis:" << kamiX.size() << std::endl;
+		for (int i = 0; i < kamiX.size(); i++) {
+			xBlock = (kamiX[i] - MIN_X) / SQUARE_WIDTH;
+			yBlock = (kamiY[i] - MIN_Y) / SQUARE_WIDTH;
+			if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) { 
+				for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
+					riskScores[j][yBlock] += 10;
+				}
+			}
+			if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) { 
+				for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+					riskScores[xBlock][j] += 10;
+				}
+			}
+		}
+		
+		// Factor proximity to the edge of the screen into the risk score
+		double center = ((MAX_Y - MIN_Y) / 2.0) / SQUARE_WIDTH - 0.5;
+		std::cout << "center:" << center << std::endl;
+		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
+			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+				riskScores[i][j] += (j - center) * (j - center) * SQUARE_WIDTH / 10.0;
+			}
+		}
+		
+		// Factor player into the risk score
+		xBlock = (playerX - MIN_X) / SQUARE_WIDTH;
+		yBlock = (playerY - MIN_Y) / SQUARE_WIDTH;
+		if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) { 
+			for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
+				riskScores[j][yBlock] -= 30;
+			}
+		}
+		if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) { 
+			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+				riskScores[xBlock][j] -= 30;
+			}
+		}
+	}
 
 
     int Enemy::getX(){

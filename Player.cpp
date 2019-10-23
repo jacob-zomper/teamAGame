@@ -35,7 +35,8 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
-	last_shot = SDL_GetTicks() - SHOOT_FREQ;
+	last_fshot = SDL_GetTicks() - SHOOT_FREQ;
+	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -169,15 +170,26 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	}
 }
 
-// Returns true if the player can fire, false if not enough time has passed
-bool Player::canFire()
+Bullet* Player::handleForwardFiring()
 {
-	time_since_move = SDL_GetTicks() - last_shot;
-	if (time_since_move >= SHOOT_FREQ) {
-		last_shot = SDL_GetTicks();
-		return true;
+	time_since_fshot = SDL_GetTicks() - last_fshot;
+	if (time_since_fshot > SHOOT_FREQ) {
+		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5,y_pos+PLAYER_HEIGHT/2,450);
+		last_fshot = SDL_GetTicks();
+		return b;
 	}
-	return false;
+	return nullptr;
+}
+
+Bullet* Player::handleBackwardFiring()
+{
+	time_since_bshot = SDL_GetTicks() - last_bshot;
+	if (time_since_bshot > SHOOT_FREQ) {
+		Bullet* b = new Bullet(x_pos,y_pos+PLAYER_HEIGHT/2,-450);
+		last_bshot = SDL_GetTicks();
+		return b;
+	}
+	return nullptr;
 }
 
 //Position and velocity accessors
