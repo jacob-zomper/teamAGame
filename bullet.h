@@ -25,7 +25,7 @@ public:
 	
 	int getXVel();
 
-    int getYVal();
+    int getYVel();
 
     int adjusted_x_velocity();
 
