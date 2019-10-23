@@ -25,6 +25,10 @@ public:
 	
 	int getXVel();
 
+    int adjusted_x_velocity();
+
+    int adjusted_y_velocity();
+
     SDL_Rect* getHitbox();
 
 private:
@@ -38,8 +42,9 @@ private:
     double yPos;
 
     // velocity of bullet
-    // y velocity will always be 0
+    int velocity_magnitude;
     int xVel;
+    int yVel;
 
     SDL_Rect bullet_sprite;
     SDL_Rect hitbox;
@@ -47,6 +52,13 @@ private:
     //timing variables
     int time_since_move;
     int last_move;
+
+    // Pitch of the bullet in degrees
+    int pitch;
+
+    // Time the projectile has been in the air
+    // Used to calculate air resistance and bullet drop
+    double air_time;
 
 };
 
