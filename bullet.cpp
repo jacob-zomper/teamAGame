@@ -6,6 +6,8 @@
 // Math constants
 const int radian_to_degree = 180.0 / M_PI;
 
+// Increase value to have bullets drop slower
+// Decrease to have bullets drop faster
 const int adjuster = 10;
 
 Bullet::Bullet(int x, int y, int vel) :xPos{(double)x}, yPos{(double)y}, width{BULLET_SIZE}, height{BULLET_SIZE}{
