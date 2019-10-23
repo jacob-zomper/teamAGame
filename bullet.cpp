@@ -8,7 +8,7 @@ const int radian_to_degree = 180.0 / M_PI;
 
 // Increase value to have projectile fall slower and have less air resistance (drag)
 // Decrease to have projectile fall faster and have more air resistance
-const int air_time_divisor = 3;
+const int air_time_divisor = 1;
 
 Bullet::Bullet(int x, int y, int vel) :xPos{(double)x}, yPos{(double)y}, width{BULLET_SIZE}, height{BULLET_SIZE}, pitch{ 0 }, air_time{ 0 }{
 	bullet_sprite = {(int)xPos,(int)yPos,width, height};
