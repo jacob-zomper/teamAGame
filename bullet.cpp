@@ -8,7 +8,7 @@ const int radian_to_degree = 180.0 / M_PI;
 
 // Increase value to have projectile fall slower and have less air resistance (drag)
 // Decrease to have projectile fall faster and have more air resistance
-const int air_time_divisor = 1;
+const int air_time_adjuster = 10;
 
 Bullet::Bullet(int x, int y, int vel) :xPos{(double)x}, yPos{(double)y}, width{BULLET_SIZE}, height{BULLET_SIZE}, pitch{ 0 }, air_time{ 0 }{
 	bullet_sprite = {(int)xPos,(int)yPos,width, height};
@@ -32,7 +32,7 @@ void Bullet::move(){
 
 	xPos += ((double) time_since_move * xVel) / 1000;
 	yPos += ((double) time_since_move * yVel) / 1000;
-	air_time += (time_since_move / 500);
+	air_time += (time_since_move / 1000);
 
 	bullet_sprite ={(int)xPos,(int)yPos,width,height};
 	hitbox = bullet_sprite;
@@ -43,7 +43,7 @@ int Bullet::adjusted_x_velocity()
 {
 	// Decrease x velocity to simulate air resistance,
 	// but half as slowly as the decrease in y velocity
-	int adjustment = air_time / (2 * air_time_divisor);
+	int adjustment = air_time * (2 * air_time_adjuster);
 	int x_velocity = velocity_magnitude * cos(pitch * radian_to_degree);
 
 	// Prevent projectile from moving backwards in the x-direction
@@ -59,7 +59,7 @@ int Bullet::adjusted_x_velocity()
 int Bullet::adjusted_y_velocity()
 {
 	// Decreases the y velocity by the air time to simulate bullet drop
-	int adjustment = air_time / air_time_divisor;
+	int adjustment = air_time * air_time_adjuster;
 	int y_velocity = velocity_magnitude * sin(pitch * radian_to_degree);
 
 	return y_velocity - adjustment;
