@@ -46,9 +46,9 @@ int Bullet::adjusted_x_velocity()
 	int adjustment = air_time * (1/2 / adjuster);
 	int x_velocity = velocity_magnitude * cos(pitch * radian_to_degree);
 
-	// Prevent projectile from moving backwards in the x-direction
+	// Prevent projectile from changing direction in the x-direction
 	int adjusted_x_velocity = x_velocity - adjustment;
-	if (adjusted_x_velocity <= 0)
+	if ((adjusted_x_velocity <= 0 && x_velocity >= 0) || (adjusted_x_velocity >= 0 && x_velocity <= 0))
 	{
 		adjusted_x_velocity = 0;
 	}
