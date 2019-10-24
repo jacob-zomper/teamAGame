@@ -1,7 +1,6 @@
 
 #include "bullet.h"
-#include <iostream>
-#include <SDL.h>
+
 
 // Math constants
 const int radian_to_degree = 180.0 / M_PI;
