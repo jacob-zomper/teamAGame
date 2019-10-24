@@ -2,13 +2,15 @@
 #define bullet_H
 
 #include <SDL.h>
+#include <iostream>
+#include <cmath>
 
 class Bullet
 {
 public:
-	
+
 	static const int BULLET_SIZE = 5;
-	
+
     Bullet(int x, int y, int vel);
 
     void renderBullet(SDL_Renderer* gRenderer);
@@ -18,11 +20,11 @@ public:
     int getX();
 
     int getY();
-	
+
 	int getWidth();
-	
+
 	int getHeight();
-	
+
 	int getXVel();
 
     int getYVel();
