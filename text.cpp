@@ -18,8 +18,9 @@ void Text::render(SDL_Renderer *gRenderer, int x, int y) const{
 }
 
  SDL_Texture *Text::loadFont(SDL_Renderer *gRenderer, const std::string &font_path, int font_size, const std::string &message_text, const SDL_Color &color){
- 	TTF_Font *font= TTF_OpenFont(font_path.c_str(), font_size);
+ 	static TTF_Font *font= TTF_OpenFont(font_path.c_str(), font_size);
  	if(!font) {
+		printf("TTF_Init: %s\n", TTF_GetError());
  		std::cerr<<"failed to load font\n";
  	}
  	auto text_surface=TTF_RenderText_Solid(font,message_text.c_str(),color);
