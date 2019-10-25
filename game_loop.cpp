@@ -11,6 +11,7 @@
 #include "bullet.h"
 #include "GameOver.h"
 #include "CaveSystem.h"
+#include "Text.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -41,11 +42,11 @@ std::vector<Bullet*> bullets;
 int time_since_horiz_scroll;
 int last_horiz_scroll = SDL_GetTicks();
 
-/*framerate timer
+//framerate timer
 Uint32 fps_last_time = SDL_GetTicks();
 Uint32 fps_cur_time = 0;
 int framecount;
-*/
+
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -55,6 +56,11 @@ bool init() {
 
 	if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
+	}
+
+	if(TTF_Init()==-1){
+		std::cout<<"TTF could not initialize";
+		return false;
 	}
 
 	gWindow = SDL_CreateWindow("TeamAGame", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -100,6 +106,7 @@ void close() {
 	SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
 	gRenderer = nullptr;
+	TTF_Quit();
 
 	// Quit SDL subsystems
 	SDL_Quit();
@@ -146,6 +153,7 @@ int main() {
 	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
 	
 	Bullet* newBullet;
+	std::string fps;//for onscreen fps
 
 
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -256,23 +264,19 @@ int main() {
 			bullets[i]->renderBullet(gRenderer);
 		}
 
-/*
 		framecount++;
 		fps_cur_time=SDL_GetTicks();
 		if (fps_cur_time - fps_last_time > 1000) {
-			std::string fps= std::to_string(framecount / ((fps_cur_time - fps_last_time) / 1000.0));
-			TTF_Font* Sans = TTF_OpenFont("Sans.ttf",14);
-			SDL_Color Black = {000,000,000};
-			SDL_Surface* fps_message = TTF_RenderText_Solid(Sans, fps.c_str(), Black);
-			SDL_Texture* message = SDL_CreateTextureFromSurface(gRenderer, fps_message);
-			SDL_Rect message_rect = {0,0,75,20};
-			SDL_RenderCopy(gRenderer, message,NULL, &message_rect);
-
+			fps= std::to_string(framecount / ((fps_cur_time - fps_last_time) / 1000.0));
+			fps +=" fps";
 			// reset
 			fps_last_time = fps_cur_time;
 			framecount = 0;
 		}
-*/
+		Text text(gRenderer, "sprites/comic.ttf", 14, fps, {255,255,255,255});
+		text.render(gRenderer,20,20);
+
+
 		if(game_over->isGameOver)
 		{
 			game_over->stopGame(player, blocks);
