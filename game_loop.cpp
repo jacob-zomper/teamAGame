@@ -174,7 +174,8 @@ int main() {
 			if (e.type == SDL_QUIT) {
 				gameon = false;
 			}
-			if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_7)
+			// Game can end by either pressing on '7' on the numpad or on top row of numbers
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && (e.key.keysym.sym == SDLK_7 || e.key.keysym.sym == SDLK_KP_7))
 			{
 				game_over->isGameOver = true;
 			}
