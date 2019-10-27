@@ -148,6 +148,23 @@ void saveHighScore()
 
 }
 
+int readHighScore()
+{
+	std::ifstream highscore_file("highscore");
+	if (highscore_file.is_open())
+	{
+		std::string highscore_file_line;
+		std::getline(highscore_file, highscore_file_line);
+		highscore_file.close();
+		return std::stoi(highscore_file_line);
+	}
+	else
+	{
+		highscore_file.close();
+		return 0;
+	}
+}
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -185,23 +202,12 @@ int main() {
 
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
-				std::ifstream highscore_file("highscore");
-				if(highscore_file.is_open())
+
+				int current_highscore = readHighScore();
+				if (current_highscore < getScore() || current_highscore == 0)
 				{
-					std::string highscore_file_line;
-					std::getline(highscore_file, highscore_file_line);
-					if(std::stoi(highscore_file_line) > getScore())
-					{
-						highscore_file.close();
-						saveHighScore();
-					}
-				}
-				else
-				{
-					highscore_file.close();
 					saveHighScore();
 				}
-				
 
 				gameon = false;
 			}
