@@ -40,6 +40,9 @@ public:
     void moveCaveBlocks(int camX, int camY);
     void checkCollision(Player *p);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+
+private:
+    void generateRandomCave();
 };
 
 #endif
