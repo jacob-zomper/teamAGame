@@ -1,5 +1,6 @@
 #define SDL_MAIN_HANDLED
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <SDL.h>
@@ -136,6 +137,34 @@ void moveEnemy(Enemy * en) {
 	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
 }
 
+int getScore(){ return (int) (camX / 100); }
+
+void saveHighScore()
+{
+	std::ofstream highscore_file;
+	highscore_file.open("highscore", std::ofstream::out | std::ofstream::trunc);
+	highscore_file << std::to_string(getScore());
+	highscore_file.close();
+
+}
+
+int readHighScore()
+{
+	std::ifstream highscore_file("highscore");
+	if (highscore_file.is_open())
+	{
+		std::string highscore_file_line;
+		std::getline(highscore_file, highscore_file_line);
+		highscore_file.close();
+		return std::stoi(highscore_file_line);
+	}
+	else
+	{
+		highscore_file.close();
+		return 0;
+	}
+}
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -154,6 +183,9 @@ int main() {
 	
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
+	std::string score; // for onscreen score
+	int high_score = readHighScore(); // For onscreen high score
+	std::string high_score_string;
 
 
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -172,6 +204,13 @@ int main() {
 
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
+
+				int current_highscore = readHighScore();
+				if (current_highscore < getScore() || current_highscore == 0)
+				{
+					saveHighScore();
+				}
+
 				gameon = false;
 			}
 			// Game can end by either pressing on '7' on the numpad or on top row of numbers
@@ -267,15 +306,24 @@ int main() {
 		framecount++;
 		fps_cur_time=SDL_GetTicks();
 		if (fps_cur_time - fps_last_time > 1000) {
-			fps= std::to_string(framecount / ((fps_cur_time - fps_last_time) / 1000.0));
+			fps= std::to_string((int) (framecount / ((fps_cur_time - fps_last_time) / 1000.0)));
 			fps +=" fps";
 			// reset
 			fps_last_time = fps_cur_time;
 			framecount = 0;
 		}
-		Text text(gRenderer, "sprites/comic.ttf", 14, fps, {255,255,255,255});
-		text.render(gRenderer,20,20);
+		Text fps_text(gRenderer, "/sprites/comic.ttf", 16, fps, {255,255,255,255});
+		fps_text.render(gRenderer,20,20);
 
+		score = "Score: ";
+		score.append(std::to_string(getScore()));
+		Text score_text(gRenderer, "/sprites/comic.ttf", 16, score, {255, 255, 255, 255});
+		score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
+
+		high_score_string = "High Score: ";
+		high_score_string.append(std::to_string(high_score));
+		Text high_score_text(gRenderer, "/sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
+		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
 
 		if(game_over->isGameOver)
 		{

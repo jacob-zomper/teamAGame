@@ -25,11 +25,11 @@ void Text::render(SDL_Renderer *gRenderer, int x, int y) const{
  	}
  	auto text_surface=TTF_RenderText_Solid(font,message_text.c_str(),color);
  	if (!text_surface){
-  		std::cerr<<"failed to create text surface\n";
+  		// std::cerr<<"failed to create text surface\n";
  	}
  	auto text_texture=SDL_CreateTextureFromSurface(gRenderer, text_surface);
  	if (!text_texture){
-  		std::cerr<<"failed to create text texture\n";
+  		// std::cerr<<"failed to create text texture\n";
  	}
  	SDL_FreeSurface(text_surface);
  	return text_texture;

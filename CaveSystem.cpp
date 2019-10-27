@@ -40,14 +40,35 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
             curr_block->CAVE_BLOCK_REL_Y = curr_block->CAVE_BLOCK_ABS_Y;
             if(i == 0) std::cout << "X: " << std::to_string(curr_block->CAVE_BLOCK_REL_X) << " Y: " << std::to_string(curr_block->CAVE_BLOCK_REL_Y) << " OFFSET_X: " << std::to_string(offsetX) << std::endl;
 
+            cave_system[i][j] = curr_block;
+        }
+
+    generateRandomCave();
+    // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
+}
+
+void CaveSystem::generateRandomCave()
+{
+    /*
+
+        This is the function that is generating the "randomness of the cave".
+        We have a 2D array in cave_system and can iterator through each block
+        with the nested FOR loop below. From there, set whether each block will
+        rendered by setting block->enabled to 0 or 1.
+
+    */
+    int i, j;
+    for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
+        for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
+        {
+            CaveBlock *curr_block = cave_system[i][j];
+
             if (curr_block->CAVE_BLOCK_REL_Y > 500 || curr_block->CAVE_BLOCK_REL_Y < 250)
                 curr_block->enabled = 1;
             else
                 curr_block->enabled = 0;
 
-            cave_system[i][j] = curr_block;
         }
-    //printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
 }
 
 void CaveSystem::moveCaveBlocks(int camX, int camY)
