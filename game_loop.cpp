@@ -184,6 +184,8 @@ int main() {
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
 	std::string score; // for onscreen score
+	int high_score = readHighScore(); // For onscreen high score
+	std::string high_score_string;
 
 
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -313,10 +315,15 @@ int main() {
 		Text fps_text(gRenderer, "/sprites/comic.ttf", 16, fps, {255,255,255,255});
 		fps_text.render(gRenderer,20,20);
 
-		score = "Score:  ";
+		score = "Score: ";
 		score.append(std::to_string(getScore()));
 		Text score_text(gRenderer, "/sprites/comic.ttf", 16, score, {255, 255, 255, 255});
-		score_text.render(gRenderer, SCREEN_WIDTH - 130, 20);
+		score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
+
+		high_score_string = "High Score: ";
+		high_score_string.append(std::to_string(high_score));
+		Text high_score_text(gRenderer, "/sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
+		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
 
 		if(game_over->isGameOver)
 		{
