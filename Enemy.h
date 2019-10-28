@@ -7,7 +7,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "bullet.h"
-
+#include <vector>
+using std::vector;
 class Enemy
 {
     
@@ -52,7 +53,7 @@ class Enemy
     
 		// Animation and shooting frequencies of the enemy
 		static const int ANIMATION_FREQ = 100;
-		static const int FIRING_FREQ = 2000;
+		static const int FIRING_FREQ = 1000;
 		
 		// Limits on where the enemy can go
 		static const int MIN_X = 0;
