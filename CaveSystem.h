@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <string>
 #include <iostream>
+#include <stdlib.h>
 #include "Player.h"
 
 class CaveBlock
@@ -25,6 +26,7 @@ public:
     std::string toString();
 };
 
+
 class CaveSystem
 {
 public:
@@ -43,6 +45,16 @@ public:
 
 private:
     void generateRandomCave();
+};
+
+class PathSequence
+{
+public:
+    int x[CaveSystem::CAVE_SYSTEM_WIDTH];
+    int y[CaveSystem::CAVE_SYSTEM_WIDTH];
+    int length;
+
+    PathSequence();
 };
 
 #endif
