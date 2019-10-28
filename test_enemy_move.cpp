@@ -6,6 +6,8 @@
 #include "MapBlocks.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "bullet.h"
+#include "Kamikaze.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -13,6 +15,8 @@ constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 7;
 
+using std::vector;
+using std::cout;
 // Function declarations
 bool init();
 void close();
@@ -67,22 +71,51 @@ void close() {
 	SDL_Quit();
 }
 
+
+void renderBullets(SDL_Renderer* g, vector<Bullet*>* b)
+{
+	for(auto i=0;i<b->size();i++)
+	{
+		b->at(i)->renderBullet(g);
+		cout << "rendered a bullet @ "<< b->at(i)->getX()<<","<<b->at(i)->getY()<<"\n";
+	}
+}
+
+void moveBullets(SDL_Renderer* g, vector<Bullet*>* b)
+{
+	for(auto i=0;i<b->size();i++)
+	{
+
+		b->at(i)->move();
+		if(b->at(i)->getX() >=SCREEN_WIDTH)
+		{
+			Bullet* b2 = b->at(i);
+			b->erase(*b2);
+		}
+	}
+}
+
+
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
 		close();
 		return 1;
 	}
-	
+
 	//Start the player on the left side of the screen
 	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	//MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT);
 	Enemy * en = new Enemy(50, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	
+	//create a bullet vector in which to store all the bullets that may be on the screen
+	std::vector<Bullet*> bullets;
+	Bullet* b = new Bullet(SCREEN_WIDTH/2,SCREEN_HEIGHT/2,0);
+	Kamikaze* kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
 
 	SDL_Event e;
 	bool gameon = true;
-
+	bool shootOnce =true;
 	while(gameon) {
 
 		// // Scroll SCROLL_SPEED pixels to the side, unless the end of the level has been reached
@@ -105,7 +138,23 @@ int main() {
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
 		// Move the enemy
+		
 		en->move(player->getPosX(), player->getPosY());
+		
+
+		//shoot one bullet
+		if(shootOnce)
+		{
+			en->shoot(&bullets);
+			cout << "taking ma shot\n";
+			shootOnce=false;
+		}
+		if(!bullets.empty())
+		{
+			moveBullets(gRenderer,&bullets);	
+		}
+
+		kam->move(player->getPosX(), player->getPosY(), SCREEN_WIDTH);
 
 		//Move Blocks
 		//blocks->moveBlocksAndCheckCollision(player, camX, camY);
@@ -114,10 +163,18 @@ int main() {
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
+		
+		
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		en->renderEnemy(gRenderer);
+		kam->renderKam(SCREEN_WIDTH, gRenderer);
 		//blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		//b->renderBullet(gRenderer);
+		if(!bullets.empty()){
+			renderBullets(gRenderer,&bullets);
+		}
+		
 
 
 		SDL_RenderPresent(gRenderer);

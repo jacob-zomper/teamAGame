@@ -125,6 +125,11 @@ FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRende
     FB_hitbox = FB_sprite;
 }
 
+int FlyingBlock::getRelX() { return BLOCK_REL_X; }
+int FlyingBlock::getRelY() { return BLOCK_REL_Y; }
+int FlyingBlock::getAbsX() { return BLOCK_ABS_X; }
+int FlyingBlock::getAbsY() { return BLOCK_ABS_Y; }
+
 Explosion::Explosion()
 {
     SDL_Renderer *gRenderer= nullptr;
@@ -139,6 +144,7 @@ Explosion::Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer)
 	center_y = y_loc;
 	abs_x = center_x - current_size / 2;
 	abs_y = center_y - current_size / 2;
+    sprite = loadImage("sprites/Explosion.png", gRenderer);
 	explosion_time = SDL_GetTicks();
 }
 
@@ -193,9 +199,11 @@ void MapBlocks::moveBlocks(int camX, int camY)
         stalagt_arr[i].STALAG_REL_X = stalagt_arr[i].STALAG_ABS_X - camX;
         if(stalagt_arr[i].beenShot == 1){
             stalagt_arr[i].time_since_move = SDL_GetTicks() - stalagt_arr[i].last_move;
-            stalagt_arr[i].acceleration += 0.008 * stalagt_arr[i].time_since_move;
+            if(stalagt_arr[i].STALAG_REL_Y <  stalagt_arr[i].terminalVelocityYValue){
+                stalagt_arr[i].acceleration += 0.008 * stalagt_arr[i].time_since_move;
+            }
             stalagt_arr[i].STALAG_REL_Y = stalagt_arr[i].STALAG_ABS_Y; //We should add an explosion upon reaching the botton of the cave
-            stalagt_arr[i].STALAG_ABS_Y += stalagt_arr[i].acceleration; // maybe make it fall until it reaches halfway down instead when the tip collides?
+            stalagt_arr[i].STALAG_ABS_Y += stalagt_arr[i].acceleration; // maybe make it fall until it reaches halfway down instead when the tip collides
             stalagt_arr[i].last_move = SDL_GetTicks();
         }
         // stalagt_arr[i].STALAG_REL_Y = stalagt_arr[i].STALAG_ABS_Y-camY - WallBlock::block_side - stalagt_arr[i].STALAG_HEIGHT;
@@ -353,7 +361,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < blocks_arr.size(); i++)
     {
         // Only render the FlyingBlock if will be screen
-        if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT)
+        if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y > WallBlock::block_side)
         {
             SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
             if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
@@ -397,16 +405,18 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < STALAG_N; i++)
     {
         // Only render the Stalag if will be screen
-        if (stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 10 - WallBlock::block_side){ // + 10 to have the stalags stick around a little after hittig the floor
+        if (stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
             SDL_Rect fillRect = {stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT};
             SDL_RenderCopyEx(gRenderer, stalagt_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
 	
 	for (i = 0; i < explosion_arr.size(); i++) {
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-		SDL_RenderFillRect(gRenderer, &explosion_arr[i].hitbox);
+		SDL_RenderCopyEx(gRenderer, explosion_arr[i].sprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
 	}
 
 }
 
+std::vector<FlyingBlock> MapBlocks::getKamikazes() {
+	return blocks_arr;
+}

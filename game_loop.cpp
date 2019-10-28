@@ -1,5 +1,6 @@
 #define SDL_MAIN_HANDLED
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <SDL.h>
@@ -10,6 +11,9 @@
 #include "Enemy.h"
 #include "bullet.h"
 #include "GameOver.h"
+#include "CaveSystem.h"
+#include "Text.h"
+#include "Kamikaze.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -30,15 +34,21 @@ SDL_Renderer* gRenderer = nullptr;
 double camX = 0;
 double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 
+Player * player;
+MapBlocks *blocks;
+GameOver *game_over;
+CaveSystem *cave_system;
+std::vector<Bullet*> bullets;
+
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
 int last_horiz_scroll = SDL_GetTicks();
 
-/*framerate timer
+//framerate timer
 Uint32 fps_last_time = SDL_GetTicks();
 Uint32 fps_cur_time = 0;
 int framecount;
-*/
+
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -48,6 +58,11 @@ bool init() {
 
 	if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
 		std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
+	}
+
+	if(TTF_Init()==-1){
+		std::cout<<"TTF could not initialize";
+		return false;
 	}
 
 	gWindow = SDL_CreateWindow("TeamAGame", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -93,9 +108,62 @@ void close() {
 	SDL_DestroyWindow(gWindow);
 	gWindow = nullptr;
 	gRenderer = nullptr;
+	TTF_Quit();
 
 	// Quit SDL subsystems
 	SDL_Quit();
+}
+
+// Function that prepares for enemy movement. Put in a separate method to avoid cluttering the main loop
+void moveEnemy(Enemy * en) {
+	int playerX = player->getPosX() + player->PLAYER_WIDTH/2;
+	int playerY = player->getPosY() + player->PLAYER_HEIGHT/2;
+	std::vector<int> bulletX;
+	std::vector<int> bulletY;
+	std::vector<int> bulletVelX;
+	std::vector<int> kamiX;
+	std::vector<int> kamiY;
+	std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
+	for (int i = 0; i < bullets.size(); i++) {
+		bulletX.push_back(bullets[i]->getX());
+		bulletY.push_back(bullets[i]->getY());
+		bulletVelX.push_back(bullets[i]->getXVel());
+	}
+	for (int i = 0; i < kamikazes.size(); i++) {
+		if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
+			kamiX.push_back(kamikazes[i].getRelX() + kamikazes[i].BLOCK_WIDTH/2);
+			kamiY.push_back(kamikazes[i].getRelY() + kamikazes[i].BLOCK_HEIGHT/2);
+		}
+	}
+	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+}
+
+int getScore(){ return (int) (camX / 100); }
+
+void saveHighScore()
+{
+	std::ofstream highscore_file;
+	highscore_file.open("highscore", std::ofstream::out | std::ofstream::trunc);
+	highscore_file << std::to_string(getScore());
+	highscore_file.close();
+
+}
+
+int readHighScore()
+{
+	std::ifstream highscore_file("highscore");
+	if (highscore_file.is_open())
+	{
+		std::string highscore_file_line;
+		std::getline(highscore_file, highscore_file_line);
+		highscore_file.close();
+		return std::stoi(highscore_file_line);
+	}
+	else
+	{
+		highscore_file.close();
+		return 0;
+	}
 }
 
 int main() {
@@ -104,19 +172,22 @@ int main() {
 		close();
 		return 1;
 	}
-	
+
 	//Start the player on the left side of the screen
-	Player * player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	MapBlocks *blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
-	GameOver *game_over = new GameOver();
+	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
+	game_over = new GameOver();
+	cave_system = new CaveSystem();
 
 	//start enemy on left side behind player
 	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+	Kamikaze* kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
 
-	//initialize a vector of bullets
-	std::vector<Bullet*> bullets;
-	
 	Bullet* newBullet;
+	std::string fps;//for onscreen fps
+	std::string score; // for onscreen score
+	int high_score = readHighScore(); // For onscreen high score
+	std::string high_score_string;
 
 
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -135,15 +206,30 @@ int main() {
 
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
+
+				int current_highscore = readHighScore();
+				if (current_highscore < getScore() || current_highscore == 0)
+				{
+					saveHighScore();
+				}
+
 				gameon = false;
 			}
-			if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_7)
+			// Game can end by either pressing on '7' on the numpad or on top row of numbers
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && (e.key.keysym.sym == SDLK_7 || e.key.keysym.sym == SDLK_KP_7))
 			{
 				game_over->isGameOver = true;
 			}
 			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
-				if (player->canFire()) {
-					bullets.push_back(new Bullet(player->getPosX() + player->PLAYER_WIDTH, player->getPosY() + player->PLAYER_HEIGHT/2,400));
+				newBullet = player->handleForwardFiring();
+				if (newBullet != nullptr) {
+					bullets.push_back(newBullet);
+				}
+			}
+			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_b) {
+				newBullet = player->handleBackwardFiring();
+				if (newBullet != nullptr) {
+					bullets.push_back(newBullet);
 				}
 			}
 			else {
@@ -155,22 +241,28 @@ int main() {
 			}
 		}
 
+		if(kam->gCheck()){
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+		}
+
 
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
 		//move enemy
-		en->move(player->getPosX(), player->getPosY());
+		moveEnemy(en);
 		newBullet = en->handleFiring();
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
-		
+
+		kam->move(player, SCREEN_WIDTH);
 		//move the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
 		}
-		
+
 		//Move Blocks and check collisions
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
@@ -178,7 +270,7 @@ int main() {
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
 			bool destroyed;
-			if (bullets[i]->getX() > SCREEN_WIDTH) {
+			if (bullets[i]->getX() > SCREEN_WIDTH || bullets[i]->getX() < 0) {
 				destroyed = true;
 			}
 			else {
@@ -189,43 +281,67 @@ int main() {
 			}
 		}
 
+		if((int) camX % 5500 == 0)
+		{
+			std::cout << "Creating Cave System" << std::endl;
+			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
+			cave_system->isEnabled = true;
+		}
+
+		if(cave_system->isEnabled)
+		{
+			cave_system->moveCaveBlocks(camX, camY);
+			cave_system->checkCollision(player);
+		}
+
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
-		
+
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
 		en->renderEnemy(gRenderer);
+
+		kam->renderKam(SCREEN_WIDTH, gRenderer);
+
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		if (cave_system->isEnabled)
+			cave_system->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->renderBullet(gRenderer);
 		}
 
-/*
 		framecount++;
 		fps_cur_time=SDL_GetTicks();
 		if (fps_cur_time - fps_last_time > 1000) {
-			std::string fps= std::to_string(framecount / ((fps_cur_time - fps_last_time) / 1000.0));
-			TTF_Font* Sans = TTF_OpenFont("Sans.ttf",14);
-			SDL_Color Black = {000,000,000};
-			SDL_Surface* fps_message = TTF_RenderText_Solid(Sans, fps.c_str(), Black);
-			SDL_Texture* message = SDL_CreateTextureFromSurface(gRenderer, fps_message);
-			SDL_Rect message_rect = {0,0,75,20};
-			SDL_RenderCopy(gRenderer, message,NULL, &message_rect);
-
+			fps= std::to_string((int) (framecount / ((fps_cur_time - fps_last_time) / 1000.0)));
+			fps +=" fps";
 			// reset
 			fps_last_time = fps_cur_time;
 			framecount = 0;
 		}
-*/
+		Text fps_text(gRenderer, "sprites/comic.ttf", 16, fps, {255,255,255,255});
+		fps_text.render(gRenderer,20,20);
+
+		score = "Score: ";
+		score.append(std::to_string(getScore()));
+		Text score_text(gRenderer, "sprites/comic.ttf", 16, score, {255, 255, 255, 255});
+		score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
+
+		high_score_string = "High Score: ";
+		high_score_string.append(std::to_string(high_score));
+		Text high_score_text(gRenderer, "sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
+		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
+
 		if(game_over->isGameOver)
 		{
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 		}
-		
+
 
 
 		SDL_RenderPresent(gRenderer);

@@ -3,10 +3,12 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
 #include "bullet.h"
-
+#include <vector>
+using std::vector;
 class Enemy
 {
     
@@ -21,9 +23,7 @@ class Enemy
         void renderEnemy(SDL_Renderer* gRenderer);
 
         //Moves the enemy
-        void move();
-        //For testing purposes
-        void move(int x, int y);
+        void move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> kamiX, std::vector<int> kamiY);
 
         //Position, dimensions, and velocity accessors
         int getX();
@@ -43,6 +43,8 @@ class Enemy
 		
         SDL_Rect* getHitbox();
         Bullet* handleFiring();
+		int chooseDirection();
+		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> kamiX, std::vector<int> kamiY);
 		
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
@@ -51,11 +53,25 @@ class Enemy
     
 		// Animation and shooting frequencies of the enemy
 		static const int ANIMATION_FREQ = 100;
-		static const int FIRING_FREQ = 2000;
+		static const int FIRING_FREQ = 1000;
+		
+		// Limits on where the enemy can go
+		static const int MIN_X = 0;
+		static const int MAX_X = 500;
+		static const int MIN_Y = 110;
+		static const int MAX_Y = 610;
+		
+		// Variables for squares and their corresponding risk scores
+		static const int SQUARE_WIDTH = 100;
+		static const int NUM_HORIZONTAL_SQUARES = (MAX_X - MIN_X) / SQUARE_WIDTH;
+		static const int NUM_VERTICAL_SQUARES = (MAX_Y - MIN_Y) / SQUARE_WIDTH;
+		double riskScores[NUM_HORIZONTAL_SQUARES][NUM_VERTICAL_SQUARES];
 		
         //Position and size of the enemy sprite on screen
         double xPos;
         double yPos;
+		int current_x_square;
+		int current_y_square;
         const int width;
         const int height;
 
