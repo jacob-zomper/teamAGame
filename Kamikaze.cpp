@@ -27,10 +27,13 @@ SDL_Texture* Kamikaze::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 Kamikaze::Kamikaze(int x, int y, int w, int h, SDL_Renderer* gRenderer) :xPos{(double) x}, yPos{(double) y}, width{w}, height{h}{
   kam_sprite = {(int) xPos, (int) yPos, width, height};
   kam_hitbox = kam_sprite;
-  time_since_move = SDL_GetTicks();
+  last_move = SDL_GetTicks();
+  last_assult = SDL_GetTicks();
   sprite1 = loadImage("sprites/EnemyPlaneK1.png", gRenderer);
   sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
   tiltAngle = 0;
+  isGone = false;
+
 }
 
 void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
@@ -43,35 +46,43 @@ void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
   }
 }
 
-void Kamikaze::move(int player_x, int player_y, int SCREEN_WIDTH){
+void Kamikaze::move(Player* p, int SCREEN_WIDTH){
   time_since_move = SDL_GetTicks() - last_move;
   time_since_assult = SDL_GetTicks() - last_assult;
   xVelo = 0;
-  tiltAngle = 0;
   yVelo = 0;
+  tiltAngle = 0;
   if (xPos > SCREEN_WIDTH - width - 10)
     xVelo = -MAX_MOVE_VELO;
   else{
-    if (yPos > player_y+(height/2)){
+    if (yPos > p->getPosY()+(height/2)){
       tiltAngle = 15;
       yVelo = -MAX_MOVE_VELO;
     }
 
-    if (yPos < player_y-(height/2)){
+    if (yPos < p->getPosY()-(height/2)){
       tiltAngle = -15;
       yVelo = MAX_MOVE_VELO;
     }
+
+    if (xPos < p->getPosX()){
+      tiltAngle = 0;
+      yVelo = 0;
+    }
   }
-  if (time_since_assult > ASSULT_FREQ && xPos > -width)
+  if (time_since_assult > ASSULT_FREQ && xPos > -width){
       xVelo = -MAX_ASSULT_VELO;
+  }
 
   xPos += (double) (xVelo * time_since_move)/1000;
   yPos += (double) (yVelo * time_since_move)/1000;
   kam_sprite = {(int)xPos,(int)yPos,width,height};
   kam_hitbox = kam_sprite;
   last_move = SDL_GetTicks();
-  if(xPos <= -width)
+  if(xPos <= -width){
     last_assult = SDL_GetTicks();
+    isGone = true;
+  }
 }
 
 int Kamikaze::getX(){
@@ -80,6 +91,20 @@ int Kamikaze::getX(){
 
 int Kamikaze::getY(){
   return (int) yPos;
+}
+
+void Kamikaze::setX(int x){
+  xPos = x;
+  isGone = false;
+}
+
+void Kamikaze::setY(int y){
+  yPos = y;
+  isGone = false;
+}
+
+bool Kamikaze::gCheck(){
+  return isGone;
 }
 
 int Kamikaze::getWidth() {

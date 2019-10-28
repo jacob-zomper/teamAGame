@@ -13,6 +13,7 @@
 #include "GameOver.h"
 #include "CaveSystem.h"
 #include "Text.h"
+#include "Kamikaze.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -171,7 +172,7 @@ int main() {
 		close();
 		return 1;
 	}
-	
+
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
@@ -180,7 +181,8 @@ int main() {
 
 	//start enemy on left side behind player
 	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	
+	Kamikaze* kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
+
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
 	std::string score; // for onscreen score
@@ -239,6 +241,11 @@ int main() {
 			}
 		}
 
+		if(kam->gCheck()){
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+		}
+
 
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
@@ -249,12 +256,13 @@ int main() {
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
-		
+
+		kam->move(player, SCREEN_WIDTH);
 		//move the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
 		}
-		
+
 		//Move Blocks and check collisions
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
@@ -279,7 +287,7 @@ int main() {
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
 			cave_system->isEnabled = true;
 		}
-		
+
 		if(cave_system->isEnabled)
 		{
 			cave_system->moveCaveBlocks(camX, camY);
@@ -289,11 +297,14 @@ int main() {
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
-		
+
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
 		en->renderEnemy(gRenderer);
+
+		kam->renderKam(SCREEN_WIDTH, gRenderer);
+
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 		if (cave_system->isEnabled)
 			cave_system->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
@@ -312,17 +323,17 @@ int main() {
 			fps_last_time = fps_cur_time;
 			framecount = 0;
 		}
-		Text fps_text(gRenderer, "/sprites/comic.ttf", 16, fps, {255,255,255,255});
+		Text fps_text(gRenderer, "sprites/comic.ttf", 16, fps, {255,255,255,255});
 		fps_text.render(gRenderer,20,20);
 
 		score = "Score: ";
 		score.append(std::to_string(getScore()));
-		Text score_text(gRenderer, "/sprites/comic.ttf", 16, score, {255, 255, 255, 255});
+		Text score_text(gRenderer, "sprites/comic.ttf", 16, score, {255, 255, 255, 255});
 		score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
 
 		high_score_string = "High Score: ";
 		high_score_string.append(std::to_string(high_score));
-		Text high_score_text(gRenderer, "/sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
+		Text high_score_text(gRenderer, "sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
 		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
 
 		if(game_over->isGameOver)
@@ -330,7 +341,7 @@ int main() {
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 		}
-		
+
 
 
 		SDL_RenderPresent(gRenderer);
