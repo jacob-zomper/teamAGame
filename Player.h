@@ -49,6 +49,7 @@ public:
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
     //Moves the player
+    void acceleration(bool &increasing, bool &decreasing, float &accel, float &accelerate_by, float &deccelerate_factor, int &vel);
     void move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY);
 
     //Shows the player on the screen relative to the camera
