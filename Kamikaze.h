@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Player.h"
+#include "MapBlocks.h"
 
 class Kamikaze
 {
@@ -22,7 +23,7 @@ class Kamikaze
     //the y axis then assults the player after a certain period
     //of time
     void move(Player* p, int SCREEN_WIDTH);
-    void checkCollision(Player *p);
+    void checkCollision(Player *p, SDL_Renderer* gRenderer);
 
     //Position, dimensions, and velocity accessors
     int getX();
@@ -32,6 +33,7 @@ class Kamikaze
     bool gCheck();
     int getWidth();
     int getHeight();
+    bool checkCol(int x, int y, int w, int h, int tx, int ty, int tw, int th);
 
     SDL_Rect* getHitbox();
     SDL_Texture* sprite1;
@@ -55,13 +57,21 @@ class Kamikaze
 		int time_since_move;
 		int last_move;
 
+    //Times for between assults of the player
     int time_since_assult;
     int last_assult;
 
+    //bool identifying if the kamikaze is gone
     bool isGone;
+
+    //Explosion when hit something
+    std::vector<Explosion> boom;
+    bool expActive;
 
     SDL_Rect kam_sprite;
     SDL_Rect kam_hitbox;
+
+
 };
 
 #endif
