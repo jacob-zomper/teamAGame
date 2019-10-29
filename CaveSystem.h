@@ -23,7 +23,7 @@ public:
     static const int CAVE_BLOCK_HEIGHT = 20;
     static const int CAVE_BLOCK_WIDTH = 20;
 	static const int CAVE_SYSTEM_PIXEL_HEIGHT = 720;
-	static const int CAVE_SYSTEM_PIXEL_WIDTH = 2000;
+	static const int CAVE_SYSTEM_PIXEL_WIDTH = 4000;
     CaveBlock();
     std::string toString();
 };
@@ -34,7 +34,7 @@ class CaveSystem
 public:
     static const int CAVE_SYSTEM_HEIGHT = CaveBlock::CAVE_SYSTEM_PIXEL_HEIGHT / CaveBlock::CAVE_BLOCK_HEIGHT;
     static const int CAVE_SYSTEM_WIDTH = CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH / CaveBlock::CAVE_BLOCK_WIDTH;
-	static const int CAVE_SYSTEM_FREQ = 7500;
+	static const int CAVE_SYSTEM_FREQ = 10000;
     bool isEnabled = false;
     CaveBlock *cave_system[CAVE_SYSTEM_HEIGHT][CAVE_SYSTEM_WIDTH];
 
