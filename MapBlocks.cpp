@@ -146,7 +146,6 @@ int Turret::getAbsY() { return BLOCK_ABS_Y; }
 
 Bullet * Turret::handleFiring(int posX, int posY) {
 	time_since_move = SDL_GetTicks() - last_move;
-		//std::cout << time_since_move << std::endl;
 	Bullet * b = nullptr;
 	if (time_since_move >= SHOOT_FREQ) {
 		last_move = SDL_GetTicks();
@@ -154,7 +153,6 @@ Bullet * Turret::handleFiring(int posX, int posY) {
 		int yDist = posY - BLOCK_REL_Y;
 		double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
 		double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
-		std::cout << xDist << " " << yDist << " " << math << " " << math2 << std::endl;
 		if (BLOCK_REL_Y >= posY){
 			b = new Bullet(BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
 		}
@@ -189,8 +187,9 @@ MapBlocks::MapBlocks()
     MapBlocks(1, 1, gRenderer = nullptr, 5500, 2000);
 }
 
-MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width)
+MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width)
 {
+	gRenderer = gr;
     int i;
     for (i = 0; i < BLOCKS_N; i++)
     {

@@ -101,7 +101,7 @@ void Player::acceleration(bool &increasing, bool &decreasing, float &accel, floa
         else if(vel > 0) accel -= deccelerate_factor*accelerate_by;
         float vel_increment = accel*time_since_move;
         vel += vel_increment;
-        if(vel != 0 && vel <= abs(deccelerate_factor*vel_increment) && vel >= -abs(deccelerate_factor*vel_increment)){
+        if(vel != 0 && vel <= abs((int) (deccelerate_factor*vel_increment)) && vel >= -abs((int) (deccelerate_factor*vel_increment))){
             accel = 0;
             vel = 0;
         }
