@@ -18,7 +18,7 @@ public:
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
 	static const int ANIMATION_FREQ = 100;
-	static const int SHOOT_FREQ = 2000;
+	static const int SHOOT_FREQ = 300;
 	
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
@@ -30,6 +30,10 @@ public:
 	
 	double bg_X;
     double tiltAngle;
+    bool xp_decel;
+    bool xn_decel;
+    bool yp_decel;
+    bool yn_decel;
 	
 	// Sprites for the player
 	SDL_Texture* sprite1;
@@ -45,6 +49,7 @@ public:
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
     //Moves the player
+    void acceleration(bool &increasing, bool &decreasing, float &accel, float &accelerate_by, float &deccelerate_factor, int &vel);
     void move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY);
 
     //Shows the player on the screen relative to the camera
@@ -76,6 +81,7 @@ private:
 
     //The velocity of the player
     int x_vel, y_vel;
+    float x_accel, y_accel;
 };
 
 #endif

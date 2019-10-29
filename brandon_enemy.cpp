@@ -64,9 +64,21 @@ if(yPos > (player_y + height))
   yPos += (double) (yVelo * time_since_move) / 1000;
 
  enemy_sprite = {xPos,yPos,width,height};
+
+ //printf("%d\n", checkCollision(player_x, player_y));
  last_move = SDL_GetTicks();
 }
 
+bool Enemy::checkCollision(int player_x,int player_y)
+ {
+    if(xPos < (player_x - width) || xPos > (player_x + width))
+      return true;
+    
+    if(yPos < (player_y - height) || yPos > (player_y + width))
+      return true;
+
+    return false;
+ }
 
 int Enemy::getX(){
   return xPos;
