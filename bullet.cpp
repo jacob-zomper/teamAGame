@@ -59,7 +59,7 @@ int Bullet::adjusted_x_velocity()
 int Bullet::adjusted_y_velocity()
 {
 	// Decreases the y velocity by the air time to simulate bullet drop
-	int y_velocity = velocity_magnitude * sin(pitch * radian_to_degree);
+	int y_velocity = velocity_magnitude * sin(pitch * radian_to_degree) - 15;
 	return y_velocity + (air_time / adjuster);
 }
 
