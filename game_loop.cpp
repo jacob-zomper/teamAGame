@@ -117,21 +117,28 @@ void close() {
 }
 
 // Function that prepares for enemy movement. Put in a separate method to avoid cluttering the main loop
-void moveEnemy(Enemy * en) {
+void moveEnemy(Enemy * en, Kamikaze* kam) {
 	int playerX = player->getPosX() + player->PLAYER_WIDTH/2;
 	int playerY = player->getPosY() + player->PLAYER_HEIGHT/2;
 	std::vector<int> bulletX;
 	std::vector<int> bulletY;
 	std::vector<int> bulletVelX;
-	std::vector<int> kamiX;
-	std::vector<int> kamiY;
+	// std::vector<int> kamiX;
+	// std::vector<int> kamiY;
+	// std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
 	for (int i = 0; i < bullets.size(); i++) {
 		bulletX.push_back(bullets[i]->getX());
 		bulletY.push_back(bullets[i]->getY());
 		bulletVelX.push_back(bullets[i]->getXVel());
 	}
-	kamiX.push_back(kam->getX());
-	kamiY.push_back(kam->getY());
+	// for (int i = 0; i < kamikazes.size(); i++) {
+	// 	if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
+	// 		kamiX.push_back(kamikazes[i].getRelX() + kamikazes[i].BLOCK_WIDTH/2);
+	// 		kamiY.push_back(kamikazes[i].getRelY() + kamikazes[i].BLOCK_HEIGHT/2);
+	// 	}
+	// }
+	int kamiX = kam->getX();
+	int kamiY = kam->getY();
 	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
 }
 
@@ -248,7 +255,7 @@ int main() {
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
 		//move enemy
-		moveEnemy(en);
+		moveEnemy(en, kam);
 		newBullet = en->handleFiring();
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);

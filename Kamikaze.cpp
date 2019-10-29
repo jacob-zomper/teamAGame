@@ -33,7 +33,6 @@ Kamikaze::Kamikaze(int x, int y, int w, int h, SDL_Renderer* gRenderer) :xPos{(d
   sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
   tiltAngle = 0;
   isGone = false;
-
 }
 
 void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
@@ -83,6 +82,10 @@ void Kamikaze::move(Player* p, int SCREEN_WIDTH){
     last_assult = SDL_GetTicks();
     isGone = true;
   }
+}
+
+void checkCollision(Player* p){
+  
 }
 
 int Kamikaze::getX(){
