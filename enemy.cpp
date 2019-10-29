@@ -51,6 +51,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
         time_since_move = SDL_GetTicks() - last_move;
 		xVelo = 0;
 		yVelo = 0;
+
         // tiltAngle = 0;
 		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
 		int direction = chooseDirection();
@@ -154,7 +155,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		int yBlock;
 		// Factor bullets into the risk score
 		for (int i = 0; i < bulletX.size(); i++) {
-			std::cout << "Made it" << std::endl;
+			// std::cout << "Made it" << std::endl;
 			xBlock = (bulletX[i] - MIN_X) / SQUARE_WIDTH;
 			yBlock = (bulletY[i] - MIN_Y) / SQUARE_WIDTH;
 			if (bulletVelX[i] < 0) {
@@ -172,7 +173,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		}
 		
 		// Factor kamikazes into the risk score
-		std::cout << "kamis:" << kamiX.size() << std::endl;
+		// std::cout << "kamis:" << kamiX.size() << std::endl;
 		for (int i = 0; i < kamiX.size(); i++) {
 			xBlock = (kamiX[i] - MIN_X) / SQUARE_WIDTH;
 			yBlock = (kamiY[i] - MIN_Y) / SQUARE_WIDTH;
@@ -190,7 +191,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		
 		// Factor proximity to the edge of the screen into the risk score
 		double center = ((MAX_Y - MIN_Y) / 2.0) / SQUARE_WIDTH - 0.5;
-		std::cout << "center:" << center << std::endl;
+		// std::cout << "center:" << center << std::endl;
 		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[i][j] += (j - center) * (j - center) * SQUARE_WIDTH / 10.0;
@@ -263,14 +264,13 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
       return &enemy_hitbox;
     }
 
-
     Bullet* Enemy::handleFiring()
     {
 		time_since_shoot = SDL_GetTicks() - last_shot;
-		if (time_since_shoot > FIRING_FREQ) {
-			Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
-			last_shot = SDL_GetTicks();
-			return b;
-		}
-		return nullptr;
+    		if (time_since_shoot > FIRING_FREQ) {
+    			Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
+    			last_shot = SDL_GetTicks();
+    			return b;
+    		}
+    		return nullptr;
     }
