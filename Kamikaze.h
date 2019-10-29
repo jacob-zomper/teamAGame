@@ -22,6 +22,7 @@ class Kamikaze
     //the y axis then assults the player after a certain period
     //of time
     void move(Player* p, int SCREEN_WIDTH);
+    void checkCollision(Player *p);
 
     //Position, dimensions, and velocity accessors
     int getX();
@@ -38,7 +39,7 @@ class Kamikaze
 
   private:
     static const int ANIMATION_FREQ = 100;
-    static const int ASSULT_FREQ = 8000;
+    static const int ASSULT_FREQ = 4000;
     static const int MAX_MOVE_VELO = 175;
     static const int MAX_ASSULT_VELO = 800;
     double xPos;
