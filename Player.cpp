@@ -148,16 +148,19 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 
     // Move the player vertically.
     // If they are near the top of the screen, scroll up
+    /*
     if (y_pos < SCREEN_HEIGHT / 10 && camY > 0)
     {
         y_pos = SCREEN_HEIGHT / 10;
         camY += (double) (y_vel * time_since_move) / 1000;
     }
-    // Stop the player if they hit the top of the level
+    */
+    // Stop the player if they hit the top of the level  
     else if (y_pos < 0)
     {
         y_pos = 0;
     }
+    
     // If they are near the bottom of the screen, scroll down
     else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
     {
@@ -169,6 +172,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     {
         y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
     }
+    
 
     if (camY < 0)
     {

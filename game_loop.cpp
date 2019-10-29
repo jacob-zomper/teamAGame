@@ -179,7 +179,12 @@ int main() {
 
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH);
+
+	//random open air area
+	int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
+    int openAirLength = (rand() % 200) + 100;
+
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength);
 	game_over = new GameOver();
 	cave_system = new CaveSystem();
 
