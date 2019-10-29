@@ -19,6 +19,22 @@ Bullet::Bullet(int x, int y, int vel) :xPos{(double)x}, yPos{(double)y}, width{B
 	last_move = SDL_GetTicks();
 };
 
+Bullet::Bullet(int x, int y, int xvel, int yvel) :xPos{(double)x}, yPos{(double)y}, width{BULLET_SIZE}, height{BULLET_SIZE}{
+	bullet_sprite = {(int)xPos,(int)yPos,width, height};
+	hitbox = bullet_sprite;
+	velocity_magnitude = sqrt(xvel * xvel + yvel * yvel);
+	xVel = xvel;
+	yVel = yvel;
+	// Compute pitch
+	pitch = atan((double) yvel / xvel);
+	if (xvel < 0)
+		pitch = pitch + 3.1415926535;
+	std::cout << pitch << std::endl;
+	
+	air_time = 0;
+	last_move = SDL_GetTicks();
+};
+
 void Bullet::renderBullet(SDL_Renderer* gRenderer){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(gRenderer, &bullet_sprite);
@@ -44,7 +60,7 @@ int Bullet::adjusted_x_velocity()
 	// Decrease x velocity to simulate air resistance,
 	// but half as slowly as the decrease in y velocity
 	int adjustment = air_time * (1/2 / adjuster);
-	int x_velocity = velocity_magnitude * cos(pitch * radian_to_degree);
+	int x_velocity = velocity_magnitude * cos(pitch);
 
 	// Prevent projectile from changing direction in the x-direction
 	int adjusted_x_velocity = x_velocity - adjustment;
@@ -59,7 +75,7 @@ int Bullet::adjusted_x_velocity()
 int Bullet::adjusted_y_velocity()
 {
 	// Decreases the y velocity by the air time to simulate bullet drop
-	int y_velocity = velocity_magnitude * sin(pitch * radian_to_degree) - 15;
+	int y_velocity = velocity_magnitude * sin(pitch) - 15;
 	return y_velocity + (air_time / adjuster);
 }
 
