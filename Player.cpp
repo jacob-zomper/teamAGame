@@ -56,7 +56,7 @@ void Player::handleEvent(SDL_Event &e)
             //y_vel -= MAX_PLAYER_VEL;
             //y_accel -= 25*time_since_move;
             yn_decel = false;
-            tiltAngle  = -15;
+            //tiltAngle  = -15;
             break;
 
         case SDLK_a:
@@ -69,7 +69,7 @@ void Player::handleEvent(SDL_Event &e)
             //y_vel += MAX_PLAYER_VEL;
             //y_accel += 25*time_since_move;
             yp_decel = false;
-            tiltAngle = 15;
+            //tiltAngle = 15;
             break;
 
         case SDLK_d:
@@ -86,7 +86,7 @@ void Player::handleEvent(SDL_Event &e)
         case SDLK_w:
             //y_vel += MAX_PLAYER_VEL;
             yn_decel = true;
-            tiltAngle = 0;
+            //tiltAngle = 0;
             break;
 
         case SDLK_a:
@@ -97,7 +97,7 @@ void Player::handleEvent(SDL_Event &e)
         case SDLK_s:
             //y_vel -= MAX_PLAYER_VEL;
             yp_decel = true;
-            tiltAngle = 0;
+            //tiltAngle = 0;
             break;
 
         case SDLK_d:
@@ -138,6 +138,8 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     //printf("YV %d\n", y_vel);
 
     //x_vel += x_accel*time_since_move;
+
+    tiltAngle = 180 * sin(y_accel / 12);
 
     to_accel /= 2;
     if(!xn_decel) x_accel -= to_accel;
