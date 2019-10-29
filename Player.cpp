@@ -53,28 +53,19 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            //y_vel -= MAX_PLAYER_VEL;
-            //y_accel -= 25*time_since_move;
             yn_decel = false;
-            //tiltAngle  = -15;
             break;
 
         case SDLK_a:
-            //x_vel -= MAX_PLAYER_VEL;
-            //x_accel -= 25*time_since_move;
             xn_decel = false;
             break;
 
         case SDLK_s:
-            //y_vel += MAX_PLAYER_VEL;
-            //y_accel += 25*time_since_move;
             yp_decel = false;
-            //tiltAngle = 15;
             break;
 
         case SDLK_d:
             x_vel += MAX_PLAYER_VEL;
-            //x_accel += 25*time_since_move;
             xp_decel = false;
             break;
         }
@@ -84,24 +75,18 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            //y_vel += MAX_PLAYER_VEL;
             yn_decel = true;
-            //tiltAngle = 0;
             break;
 
         case SDLK_a:
-            //x_vel += MAX_PLAYER_VEL;
             xn_decel = true;
             break;
 
         case SDLK_s:
-            //y_vel -= MAX_PLAYER_VEL;
             yp_decel = true;
-            //tiltAngle = 0;
             break;
 
         case SDLK_d:
-            //x_vel -= MAX_PLAYER_VEL;
             xp_decel = true;
             break;
         }
@@ -111,7 +96,6 @@ void Player::handleEvent(SDL_Event &e)
 //Moves the player
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
-    //float oldA = y_accel;
     float to_accel = 0.003*time_since_move;
     float decelFactor = 1.0;
     if(!yn_decel) y_accel -= to_accel;
@@ -132,13 +116,6 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     if(y_accel > 3) y_accel = 3;
     else if(y_accel < -3) y_accel = -3;
     
-    //printf("DA %f \t", fabs(oldA - y_accel));
-    //printf("YA %f \t", y_accel);
-    //printf("TA %f \t", to_accel);
-    //printf("YV %d\n", y_vel);
-
-    //x_vel += x_accel*time_since_move;
-
     tiltAngle = 180 * sin(y_accel / 12);
 
     to_accel /= 2;
