@@ -58,39 +58,46 @@ public:
     int terminalVelocityYValue = 360;
 };
 
-// class FlyingBlock
-// {
-// public:
-//     // absolute coordinates of each FlyingBlock
-//     int BLOCK_ABS_X;
-//     int BLOCK_ABS_Y;
-//
-//     // coordinates of each FlyingBlock relative to camera
-//     int BLOCK_REL_X;
-//     int BLOCK_REL_Y;
-//
-//     int BLOCK_HEIGHT;
-//     int BLOCK_WIDTH;
-//
-//     int BLOCK_SPRITE; // Map to which sprite image this FlyingBlock will use.
-//
-//     FlyingBlock();
-//     FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
-//
-// 	int getRelX();
-// 	int getRelY();
-// 	int getAbsX();
-// 	int getAbsY();
-//
-//      //Sprites for other Enemies
-//     SDL_Texture* sprite1;
-// 	SDL_Texture* sprite2;
-//
-//      //defines the enemy asset
-//     SDL_Rect FB_sprite;
-//     //defines the hitbox of the enemy
-//     SDL_Rect FB_hitbox;
-// };
+class Turret
+{
+public:
+	// Move and shooting times, needed for framerate-independent shooting
+	int time_since_move;
+	int last_move;
+	static const int SHOOT_FREQ = 1000;
+
+    // absolute coordinates of each Turret
+    int BLOCK_ABS_X;
+    int BLOCK_ABS_Y;
+
+    // coordinates of each Turret relative to camera
+    int BLOCK_REL_X;
+    int BLOCK_REL_Y;
+
+    int BLOCK_HEIGHT;
+    int BLOCK_WIDTH;
+
+    int BLOCK_SPRITE; // Map to which sprite image this Turret will use.
+
+    Turret();
+    Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
+
+	int getRelX();
+	int getRelY();
+	int getAbsX();
+	int getAbsY();
+
+    //Sprites for turrets
+    SDL_Texture* sprite1;
+	SDL_Texture* sprite2;
+
+    //defines the turret asset
+    SDL_Rect FB_sprite;
+    //defines the hitbox of the turret
+    SDL_Rect FB_hitbox;
+
+	Bullet * handleFiring(int posX, int posY);
+};
 
 class Explosion
 {
@@ -140,11 +147,7 @@ public:
 
 	SDL_Renderer *gRenderer;
 
-<<<<<<< HEAD
-    // std::vector<FlyingBlock> blocks_arr;
-=======
     std::vector<Turret> blocks_arr;
->>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce
     std::vector<Stalagmite> stalagm_arr;
     std::vector<Stalagtite> stalagt_arr;
     std::vector<Explosion> explosion_arr;
@@ -160,12 +163,7 @@ public:
 	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
 
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
-<<<<<<< HEAD
 
-	//std::vector<FlyingBlock> getKamikazes();
-=======
-
->>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
