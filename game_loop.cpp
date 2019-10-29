@@ -39,6 +39,8 @@ MapBlocks *blocks;
 GameOver *game_over;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
+Enemy* en;
+Kamikaze* kam;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
@@ -177,13 +179,13 @@ int main() {
 
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH);
 	game_over = new GameOver();
 	cave_system = new CaveSystem();
 
 	//start enemy on left side behind player
-	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	Kamikaze* kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
+	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
 
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
@@ -258,6 +260,7 @@ int main() {
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
+		bullets = blocks->handleFiring(bullets, player->getPosX(), player->getPosY());
 
 		kam->move(player, SCREEN_WIDTH);
 		//move the bullets
@@ -283,7 +286,7 @@ int main() {
 			}
 		}
 
-		if((int) camX % 5500 == 0)
+		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
 		{
 			std::cout << "Creating Cave System" << std::endl;
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);

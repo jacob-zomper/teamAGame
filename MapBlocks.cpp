@@ -31,12 +31,15 @@ WallBlock::WallBlock(){};
 Stalagmite::Stalagmite()
 {
     SDL_Renderer *gRenderer= nullptr;
-    Stalagmite(1,1,gRenderer);
+    Stalagmite(1,1,gRenderer, 5500, 2000);
 }
-Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
+Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width)
 {
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
     STALAG_ABS_Y = LEVEL_HEIGHT;//growing from bottom of cave
+	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width) {
+		STALAG_ABS_X = rand() % LEVEL_WIDTH;
+	}
     //STALAG_ABS_Y= rand() % LEVEL_HEIGHT;
 
     // These should be the same first
@@ -64,15 +67,18 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 Stalagtite::Stalagtite()
 {
     SDL_Renderer *gRenderer= nullptr;
-    Stalagtite(1,1,gRenderer);
+    Stalagtite(1,1,gRenderer, 5500, 2000);
 }
-Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
+Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width)
 {
     STALAG_WIDTH = rand() % 16 + 60;
     STALAG_HEIGHT = rand() % 141 + 50;
 
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
     STALAG_ABS_Y = WallBlock::block_side;//growing from top of cave
+	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width) {
+		STALAG_ABS_X = rand() % LEVEL_WIDTH;
+	}
     //STALAG_ABS_Y= rand() % LEVEL_HEIGHT;
 
     // These should be the same first
@@ -97,6 +103,7 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     acceleration = 0;
 }
 
+<<<<<<< HEAD
 // FlyingBlock::FlyingBlock()
 // {
 //     SDL_Renderer *gRenderer= nullptr;
@@ -129,6 +136,70 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 // int FlyingBlock::getRelY() { return BLOCK_REL_Y; }
 // int FlyingBlock::getAbsX() { return BLOCK_ABS_X; }
 // int FlyingBlock::getAbsY() { return BLOCK_ABS_Y; }
+=======
+Turret::Turret()
+{
+    SDL_Renderer *gRenderer= nullptr;
+    Turret(1, 1, gRenderer, 5500, 2000);
+}
+
+Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width)
+{
+    BLOCK_ABS_X = rand() % LEVEL_WIDTH;
+	BLOCK_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT;
+	if (rand() % 2 == 1) {
+		BLOCK_ABS_Y = LEVEL_HEIGHT - 720 + WallBlock::block_side;
+	}
+	while ((BLOCK_ABS_X - 1280) % cave_freq <= cave_width) {
+		BLOCK_ABS_X = rand() % LEVEL_WIDTH;
+	}
+
+    // These should be the same first
+    BLOCK_REL_X = BLOCK_ABS_X;
+    BLOCK_REL_Y = BLOCK_ABS_Y;
+
+    // BLOCK_WIDTH = 25 + (rand() % 100);
+    // BLOCK_HEIGHT = 25 + (rand() % 100);
+    //Standard Enemy plane size
+    BLOCK_WIDTH = 50;
+    BLOCK_HEIGHT = 50;
+
+    sprite1 = loadImage("sprites/EnemyPlaneK1.png", gRenderer);
+    sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
+
+    FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
+    FB_hitbox = FB_sprite;
+
+	last_move = SDL_GetTicks();
+}
+
+int Turret::getRelX() { return BLOCK_REL_X; }
+int Turret::getRelY() { return BLOCK_REL_Y; }
+int Turret::getAbsX() { return BLOCK_ABS_X; }
+int Turret::getAbsY() { return BLOCK_ABS_Y; }
+
+Bullet * Turret::handleFiring(int posX, int posY) {
+	time_since_move = SDL_GetTicks() - last_move;
+		//std::cout << time_since_move << std::endl;
+	Bullet * b = nullptr;
+	if (time_since_move >= SHOOT_FREQ) {
+		last_move = SDL_GetTicks();
+		int xDist = posX - BLOCK_REL_X;
+		int yDist = posY - BLOCK_REL_Y;
+		double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
+		double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
+		std::cout << xDist << " " << yDist << " " << math << " " << math2 << std::endl;
+		if (BLOCK_REL_Y >= posY){
+			b = new Bullet(BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
+		}
+		else {
+			b = new Bullet(BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
+		}
+	}
+	return b;
+}
+
+>>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce
 Explosion::Explosion()
 {
     SDL_Renderer *gRenderer= nullptr;
@@ -150,24 +221,30 @@ Explosion::Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer)
 MapBlocks::MapBlocks()
 {
     gRenderer= nullptr;
-    MapBlocks(1, 1, gRenderer = nullptr);
+    MapBlocks(1, 1, gRenderer = nullptr, 5500, 2000);
 }
 
-MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr)
+MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width)
 {
-	gRenderer = gr;
     int i;
+<<<<<<< HEAD
     // for (i = 0; i < BLOCKS_N; i++)
     // {
     //     blocks_arr.push_back(FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer)); // Initiating each FlyingBlock
     // }
+=======
+    for (i = 0; i < BLOCKS_N; i++)
+    {
+        blocks_arr.push_back(Turret(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width)); // Initiating each Turret
+    }
+>>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce
     for (i=0; i < STALAG_N; i++)
     {
-        stalagm_arr.push_back(Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer));//Initiate the stalagmites
+        stalagm_arr.push_back(Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width));//Initiate the stalagmites
     }
     for (i=0; i < STALAG_N; i++)
     {
-        stalagt_arr.push_back(Stalagtite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer));//Initiate the stalagtites
+        stalagt_arr.push_back(Stalagtite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width));//Initiate the stalagtites
     }
 }
 
@@ -220,6 +297,18 @@ void MapBlocks::moveBlocks(int camX, int camY)
 			explosion_arr.erase(explosion_arr.begin() + i);
 		}
 	}
+}
+
+std::vector<Bullet*> MapBlocks::handleFiring(std::vector<Bullet*> bullets, int posX, int posY) {
+	for (int i = 0; i < blocks_arr.size(); i++) {
+		if (blocks_arr[i].BLOCK_REL_X > 0 && blocks_arr[i].BLOCK_REL_Y > 0 && blocks_arr[i].BLOCK_REL_X <= 1280 && blocks_arr[i].BLOCK_REL_Y <= 720) {
+			Bullet * newBullet = blocks_arr[i].handleFiring(posX, posY);
+			if (newBullet != nullptr) {
+				bullets.push_back(newBullet);
+			}
+		}
+	}
+	return bullets;
 }
 
 void MapBlocks::checkCollision(Player *p)
@@ -357,6 +446,7 @@ bool MapBlocks::checkCollision(Bullet *b)
 void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRenderer)
 {
     int i;
+<<<<<<< HEAD
     // for (i = 0; i < blocks_arr.size(); i++)
     // {
     //     // Only render the FlyingBlock if will be screen
@@ -372,6 +462,18 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     //         blocks_arr[i].FB_hitbox=blocks_arr[i].FB_sprite;
     //     }
     // }
+=======
+    for (i = 0; i < blocks_arr.size(); i++)
+    {
+        // Only render the Turret if will be screen
+        if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y >= WallBlock::block_side)
+        {
+            SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
+			SDL_RenderFillRect(gRenderer, &fillRect);
+        }
+    }
+>>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce
 
     // Render walls
     for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
@@ -394,7 +496,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < STALAG_N; i++)
     {
         // Only render the Stalag if will be screen
-        if (stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
+        if (stalagm_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_HEIGHT && stalagm_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_WIDTH && stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
         {
             SDL_Rect fillRect = {stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT};
             SDL_RenderCopyEx(gRenderer, stalagm_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
@@ -404,7 +506,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < STALAG_N; i++)
     {
         // Only render the Stalag if will be screen
-        if (stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
+        if (stalagt_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_WIDTH && stalagt_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_HEIGHT && stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
             SDL_Rect fillRect = {stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT};
             SDL_RenderCopyEx(gRenderer, stalagt_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
@@ -414,8 +516,12 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 		SDL_RenderCopyEx(gRenderer, explosion_arr[i].sprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
 	}
 
+<<<<<<< HEAD
 }
 
 // std::vector<FlyingBlock> MapBlocks::getKamikazes() {
 // 	return blocks_arr;
 // }
+=======
+}
+>>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce

@@ -18,7 +18,7 @@ public:
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
 	static const int ANIMATION_FREQ = 100;
-	static const int SHOOT_FREQ = 2000;
+	static const int SHOOT_FREQ = 300;
 	
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;

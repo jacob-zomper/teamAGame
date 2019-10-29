@@ -27,7 +27,7 @@ public:
     int STALAG_WIDTH;
 
     Stalagmite();
-    Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+    Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
 
     SDL_Texture* sprite;
     int stalagShapeNum;
@@ -46,7 +46,7 @@ public:
     int STALAG_WIDTH;
 
     Stalagtite();
-    Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+    Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
 
     SDL_Texture* sprite;
     int stalagShapeNum;
@@ -129,8 +129,8 @@ class MapBlocks
 {
 
 public:
-    static const int BLOCKS_STARTING_N = 500;
-    int BLOCKS_N = 500;
+    static const int BLOCKS_STARTING_N = 50;
+    int BLOCKS_N = 50;
 
     static const int STALAG_STARTING_N=50;
     int STALAG_N = 50;
@@ -140,22 +140,32 @@ public:
 
 	SDL_Renderer *gRenderer;
 
+<<<<<<< HEAD
     // std::vector<FlyingBlock> blocks_arr;
+=======
+    std::vector<Turret> blocks_arr;
+>>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce
     std::vector<Stalagmite> stalagm_arr;
     std::vector<Stalagtite> stalagt_arr;
     std::vector<Explosion> explosion_arr;
 
     MapBlocks();
-    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
 	bool checkCollision(Bullet *b);
+	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
+
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+<<<<<<< HEAD
 
 	//std::vector<FlyingBlock> getKamikazes();
+=======
+
+>>>>>>> b5e0a1c8eca74448cda6f2c95c816a0a19b767ce
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
