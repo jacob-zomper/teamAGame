@@ -39,6 +39,8 @@ MapBlocks *blocks;
 GameOver *game_over;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
+Enemy* en;
+Kamikaze* kam;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
@@ -123,18 +125,13 @@ void moveEnemy(Enemy * en) {
 	std::vector<int> bulletVelX;
 	std::vector<int> kamiX;
 	std::vector<int> kamiY;
-	std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
 	for (int i = 0; i < bullets.size(); i++) {
 		bulletX.push_back(bullets[i]->getX());
 		bulletY.push_back(bullets[i]->getY());
 		bulletVelX.push_back(bullets[i]->getXVel());
 	}
-	for (int i = 0; i < kamikazes.size(); i++) {
-		if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
-			kamiX.push_back(kamikazes[i].getRelX() + kamikazes[i].BLOCK_WIDTH/2);
-			kamiY.push_back(kamikazes[i].getRelY() + kamikazes[i].BLOCK_HEIGHT/2);
-		}
-	}
+	kamiX.push_back(kam->getX());
+	kamiY.push_back(kam->getY());
 	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
 }
 
@@ -175,13 +172,13 @@ int main() {
 
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH);
 	game_over = new GameOver();
 	cave_system = new CaveSystem();
 
 	//start enemy on left side behind player
-	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	Kamikaze* kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
+	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
 
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
@@ -256,6 +253,7 @@ int main() {
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
+		bullets = blocks->handleFiring(bullets, player->getPosX(), player->getPosY());
 
 		kam->move(player, SCREEN_WIDTH);
 		//move the bullets
@@ -281,7 +279,7 @@ int main() {
 			}
 		}
 
-		if((int) camX % 5500 == 0)
+		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
 		{
 			std::cout << "Creating Cave System" << std::endl;
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
