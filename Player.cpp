@@ -37,10 +37,10 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
-    xp_decel = true;
-    xn_decel = true;
-    yp_decel = true;
-    yn_decel = true;
+    xp_decel = false;
+    xn_decel = false;
+    yp_decel = false;
+    yn_decel = false;
 	last_fshot = SDL_GetTicks() - SHOOT_FREQ;
 	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
 }
@@ -49,28 +49,6 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
 void Player::handleEvent(SDL_Event &e)
 {
     if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
-    {
-        switch (e.key.keysym.sym)
-        {
-        case SDLK_w:
-            yn_decel = false;
-            break;
-
-        case SDLK_a:
-            xn_decel = false;
-            break;
-
-        case SDLK_s:
-            yp_decel = false;
-            break;
-
-        case SDLK_d:
-            x_vel += MAX_PLAYER_VEL;
-            xp_decel = false;
-            break;
-        }
-    }
-    else if (e.type == SDL_KEYUP)
     {
         switch (e.key.keysym.sym)
         {
@@ -87,56 +65,62 @@ void Player::handleEvent(SDL_Event &e)
             break;
 
         case SDLK_d:
+            x_vel += MAX_PLAYER_VEL;
             xp_decel = true;
+            break;
+        }
+    }
+    else if (e.type == SDL_KEYUP)
+    {
+        switch (e.key.keysym.sym)
+        {
+        case SDLK_w:
+            yn_decel = false;
+            break;
+
+        case SDLK_a:
+            xn_decel = false;
+            break;
+
+        case SDLK_s:
+            yp_decel = false;
+            break;
+
+        case SDLK_d:
+            xp_decel = false;
             break;
         }
     }
 }
 
+void Player::acceleration(bool &increasing, bool &decreasing, float &accel, float &accelerate_by, float &deccelerate_factor, int &vel){
+    if(decreasing) accel -= accelerate_by;
+    if(increasing) accel += accelerate_by;
+    if(!decreasing && !increasing){
+        if(vel < 0) accel += deccelerate_factor*accelerate_by;
+        else if(vel > 0) accel -= deccelerate_factor*accelerate_by;
+        float vel_increment = accel*time_since_move;
+        vel += vel_increment;
+        if(vel != 0 && vel <= abs(deccelerate_factor*vel_increment) && vel >= -abs(deccelerate_factor*vel_increment)){
+            accel = 0;
+            vel = 0;
+        }
+    } else{
+        float vel_increment = accel*time_since_move;
+        vel += vel_increment;
+    }
+    if(accel > 3) accel = 3;
+    else if(accel < -3) accel = -3;
+}
+
 //Moves the player
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
-    float to_accel = 0.003*time_since_move;
-    float decelFactor = 1.0;
-    if(!yn_decel) y_accel -= to_accel;
-    if(!yp_decel) y_accel += to_accel;
-    if(yn_decel && yp_decel){
-        if(y_vel < 0) y_accel += decelFactor*to_accel;
-        else if(y_vel > 0) y_accel -= decelFactor*to_accel;
-        float to_vel = y_accel*time_since_move;
-        y_vel += to_vel;
-        if(y_vel != 0 && y_vel <= abs(decelFactor*to_vel) && y_vel >= -abs(decelFactor*to_vel)){
-            y_accel = 0;
-            y_vel = 0;
-        }
-    } else{
-        float to_vel = y_accel*time_since_move;
-        y_vel += to_vel;
-    }
-    if(y_accel > 3) y_accel = 3;
-    else if(y_accel < -3) y_accel = -3;
-    
+    float accelerate_by = 0.003*time_since_move;
+    float deccelerate_factor = 1.0;
+    acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
     tiltAngle = 180 * sin(y_accel / 12);
-
-    to_accel /= 2;
-    if(!xn_decel) x_accel -= to_accel;
-    if(!xp_decel) x_accel += to_accel;
-    if(xn_decel && xp_decel){
-        if(x_vel < 0) x_accel += decelFactor*to_accel;
-        else if(x_vel > 0) x_accel -= decelFactor*to_accel;
-        float to_vel = x_accel*time_since_move;
-        x_vel += to_vel;
-        if(x_vel != 0 && x_vel <= abs(decelFactor*to_vel) && x_vel >= -abs(decelFactor*to_vel)){
-            x_accel = 0;
-            x_vel = 0;
-        }
-    } else{
-        float to_vel = x_accel*time_since_move;
-        x_vel += to_vel;
-    }
-    if(x_accel > 3) x_accel = 3;
-    else if(x_accel < -3) x_accel = -3;
-
+    acceleration(xp_decel, xn_decel, x_accel, accelerate_by, deccelerate_factor, x_vel);
 
     if (y_vel > MAX_PLAYER_VEL)
         y_vel = MAX_PLAYER_VEL;
