@@ -103,10 +103,6 @@ public:
 	int getAbsX();
 	int getAbsY();
 
-    //Sprites for turrets
-    SDL_Texture* sprite1;
-	SDL_Texture* sprite2;
-
     //defines the turret asset
     SDL_Rect FB_sprite;
     //defines the hitbox of the turret
