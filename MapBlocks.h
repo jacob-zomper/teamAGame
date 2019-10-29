@@ -172,6 +172,7 @@ public:
     std::vector<WallBlock> ceiling_arr;
 
     MapBlocks();
+
     MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
