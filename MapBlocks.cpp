@@ -127,15 +127,15 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
     // BLOCK_WIDTH = 25 + (rand() % 100);
     // BLOCK_HEIGHT = 25 + (rand() % 100);
     //Standard Enemy plane size
-    BLOCK_WIDTH = 50; 
+    BLOCK_WIDTH = 50;
     BLOCK_HEIGHT = 50;
 
     sprite1 = loadImage("sprites/EnemyPlaneK1.png", gRenderer);
     sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
-    
+
     FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
     FB_hitbox = FB_sprite;
-	
+
 	last_move = SDL_GetTicks();
 }
 
@@ -382,7 +382,7 @@ bool MapBlocks::checkCollision(Bullet *b)
     for (int i = 0; i < STALAG_N; i++)
     {
         // If there's a collision with a stalagmite or a stalagtite, detroy the bullet. The stalag will be fine; stalags are strong.
-            //Not sure what we want to do with the stalagmites but reworked to stalagtites fall when shot 
+            //Not sure what we want to do with the stalagmites but reworked to stalagtites fall when shot
         if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
             return true;
@@ -450,7 +450,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
             SDL_RenderCopyEx(gRenderer, stalagt_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
-	
+
 	for (i = 0; i < explosion_arr.size(); i++) {
 		SDL_RenderCopyEx(gRenderer, explosion_arr[i].sprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
 	}
