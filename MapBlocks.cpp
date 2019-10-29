@@ -163,9 +163,6 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
         enabled=true;
     }
 
-    sprite1 = loadImage("sprites/EnemyPlaneK1.png", gRenderer);
-    sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
-
     FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
     FB_hitbox = FB_sprite;
 
@@ -478,9 +475,16 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         // Only render the Turret if will be screen
         if (blocks_arr[i].enabled==true && blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y >= WallBlock::block_side)
         {
-            SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
-			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
-			SDL_RenderFillRect(gRenderer, &fillRect);
+            if(blocks_arr[i].BLOCK_REL_Y < 360){
+                SDL_Texture* sprite = loadImage("sprites/topturret.png", gRenderer);
+                SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
+                SDL_RenderCopyEx(gRenderer, sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+            }
+            else{
+                SDL_Texture* sprite = loadImage("sprites/bottomturret.png", gRenderer);
+                SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
+                SDL_RenderCopyEx(gRenderer, sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+            }
         }
     }
 
