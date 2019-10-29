@@ -97,39 +97,38 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     acceleration = 0;
 }
 
-FlyingBlock::FlyingBlock()
-{
-    SDL_Renderer *gRenderer= nullptr;
-    FlyingBlock(1, 1, gRenderer);
-}
-
-FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
-{
-    BLOCK_ABS_X = rand() % LEVEL_WIDTH;
-    BLOCK_ABS_Y = rand() % LEVEL_HEIGHT;
-
-    // These should be the same first
-    BLOCK_REL_X = BLOCK_ABS_X;
-    BLOCK_REL_Y = BLOCK_ABS_Y;
-
-    // BLOCK_WIDTH = 25 + (rand() % 100);
-    // BLOCK_HEIGHT = 25 + (rand() % 100);
-    //Standard Enemy plane size
-    BLOCK_WIDTH = 125; 
-    BLOCK_HEIGHT = 53;
-
-    sprite1 = loadImage("sprites/EnemyPlaneK1.png", gRenderer);
-    sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
-    
-    FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
-    FB_hitbox = FB_sprite;
-}
-
-int FlyingBlock::getRelX() { return BLOCK_REL_X; }
-int FlyingBlock::getRelY() { return BLOCK_REL_Y; }
-int FlyingBlock::getAbsX() { return BLOCK_ABS_X; }
-int FlyingBlock::getAbsY() { return BLOCK_ABS_Y; }
-
+// FlyingBlock::FlyingBlock()
+// {
+//     SDL_Renderer *gRenderer= nullptr;
+//     FlyingBlock(1, 1, gRenderer);
+// }
+//
+// FlyingBlock::FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer)
+// {
+//     BLOCK_ABS_X = rand() % LEVEL_WIDTH;
+//     BLOCK_ABS_Y = rand() % LEVEL_HEIGHT;
+//
+//     // These should be the same first
+//     BLOCK_REL_X = BLOCK_ABS_X;
+//     BLOCK_REL_Y = BLOCK_ABS_Y;
+//
+//     // BLOCK_WIDTH = 25 + (rand() % 100);
+//     // BLOCK_HEIGHT = 25 + (rand() % 100);
+//     //Standard Enemy plane size
+//     BLOCK_WIDTH = 125;
+//     BLOCK_HEIGHT = 53;
+//
+//     sprite1 = loadImage("sprites/EnemyPlaneK1.png", gRenderer);
+//     sprite2 = loadImage("sprites/EnemyPlaneK2.png", gRenderer);
+//
+//     FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
+//     FB_hitbox = FB_sprite;
+// }
+//
+// int FlyingBlock::getRelX() { return BLOCK_REL_X; }
+// int FlyingBlock::getRelY() { return BLOCK_REL_Y; }
+// int FlyingBlock::getAbsX() { return BLOCK_ABS_X; }
+// int FlyingBlock::getAbsY() { return BLOCK_ABS_Y; }
 Explosion::Explosion()
 {
     SDL_Renderer *gRenderer= nullptr;
@@ -158,10 +157,10 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr)
 {
 	gRenderer = gr;
     int i;
-    for (i = 0; i < BLOCKS_N; i++)
-    {
-        blocks_arr.push_back(FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer)); // Initiating each FlyingBlock
-    }
+    // for (i = 0; i < BLOCKS_N; i++)
+    // {
+    //     blocks_arr.push_back(FlyingBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer)); // Initiating each FlyingBlock
+    // }
     for (i=0; i < STALAG_N; i++)
     {
         stalagm_arr.push_back(Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer));//Initiate the stalagmites
@@ -184,11 +183,11 @@ bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, in
 void MapBlocks::moveBlocks(int camX, int camY)
 {
     int i;
-    for (i = 0; i < blocks_arr.size(); i++)
-    {
-        blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
-        blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
-	}
+  //   for (i = 0; i < blocks_arr.size(); i++)
+  //   {
+  //       blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
+  //       blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
+	// }
     for (i = 0; i < STALAG_N; i++)
     {
         stalagm_arr[i].STALAG_REL_X = stalagm_arr[i].STALAG_ABS_X - camX;
@@ -226,21 +225,21 @@ void MapBlocks::moveBlocks(int camX, int camY)
 void MapBlocks::checkCollision(Player *p)
 {
 	int i;
-    for (i = 0; i < BLOCKS_N; i++)
-    {
-        // If there's a collision, cancel the player's move
-		if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
-        {
-            p->undoXMove();
-            p->undoYMove();
-			// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
-            {
-                p->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - p->PLAYER_WIDTH, 0));
-                p->redoYMove();
-            }
-        }
-    }
+    // for (i = 0; i < BLOCKS_N; i++)
+    // {
+    //     // If there's a collision, cancel the player's move
+		// if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+    //     {
+    //         p->undoXMove();
+    //         p->undoYMove();
+		// 	// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
+    //         if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+    //         {
+    //             p->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - p->PLAYER_WIDTH, 0));
+    //             p->redoYMove();
+    //         }
+    //     }
+    // }
     for (i = 0; i < STALAG_N; i++)
     {
         // If there's a collision, cancel the player's move
@@ -277,21 +276,21 @@ void MapBlocks::checkCollision(Player *p)
 void MapBlocks::checkCollision(Enemy *e)
 {
 	int i;
-    for (i = 0; i < BLOCKS_N; i++)
-    {
-        // If there's a collision, cancel the enemy's move
-		if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
-        {
-            e->undoXMove();
-            e->undoYMove();
-			// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
-            {
-                e->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - e->getWidth(), 0));
-                e->redoYMove();
-            }
-        }
-    }
+    // for (i = 0; i < BLOCKS_N; i++)
+    // {
+    //     // If there's a collision, cancel the enemy's move
+		// if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+    //     {
+    //         e->undoXMove();
+    //         e->undoYMove();
+		// 	// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
+    //         if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+    //         {
+    //             e->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - e->getWidth(), 0));
+    //             e->redoYMove();
+    //         }
+    //     }
+    // }
     for (i = 0; i < STALAG_N; i++)
     {
         // If there's a collision, cancel the player's move
@@ -324,20 +323,20 @@ void MapBlocks::checkCollision(Enemy *e)
 // Returns true if the bullet hit something (and was therefore destroyed), and false otherwise
 bool MapBlocks::checkCollision(Bullet *b)
 {
-    for (int i = blocks_arr.size() - 1; i >= 0; i--)
-    {
-        // If there's a collision with one of the planes, destroy the plane and the bullet
-		if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
-        {
-			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, gRenderer));
-            blocks_arr.erase(blocks_arr.begin() + i);
-			return true;
-        }
-    }
+    // for (int i = blocks_arr.size() - 1; i >= 0; i--)
+    // {
+    //     // If there's a collision with one of the planes, destroy the plane and the bullet
+		// if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+    //     {
+		// 	explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, gRenderer));
+    //         blocks_arr.erase(blocks_arr.begin() + i);
+		// 	return true;
+    //     }
+    // }
     for (int i = 0; i < STALAG_N; i++)
     {
         // If there's a collision with a stalagmite or a stalagtite, detroy the bullet. The stalag will be fine; stalags are strong.
-            //Not sure what we want to do with the stalagmites but reworked to stalagtites fall when shot 
+            //Not sure what we want to do with the stalagmites but reworked to stalagtites fall when shot
         if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
             return true;
@@ -358,21 +357,21 @@ bool MapBlocks::checkCollision(Bullet *b)
 void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRenderer)
 {
     int i;
-    for (i = 0; i < blocks_arr.size(); i++)
-    {
-        // Only render the FlyingBlock if will be screen
-        if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y > WallBlock::block_side)
-        {
-            SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
-            if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
-                 SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-            }
-            else {
-                SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite2, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-            }
-            blocks_arr[i].FB_hitbox=blocks_arr[i].FB_sprite;
-        }
-    }
+    // for (i = 0; i < blocks_arr.size(); i++)
+    // {
+    //     // Only render the FlyingBlock if will be screen
+    //     if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y > WallBlock::block_side)
+    //     {
+    //         SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
+    //         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+    //              SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //         }
+    //         else {
+    //             SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite2, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //         }
+    //         blocks_arr[i].FB_hitbox=blocks_arr[i].FB_sprite;
+    //     }
+    // }
 
     // Render walls
     for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
@@ -410,13 +409,13 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
             SDL_RenderCopyEx(gRenderer, stalagt_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
-	
+
 	for (i = 0; i < explosion_arr.size(); i++) {
 		SDL_RenderCopyEx(gRenderer, explosion_arr[i].sprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
 	}
 
 }
 
-std::vector<FlyingBlock> MapBlocks::getKamikazes() {
-	return blocks_arr;
-}
+// std::vector<FlyingBlock> MapBlocks::getKamikazes() {
+// 	return blocks_arr;
+// }

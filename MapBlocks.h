@@ -58,69 +58,69 @@ public:
     int terminalVelocityYValue = 360;
 };
 
-class FlyingBlock
-{
-public:
-    // absolute coordinates of each FlyingBlock
-    int BLOCK_ABS_X;
-    int BLOCK_ABS_Y;
-
-    // coordinates of each FlyingBlock relative to camera
-    int BLOCK_REL_X;
-    int BLOCK_REL_Y;
-
-    int BLOCK_HEIGHT;
-    int BLOCK_WIDTH;
-
-    int BLOCK_SPRITE; // Map to which sprite image this FlyingBlock will use.
-
-    FlyingBlock();
-    FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
-	
-	int getRelX();
-	int getRelY();
-	int getAbsX();
-	int getAbsY();
-
-     //Sprites for other Enemies
-    SDL_Texture* sprite1;
-	SDL_Texture* sprite2;
-
-     //defines the enemy asset
-    SDL_Rect FB_sprite;
-    //defines the hitbox of the enemy
-    SDL_Rect FB_hitbox;
-};
+// class FlyingBlock
+// {
+// public:
+//     // absolute coordinates of each FlyingBlock
+//     int BLOCK_ABS_X;
+//     int BLOCK_ABS_Y;
+//
+//     // coordinates of each FlyingBlock relative to camera
+//     int BLOCK_REL_X;
+//     int BLOCK_REL_Y;
+//
+//     int BLOCK_HEIGHT;
+//     int BLOCK_WIDTH;
+//
+//     int BLOCK_SPRITE; // Map to which sprite image this FlyingBlock will use.
+//
+//     FlyingBlock();
+//     FlyingBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer);
+//
+// 	int getRelX();
+// 	int getRelY();
+// 	int getAbsX();
+// 	int getAbsY();
+//
+//      //Sprites for other Enemies
+//     SDL_Texture* sprite1;
+// 	SDL_Texture* sprite2;
+//
+//      //defines the enemy asset
+//     SDL_Rect FB_sprite;
+//     //defines the hitbox of the enemy
+//     SDL_Rect FB_hitbox;
+// };
 
 class Explosion
 {
 public:
-	
+
 	// Variables needed to control the size of the explosion and make it disappear at the right time
 	static const int INITIAL_EXPLOSION_SIZE = 30;
 	static const int FINAL_EXPLOSION_SIZE = 100;
 	static const int EXPLOSION_SPEED = 100;
 	int explosion_time;
 	double current_size;
-	
+
 	// Absolute location of the explosion's center
 	int center_x;
 	int center_y;
-	
+
 	// Absolute location of the explosion's top left corner
 	double abs_x;
 	double abs_y;
-	
+
 	// Location relative to the camera
 	double rel_x;
 	double rel_y;
-	
+
 	Explosion();
 	Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer);
 
     //Explosion sprite
     SDL_Texture* sprite;
-	
+
 	//defines the explosion
     SDL_Rect hitbox;
 };
@@ -137,10 +137,10 @@ public:
 
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
-	
+
 	SDL_Renderer *gRenderer;
 
-    std::vector<FlyingBlock> blocks_arr;
+    // std::vector<FlyingBlock> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
     std::vector<Stalagtite> stalagt_arr;
     std::vector<Explosion> explosion_arr;
@@ -154,8 +154,8 @@ public:
 	void checkCollision(Enemy *e);
 	bool checkCollision(Bullet *b);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
-	
-	std::vector<FlyingBlock> getKamikazes();
+
+	//std::vector<FlyingBlock> getKamikazes();
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
