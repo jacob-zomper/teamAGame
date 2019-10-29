@@ -5,6 +5,7 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
+#include "Player.h"
 
 class Kamikaze
 {
@@ -20,11 +21,15 @@ class Kamikaze
     //Move the plane into the frame, follows the player along
     //the y axis then assults the player after a certain period
     //of time
-    void move(int x, int y, int SCREEN_WIDTH);
+    void move(Player* p, int SCREEN_WIDTH);
+    void checkCollision(Player *p);
 
     //Position, dimensions, and velocity accessors
     int getX();
     int getY();
+    void setX(int x);
+    void setY(int y);
+    bool gCheck();
     int getWidth();
     int getHeight();
 
@@ -34,7 +39,7 @@ class Kamikaze
 
   private:
     static const int ANIMATION_FREQ = 100;
-    static const int ASSULT_FREQ = 8000;
+    static const int ASSULT_FREQ = 4000;
     static const int MAX_MOVE_VELO = 175;
     static const int MAX_ASSULT_VELO = 800;
     double xPos;
@@ -52,6 +57,8 @@ class Kamikaze
 
     int time_since_assult;
     int last_assult;
+
+    bool isGone;
 
     SDL_Rect kam_sprite;
     SDL_Rect kam_hitbox;

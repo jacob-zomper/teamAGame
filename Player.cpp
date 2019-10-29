@@ -29,12 +29,18 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     y_pos = yPos;
     x_vel = 0;
     y_vel = 0;
+    x_accel = 0;
+    y_accel = 0;
 	sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
 	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
 	gBackground = loadImage("sprites/cave.png", gRenderer);
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
+    xp_decel = false;
+    xn_decel = false;
+    yp_decel = false;
+    yn_decel = false;
 	last_fshot = SDL_GetTicks() - SHOOT_FREQ;
 	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
 }
@@ -47,21 +53,20 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            y_vel -= MAX_PLAYER_VEL;
-            tiltAngle  = -15;
+            yn_decel = true;
             break;
 
         case SDLK_a:
-            x_vel -= MAX_PLAYER_VEL;
+            xn_decel = true;
             break;
 
         case SDLK_s:
-            y_vel += MAX_PLAYER_VEL;
-            tiltAngle = 15;
+            yp_decel = true;
             break;
 
         case SDLK_d:
             x_vel += MAX_PLAYER_VEL;
+            xp_decel = true;
             break;
         }
     }
@@ -70,29 +75,53 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            y_vel += MAX_PLAYER_VEL;
-            tiltAngle = 0;
+            yn_decel = false;
             break;
 
         case SDLK_a:
-            x_vel += MAX_PLAYER_VEL;
+            xn_decel = false;
             break;
 
         case SDLK_s:
-            y_vel -= MAX_PLAYER_VEL;
-            tiltAngle = 0;
+            yp_decel = false;
             break;
 
         case SDLK_d:
-            x_vel -= MAX_PLAYER_VEL;
+            xp_decel = false;
             break;
         }
     }
 }
 
+void Player::acceleration(bool &increasing, bool &decreasing, float &accel, float &accelerate_by, float &deccelerate_factor, int &vel){
+    if(decreasing) accel -= accelerate_by;
+    if(increasing) accel += accelerate_by;
+    if(!decreasing && !increasing){
+        if(vel < 0) accel += deccelerate_factor*accelerate_by;
+        else if(vel > 0) accel -= deccelerate_factor*accelerate_by;
+        float vel_increment = accel*time_since_move;
+        vel += vel_increment;
+        if(vel != 0 && vel <= abs(deccelerate_factor*vel_increment) && vel >= -abs(deccelerate_factor*vel_increment)){
+            accel = 0;
+            vel = 0;
+        }
+    } else{
+        float vel_increment = accel*time_since_move;
+        vel += vel_increment;
+    }
+    if(accel > 3) accel = 3;
+    else if(accel < -3) accel = -3;
+}
+
 //Moves the player
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
+    float accelerate_by = 0.003*time_since_move;
+    float deccelerate_factor = 1.0;
+    acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
+    tiltAngle = 180 * sin(y_accel / 12);
+    acceleration(xp_decel, xn_decel, x_accel, accelerate_by, deccelerate_factor, x_vel);
+
     if (y_vel > MAX_PLAYER_VEL)
         y_vel = MAX_PLAYER_VEL;
     else if (y_vel < -MAX_PLAYER_VEL)

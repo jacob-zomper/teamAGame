@@ -7,8 +7,10 @@ ENEMY_CLASS = -c enemy.cpp -o enemy.o
 GAMEOVER_CLASS = -c GameOver.cpp -o GameOver.o
 CAVESYSTEM_CLASS = -c CaveSystem.cpp -o CaveSystem.o
 TEXT_CLASS = -c text.cpp -o text.o
+KAMIKAZE_CLASS = -c Kamikaze.cpp -o Kamikaze.o
 
-INCLUDED_CLASSES = CaveSystem.cpp Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp text.cpp
+INCLUDED_CLASSES = CaveSystem.cpp Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp text.cpp Kamikaze.cpp
+BRANDON_LIB = -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -lSDL2_ttf -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 
 all: SDLCredits.cpp game_loop.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
@@ -23,29 +25,29 @@ connor: SDLCredits.cpp game_loop.cpp
 tc: SDLCredits.cpp game_loop.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 
-brian: SDLCredits.cpp
-	g++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o game_loop
 
-jerry_lin_game: game_loop.cpp
-	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS)
-	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS)
+jlg: game_loop.cpp
+	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS) 
+	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
 	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
 	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
 	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
-	clang++ $(LINKER_FLAGS) $(CAVESYSTEM_CLASS)
 	clang++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -o game
 
 
-jerry_lin_enemy_test: test_enemy_move.cpp
-	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS)
-	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS)
+jlet: test_enemy_move.cpp
+	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS) 
+	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
 	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
 	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
 	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
-	clang++ $(LINKER_FLAGS) $(CAVESYSTEM_CLASS)
 	clang++ $(INCLUDED_CLASSES) test_enemy_move.cpp $(LINKER_FLAGS)  -o enemy_test
 
-BRANDON_LIB = -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -lSDL2_ttf -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
+brian: SDLCredits.cpp
+	g++ $(INCLUDED_CLASSES) game_loop.cpp $(LINKER_FLAGS) -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -o game_loop
+
+
+
 brandon: SDLCredits.cpp game_loop.cpp
 	g++ $(PLAYER_CLASS) $(BRANDON_LIB)
 	g++ $(BULLET_CLASS) $(BRANDON_LIB)

@@ -1,5 +1,6 @@
 #define SDL_MAIN_HANDLED
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <SDL.h>
@@ -12,6 +13,7 @@
 #include "GameOver.h"
 #include "CaveSystem.h"
 #include "Text.h"
+#include "Kamikaze.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -37,6 +39,8 @@ MapBlocks *blocks;
 GameOver *game_over;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
+Enemy* en;
+Kamikaze* kam;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
@@ -113,27 +117,57 @@ void close() {
 }
 
 // Function that prepares for enemy movement. Put in a separate method to avoid cluttering the main loop
-void moveEnemy(Enemy * en) {
+void moveEnemy(Enemy * en, Kamikaze* kam) {
 	int playerX = player->getPosX() + player->PLAYER_WIDTH/2;
 	int playerY = player->getPosY() + player->PLAYER_HEIGHT/2;
 	std::vector<int> bulletX;
 	std::vector<int> bulletY;
 	std::vector<int> bulletVelX;
-	std::vector<int> kamiX;
-	std::vector<int> kamiY;
-	std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
+	// std::vector<int> kamiX;
+	// std::vector<int> kamiY;
+	// std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
 	for (int i = 0; i < bullets.size(); i++) {
 		bulletX.push_back(bullets[i]->getX());
 		bulletY.push_back(bullets[i]->getY());
 		bulletVelX.push_back(bullets[i]->getXVel());
 	}
-	for (int i = 0; i < kamikazes.size(); i++) {
-		if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
-			kamiX.push_back(kamikazes[i].getRelX() + kamikazes[i].BLOCK_WIDTH/2);
-			kamiY.push_back(kamikazes[i].getRelY() + kamikazes[i].BLOCK_HEIGHT/2);
-		}
-	}
+	// for (int i = 0; i < kamikazes.size(); i++) {
+	// 	if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
+	// 		kamiX.push_back(kamikazes[i].getRelX() + kamikazes[i].BLOCK_WIDTH/2);
+	// 		kamiY.push_back(kamikazes[i].getRelY() + kamikazes[i].BLOCK_HEIGHT/2);
+	// 	}
+	// }
+	int kamiX = kam->getX();
+	int kamiY = kam->getY();
 	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+}
+
+int getScore(){ return (int) (camX / 100); }
+
+void saveHighScore()
+{
+	std::ofstream highscore_file;
+	highscore_file.open("highscore", std::ofstream::out | std::ofstream::trunc);
+	highscore_file << std::to_string(getScore());
+	highscore_file.close();
+
+}
+
+int readHighScore()
+{
+	std::ifstream highscore_file("highscore");
+	if (highscore_file.is_open())
+	{
+		std::string highscore_file_line;
+		std::getline(highscore_file, highscore_file_line);
+		highscore_file.close();
+		return std::stoi(highscore_file_line);
+	}
+	else
+	{
+		highscore_file.close();
+		return 0;
+	}
 }
 
 int main() {
@@ -142,18 +176,22 @@ int main() {
 		close();
 		return 1;
 	}
-	
+
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer);
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH);
 	game_over = new GameOver();
 	cave_system = new CaveSystem();
 
 	//start enemy on left side behind player
-	Enemy* en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	
+	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, gRenderer);
+
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
+	std::string score; // for onscreen score
+	int high_score = readHighScore(); // For onscreen high score
+	std::string high_score_string;
 
 
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -172,6 +210,13 @@ int main() {
 
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
+
+				int current_highscore = readHighScore();
+				if (current_highscore < getScore() || current_highscore == 0)
+				{
+					saveHighScore();
+				}
+
 				gameon = false;
 			}
 			// Game can end by either pressing on '7' on the numpad or on top row of numbers
@@ -200,22 +245,29 @@ int main() {
 			}
 		}
 
+		if(kam->gCheck()){
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+		}
+
 
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
 		//move enemy
-		moveEnemy(en);
+		moveEnemy(en, kam);
 		newBullet = en->handleFiring();
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
-		
+		bullets = blocks->handleFiring(bullets, player->getPosX(), player->getPosY());
+
+		kam->move(player, SCREEN_WIDTH);
 		//move the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
 		}
-		
+
 		//Move Blocks and check collisions
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
@@ -234,13 +286,13 @@ int main() {
 			}
 		}
 
-		if((int) camX % 5500 == 0)
+		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
 		{
 			std::cout << "Creating Cave System" << std::endl;
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
 			cave_system->isEnabled = true;
 		}
-		
+
 		if(cave_system->isEnabled)
 		{
 			cave_system->moveCaveBlocks(camX, camY);
@@ -250,11 +302,14 @@ int main() {
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
-		
+
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
 		en->renderEnemy(gRenderer);
+
+		kam->renderKam(SCREEN_WIDTH, gRenderer);
+
 		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 		if (cave_system->isEnabled)
 			cave_system->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
@@ -267,22 +322,31 @@ int main() {
 		framecount++;
 		fps_cur_time=SDL_GetTicks();
 		if (fps_cur_time - fps_last_time > 1000) {
-			fps= std::to_string(framecount / ((fps_cur_time - fps_last_time) / 1000.0));
+			fps= std::to_string((int) (framecount / ((fps_cur_time - fps_last_time) / 1000.0)));
 			fps +=" fps";
 			// reset
 			fps_last_time = fps_cur_time;
 			framecount = 0;
 		}
-		Text text(gRenderer, "sprites/comic.ttf", 14, fps, {255,255,255,255});
-		text.render(gRenderer,20,20);
+		Text fps_text(gRenderer, "sprites/comic.ttf", 16, fps, {255,255,255,255});
+		fps_text.render(gRenderer,20,20);
 
+		score = "Score: ";
+		score.append(std::to_string(getScore()));
+		Text score_text(gRenderer, "sprites/comic.ttf", 16, score, {255, 255, 255, 255});
+		score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
+
+		high_score_string = "High Score: ";
+		high_score_string.append(std::to_string(high_score));
+		Text high_score_text(gRenderer, "sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
+		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
 
 		if(game_over->isGameOver)
 		{
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 		}
-		
+
 
 
 		SDL_RenderPresent(gRenderer);

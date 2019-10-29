@@ -46,15 +46,16 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
       enemy_hitbox=enemy_sprite;
     }
 
-    void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> kamiX, std::vector<int> kamiY)
+    void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY)
     {
         time_since_move = SDL_GetTicks() - last_move;
 		xVelo = 0;
 		yVelo = 0;
+
         // tiltAngle = 0;
 		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
 		int direction = chooseDirection();
-		
+
 		// Move right if that's the optimal direction
         if(direction == 3 || direction == 4 || direction == 5 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) < SQUARE_WIDTH / 4))){
 			xVelo = maxXVelo;
@@ -73,13 +74,13 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			yVelo = maxYVelo;
 			// tiltAngle = -15;
 		}
-		
+
 		xPos += (double) (xVelo * time_since_move) / 1000;
 		yPos += (double) (yVelo * time_since_move) / 1000;
 		enemy_sprite = {(int)xPos,(int)yPos,width,height};
 		last_move = SDL_GetTicks();
     }
-	
+
 	/*
 	Directions are numbered as follows:
 	1	2	3
@@ -91,7 +92,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		current_y_square = (yPos - height/2 - MIN_Y) / SQUARE_WIDTH;
 		double minRisk = riskScores[current_x_square][current_y_square];
 		int leastRisky = 0;
-		
+
 		if (current_y_square > 0) {
 			if (minRisk > riskScores[current_x_square][current_y_square-1]) {
 				leastRisky = 2;
@@ -143,8 +144,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		//std::cout << current_x_square << " " << current_y_square << " " << leastRisky << " " << minRisk << std::endl;
 		return leastRisky;
 	}
-	
-	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> kamiX, std::vector<int> kamiY) {
+
+	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY) {
 		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[i][j] = 0;
@@ -154,58 +155,72 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		int yBlock;
 		// Factor bullets into the risk score
 		for (int i = 0; i < bulletX.size(); i++) {
-			std::cout << "Made it" << std::endl;
+			// std::cout << "Made it" << std::endl;
 			xBlock = (bulletX[i] - MIN_X) / SQUARE_WIDTH;
 			yBlock = (bulletY[i] - MIN_Y) / SQUARE_WIDTH;
 			if (bulletVelX[i] < 0) {
-				if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) { 
+				if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) {
 					for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
 						riskScores[j][yBlock] += 200;
 					}
 				}
-				if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) { 
+				if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) {
 					for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 						riskScores[xBlock][j] += 200;
 					}
 				}
 			}
 		}
-		
+
 		// Factor kamikazes into the risk score
-		std::cout << "kamis:" << kamiX.size() << std::endl;
-		for (int i = 0; i < kamiX.size(); i++) {
-			xBlock = (kamiX[i] - MIN_X) / SQUARE_WIDTH;
-			yBlock = (kamiY[i] - MIN_Y) / SQUARE_WIDTH;
-			if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) { 
-				for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
-					riskScores[j][yBlock] += 10;
-				}
-			}
-			if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) { 
-				for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
-					riskScores[xBlock][j] += 10;
-				}
+		// std::cout << "kamis:" << kamiX.size() << std::endl;
+		// for (int i = 0; i < kamiX.size(); i++) {
+		// 	xBlock = (kamiX[i] - MIN_X) / SQUARE_WIDTH;
+		// 	yBlock = (kamiY[i] - MIN_Y) / SQUARE_WIDTH;
+		// 	if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) {
+		// 		for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
+		// 			riskScores[j][yBlock] += 10;
+		// 		}
+		// 	}
+		// 	if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) {
+		// 		for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+		// 			riskScores[xBlock][j] += 10;
+		// 		}
+		// 	}
+		// }
+
+		//New kamikaze risk score calculations
+		xBlock = (kamiX - MIN_X)/SQUARE_WIDTH;
+		yBlock = (kamiY - MIN_Y)/SQUARE_WIDTH;
+		if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) {
+			for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
+				riskScores[j][yBlock] += 10;
 			}
 		}
-		
+		if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) {
+			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+				riskScores[xBlock][j] += 10;
+			}
+		}
+
 		// Factor proximity to the edge of the screen into the risk score
 		double center = ((MAX_Y - MIN_Y) / 2.0) / SQUARE_WIDTH - 0.5;
-		std::cout << "center:" << center << std::endl;
+		// std::cout << "center:" << center << std::endl;
 		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[i][j] += (j - center) * (j - center) * SQUARE_WIDTH / 10.0;
 			}
 		}
-		
+
 		// Factor player into the risk score
 		xBlock = (playerX - MIN_X) / SQUARE_WIDTH;
 		yBlock = (playerY - MIN_Y) / SQUARE_WIDTH;
-		if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) { 
+		if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) {
 			for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
 				riskScores[j][yBlock] -= 30;
 			}
 		}
-		if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) { 
+		if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[xBlock][j] -= 30;
 			}
@@ -220,11 +235,11 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     int Enemy::getY(){
       return (int) yPos;
     }
-	
+
 	int Enemy::getWidth() {
 		return width;
 	}
-	
+
 	int Enemy::getHeight() {
 		return height;
 	}
@@ -236,15 +251,15 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     void Enemy::setxVelo(int x) {
       xVelo = x;
     }
-	
+
     void Enemy::setPosX(int x) {
 		xPos = x;
 	}
-    
+
 	void Enemy::setPosY(int y) {
 		yPos = y;
 	}
-	
+
 	// Methods that can be used to undo the enemy's moves when dealing with collisions
 	void Enemy::undoXMove() {
 		xPos -= (double) (xVelo * time_since_move) / 1000;
@@ -263,14 +278,13 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
       return &enemy_hitbox;
     }
 
-
     Bullet* Enemy::handleFiring()
     {
 		time_since_shoot = SDL_GetTicks() - last_shot;
-		if (time_since_shoot > FIRING_FREQ) {
-			Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
-			last_shot = SDL_GetTicks();
-			return b;
-		}
-		return nullptr;
+    		if (time_since_shoot > FIRING_FREQ) {
+    			Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
+    			last_shot = SDL_GetTicks();
+    			return b;
+    		}
+    		return nullptr;
     }

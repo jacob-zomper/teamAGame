@@ -12,6 +12,7 @@ public:
 	static const int BULLET_SIZE = 5;
 
     Bullet(int x, int y, int vel);
+	Bullet(int x, int y, int xvel, int yvel);
 
     void renderBullet(SDL_Renderer* gRenderer);
 
@@ -48,6 +49,7 @@ private:
     int velocity_magnitude;
     int xVel;
     int yVel;
+	int yVel0;
 
     SDL_Rect bullet_sprite;
     SDL_Rect hitbox;
@@ -56,8 +58,8 @@ private:
     int time_since_move;
     int last_move;
 
-    // Pitch of the bullet in degrees
-    int pitch;
+    // Pitch of the bullet in radians
+    double pitch;
 
     // Time the projectile has been in the air
     // Used to calculate air resistance and bullet drop
