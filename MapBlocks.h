@@ -162,7 +162,8 @@ public:
     static const int BLOCK_WIDTH = 100;
 
     static const int CEILING_N = 100000/72;
-	SDL_Renderer *gRenderer;
+
+	   SDL_Renderer *gRenderer;
 
     std::vector<Turret> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
@@ -171,7 +172,7 @@ public:
     std::vector<WallBlock> ceiling_arr;
 
     MapBlocks();
-    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
     void moveBlocks(int camX, int camY);
