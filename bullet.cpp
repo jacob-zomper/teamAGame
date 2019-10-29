@@ -29,7 +29,6 @@ Bullet::Bullet(int x, int y, int xvel, int yvel) :xPos{(double)x}, yPos{(double)
 	pitch = atan((double) yvel / xvel);
 	if (xvel < 0)
 		pitch = pitch + 3.1415926535;
-	std::cout << pitch << std::endl;
 	
 	air_time = 0;
 	last_move = SDL_GetTicks();
