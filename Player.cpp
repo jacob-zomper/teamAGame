@@ -29,12 +29,18 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     y_pos = yPos;
     x_vel = 0;
     y_vel = 0;
+    x_accel = 0;
+    y_accel = 0;
 	sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
 	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
 	gBackground = loadImage("sprites/cave.png", gRenderer);
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
+    xp_decel = true;
+    xn_decel = true;
+    yp_decel = true;
+    yn_decel = true;
 	last_fshot = SDL_GetTicks() - SHOOT_FREQ;
 	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
 }
@@ -47,21 +53,29 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            y_vel -= MAX_PLAYER_VEL;
+            //y_vel -= MAX_PLAYER_VEL;
+            //y_accel -= 25*time_since_move;
+            yn_decel = false;
             tiltAngle  = -15;
             break;
 
         case SDLK_a:
-            x_vel -= MAX_PLAYER_VEL;
+            //x_vel -= MAX_PLAYER_VEL;
+            //x_accel -= 25*time_since_move;
+            xn_decel = false;
             break;
 
         case SDLK_s:
-            y_vel += MAX_PLAYER_VEL;
+            //y_vel += MAX_PLAYER_VEL;
+            //y_accel += 25*time_since_move;
+            yp_decel = false;
             tiltAngle = 15;
             break;
 
         case SDLK_d:
             x_vel += MAX_PLAYER_VEL;
+            //x_accel += 25*time_since_move;
+            xp_decel = false;
             break;
         }
     }
@@ -70,21 +84,25 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            y_vel += MAX_PLAYER_VEL;
+            //y_vel += MAX_PLAYER_VEL;
+            yn_decel = true;
             tiltAngle = 0;
             break;
 
         case SDLK_a:
-            x_vel += MAX_PLAYER_VEL;
+            //x_vel += MAX_PLAYER_VEL;
+            xn_decel = true;
             break;
 
         case SDLK_s:
-            y_vel -= MAX_PLAYER_VEL;
+            //y_vel -= MAX_PLAYER_VEL;
+            yp_decel = true;
             tiltAngle = 0;
             break;
 
         case SDLK_d:
-            x_vel -= MAX_PLAYER_VEL;
+            //x_vel -= MAX_PLAYER_VEL;
+            xp_decel = true;
             break;
         }
     }
@@ -93,6 +111,54 @@ void Player::handleEvent(SDL_Event &e)
 //Moves the player
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
+    //float oldA = y_accel;
+    float to_accel = 0.003*time_since_move;
+    float decelFactor = 1.0;
+    if(!yn_decel) y_accel -= to_accel;
+    if(!yp_decel) y_accel += to_accel;
+    if(yn_decel && yp_decel){
+        if(y_vel < 0) y_accel += decelFactor*to_accel;
+        else if(y_vel > 0) y_accel -= decelFactor*to_accel;
+        float to_vel = y_accel*time_since_move;
+        y_vel += to_vel;
+        if(y_vel != 0 && y_vel <= abs(decelFactor*to_vel) && y_vel >= -abs(decelFactor*to_vel)){
+            y_accel = 0;
+            y_vel = 0;
+        }
+    } else{
+        float to_vel = y_accel*time_since_move;
+        y_vel += to_vel;
+    }
+    if(y_accel > 3) y_accel = 3;
+    else if(y_accel < -3) y_accel = -3;
+    
+    //printf("DA %f \t", fabs(oldA - y_accel));
+    //printf("YA %f \t", y_accel);
+    //printf("TA %f \t", to_accel);
+    //printf("YV %d\n", y_vel);
+
+    //x_vel += x_accel*time_since_move;
+
+    to_accel /= 2;
+    if(!xn_decel) x_accel -= to_accel;
+    if(!xp_decel) x_accel += to_accel;
+    if(xn_decel && xp_decel){
+        if(x_vel < 0) x_accel += decelFactor*to_accel;
+        else if(x_vel > 0) x_accel -= decelFactor*to_accel;
+        float to_vel = x_accel*time_since_move;
+        x_vel += to_vel;
+        if(x_vel != 0 && x_vel <= abs(decelFactor*to_vel) && x_vel >= -abs(decelFactor*to_vel)){
+            x_accel = 0;
+            x_vel = 0;
+        }
+    } else{
+        float to_vel = x_accel*time_since_move;
+        x_vel += to_vel;
+    }
+    if(x_accel > 3) x_accel = 3;
+    else if(x_accel < -3) x_accel = -3;
+
+
     if (y_vel > MAX_PLAYER_VEL)
         y_vel = MAX_PLAYER_VEL;
     else if (y_vel < -MAX_PLAYER_VEL)

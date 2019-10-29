@@ -30,6 +30,10 @@ public:
 	
 	double bg_X;
     double tiltAngle;
+    bool xp_decel;
+    bool xn_decel;
+    bool yp_decel;
+    bool yn_decel;
 	
 	// Sprites for the player
 	SDL_Texture* sprite1;
@@ -76,6 +80,7 @@ private:
 
     //The velocity of the player
     int x_vel, y_vel;
+    float x_accel, y_accel;
 };
 
 #endif
