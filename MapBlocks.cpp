@@ -222,8 +222,9 @@ MapBlocks::MapBlocks()
     MapBlocks(1, 1, gRenderer = nullptr, 5500, 2000, 0,0);
 }
 
-MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength)
+MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength)
 {
+    gRenderer = gr;
     int i;
     for(i = 0; i<CEILING_N; i++){
         if(i>openAir && i<openAir+openAirLength && openAir+openAirLength<CEILING_N){
