@@ -100,14 +100,14 @@ void Player::acceleration(bool &increasing, bool &decreasing, float &accel, floa
         if(vel < 0) accel += deccelerate_factor*accelerate_by;
         else if(vel > 0) accel -= deccelerate_factor*accelerate_by;
         float vel_increment = accel*time_since_move;
-        vel += vel_increment;
+        vel += vel_increment * 2;
         if(vel != 0 && vel <= abs((int) (deccelerate_factor*vel_increment)) && vel >= -abs((int) (deccelerate_factor*vel_increment))){
             accel = 0;
             vel = 0;
         }
     } else{
         float vel_increment = accel*time_since_move;
-        vel += vel_increment;
+        vel += vel_increment * 2;
     }
     if(accel > 3) accel = 3;
     else if(accel < -3) accel = -3;
@@ -117,7 +117,7 @@ void Player::acceleration(bool &increasing, bool &decreasing, float &accel, floa
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
     float accelerate_by = 0.003*time_since_move;
-    float deccelerate_factor = 1.0;
+    float deccelerate_factor = 4.0;
     acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
     tiltAngle = 180 * sin(y_accel / 12);
     acceleration(xp_decel, xn_decel, x_accel, accelerate_by, deccelerate_factor, x_vel);
