@@ -142,7 +142,7 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
 	if (rand() % 2 == 1) {
 		BLOCK_ABS_Y = LEVEL_HEIGHT - 720 + WallBlock::block_side;
 	}
-	while ((BLOCK_ABS_X - 1280) % cave_freq <= cave_width) {
+	while ((BLOCK_ABS_X - 1280) % cave_freq <= cave_width || (BLOCK_ABS_X>(openAir*72) && BLOCK_ABS_X+BLOCK_WIDTH<(openAir+openAirLength)*72 && BLOCK_ABS_Y==LEVEL_HEIGHT -720 + WallBlock::block_side)) {
 		BLOCK_ABS_X = rand() % LEVEL_WIDTH;
 	}
 
@@ -156,19 +156,14 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
     BLOCK_WIDTH = 50;
     BLOCK_HEIGHT = 50;
 
-    //if open air enabled = false
-    if(BLOCK_ABS_X>(openAir*72) && BLOCK_ABS_X+BLOCK_WIDTH<(openAir+openAirLength)*72 && BLOCK_ABS_Y==LEVEL_HEIGHT -720 + WallBlock::block_side){
-        enabled=false;
-    }else{
-        enabled=true;
-        if(BLOCK_REL_Y < 360){
-            sprite = loadImage("sprites/topturret.png", gRenderer);
-        }
-        else{
-            sprite = loadImage("sprites/bottomturret.png", gRenderer);
-        }
+    // Select the ceiling or floor turret sprite
+    if(BLOCK_ABS_Y == LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT){
+        sprite = loadImage("sprites/bottomturret.png", gRenderer);
     }
-
+    else{
+        sprite = loadImage("sprites/topturret.png", gRenderer);
+    }
+    
     FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
     FB_hitbox = FB_sprite;
 
@@ -312,7 +307,7 @@ void MapBlocks::moveBlocks(int camX, int camY)
 
 std::vector<Bullet*> MapBlocks::handleFiring(std::vector<Bullet*> bullets, int posX, int posY) {
 	for (int i = 0; i < blocks_arr.size(); i++) {
-		if (blocks_arr[i].enabled==true && blocks_arr[i].BLOCK_REL_X > 0 && blocks_arr[i].BLOCK_REL_Y > 0 && blocks_arr[i].BLOCK_REL_X <= 1280 && blocks_arr[i].BLOCK_REL_Y <= 720) {
+		if (blocks_arr[i].BLOCK_REL_X > 0 && blocks_arr[i].BLOCK_REL_Y > 0 && blocks_arr[i].BLOCK_REL_X <= 1280 && blocks_arr[i].BLOCK_REL_Y <= 720) {
 			Bullet * newBullet = blocks_arr[i].handleFiring(posX, posY);
 			if (newBullet != nullptr) {
 				bullets.push_back(newBullet);
@@ -329,7 +324,7 @@ void MapBlocks::checkCollision(Player *p)
     for (i = 0; i < BLOCKS_N; i++)
     {
         // If there's a collision, cancel the player's move
-		if (blocks_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+		if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
             p->undoXMove();
             p->undoYMove();
@@ -398,7 +393,7 @@ void MapBlocks::checkCollision(Enemy *e)
     for (i = 0; i < BLOCKS_N; i++)
     {
         // If there's a collision, cancel the enemy's move
-		if (blocks_arr[i].enabled==true && checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+		if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
             e->undoXMove();
             e->undoYMove();
@@ -479,7 +474,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < blocks_arr.size(); i++)
     {
         // Only render the Turret if will be screen
-        if (blocks_arr[i].enabled==true && blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y >= WallBlock::block_side)
+        if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y >= WallBlock::block_side)
         {
             SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
             SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
