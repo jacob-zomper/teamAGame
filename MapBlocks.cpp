@@ -161,7 +161,7 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
         enabled=false;
     }else{
         enabled=true;
-        if(BLOCK_REL_Y < 360){
+        if(BLOCK_REL_Y < 1400){
             sprite = loadImage("sprites/topturret.png", gRenderer);
         }
         else{
