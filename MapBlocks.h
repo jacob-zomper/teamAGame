@@ -93,7 +93,6 @@ public:
 
     int BLOCK_SPRITE; // Map to which sprite image this Turret will use.
 
-    bool enabled;
     SDL_Texture* sprite;
 
 
