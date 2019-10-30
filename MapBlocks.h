@@ -94,6 +94,8 @@ public:
     int BLOCK_SPRITE; // Map to which sprite image this Turret will use.
 
     bool enabled;
+    SDL_Texture* sprite;
+
 
     Turret();
     Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);

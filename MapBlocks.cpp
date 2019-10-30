@@ -161,6 +161,12 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
         enabled=false;
     }else{
         enabled=true;
+        if(BLOCK_REL_Y < 360){
+            sprite = loadImage("sprites/topturret.png", gRenderer);
+        }
+        else{
+            sprite = loadImage("sprites/bottomturret.png", gRenderer);
+        }
     }
 
     FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
@@ -475,16 +481,9 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         // Only render the Turret if will be screen
         if (blocks_arr[i].enabled==true && blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y >= WallBlock::block_side)
         {
-            if(blocks_arr[i].BLOCK_REL_Y < 360){
-                SDL_Texture* sprite = loadImage("sprites/topturret.png", gRenderer);
-                SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
-                SDL_RenderCopyEx(gRenderer, sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-            }
-            else{
-                SDL_Texture* sprite = loadImage("sprites/bottomturret.png", gRenderer);
-                SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
-                SDL_RenderCopyEx(gRenderer, sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-            }
+            SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+            
         }
     }
 
@@ -503,7 +502,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         SDL_RenderFillRect(gRenderer, &fillRectWall1);
 
        // SDL_Rect fillRectWall2 = {i, 0, WallBlock::block_side, WallBlock::block_side};
-       // SDL_RenderFillRect(gRenderer, &fillRectWall2);
+       // SDL_RenderFillRect(gRenderer, &fillRectWall);
     }
 
     //Render Ceiling
