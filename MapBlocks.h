@@ -180,6 +180,7 @@ public:
 	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
 
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+	void addExplosion(int x, int y, int w, int h);
 
 private:
     //Animation frequency
