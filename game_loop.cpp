@@ -184,9 +184,9 @@ int main() {
 	int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
     int openAirLength = (rand() % 200) + 100;
 
+	cave_system = new CaveSystem();
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength);
 	game_over = new GameOver();
-	cave_system = new CaveSystem();
 
 	//start enemy on left side behind player
 	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
@@ -303,7 +303,6 @@ int main() {
 		{
 			std::cout << "Creating Cave System" << std::endl;
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
-			cave_system->isEnabled = true;
 		}
 
 		if(cave_system->isEnabled)
@@ -330,7 +329,7 @@ int main() {
 
 		kam->renderKam(SCREEN_WIDTH, gRenderer);
 
-		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
+		blocks->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer, cave_system->isEnabled);
 		if (cave_system->isEnabled)
 			cave_system->render(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer);
 

@@ -29,9 +29,13 @@ SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer) {
 WallBlock::WallBlock(){};
 WallBlock::WallBlock(int num, bool cave){
     CEILING_ABS_X = num * block_side;
+    FLOOR_ABS_X = num * block_side;
     CEILING_ABS_Y = 0;
+    FLOOR_ABS_Y = 720 - WallBlock::block_side;
     CEILING_REL_X = CEILING_ABS_X;
+    FLOOR_REL_X = FLOOR_ABS_X;
     CEILING_REL_Y = CEILING_ABS_Y; 
+    FLOOR_REL_Y = FLOOR_ABS_Y;
     if(cave){
         enabled=true;
     }else{
@@ -227,6 +231,8 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
         }else{
         ceiling_arr.push_back(WallBlock(i,true));
         }
+
+        floor_arr.push_back(WallBlock(i, true));
     }
 
     for (i = 0; i < BLOCKS_N; i++)
@@ -262,10 +268,11 @@ void MapBlocks::moveBlocks(int camX, int camY)
         blocks_arr[i].BLOCK_REL_X = blocks_arr[i].BLOCK_ABS_X - camX;
         blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
 	}
-    //ceiling
+    //ceiling and floor
     for(i=0; i<CEILING_N; i++)
     {
         ceiling_arr[i].CEILING_REL_X = ceiling_arr[i].CEILING_ABS_X - camX;
+        floor_arr[i].FLOOR_REL_X = floor_arr[i].FLOOR_ABS_X - camX;
     }
 
 
@@ -351,7 +358,7 @@ void MapBlocks::checkCollision(Player *p)
 			stalagt_arr.erase(stalagt_arr.begin() + i);
         }
     }
-    //ceiling
+    //ceiling and floor
     for(i=0; i<CEILING_N; i++){
         if(ceiling_arr[i].enabled == true && (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
@@ -361,6 +368,19 @@ void MapBlocks::checkCollision(Player *p)
             if(checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT,ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side))
             {
                 p->setPosX(std::max(ceiling_arr[i].CEILING_REL_X - p->PLAYER_WIDTH, 0));
+                p->redoYMove();
+            }
+
+        }
+
+        if(floor_arr[i].enabled == true && (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        {
+            p->undoXMove();
+            p->undoYMove();
+
+            if(checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT,floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side))
+            {
+                p->setPosX(std::max(floor_arr[i].FLOOR_REL_X - p->PLAYER_WIDTH, 0));
                 p->redoYMove();
             }
 
@@ -458,9 +478,28 @@ bool MapBlocks::checkCollision(Bullet *b)
 }
 
 
-void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRenderer)
+void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRenderer, bool caveIsEnabled)
 {
     int i;
+
+    if(caveIsEnabled && CaveSystem::CAVE_START_ABS_X != -1)
+    {
+        for (i = 0; i < ceiling_arr.size(); i++)
+        {
+            if (ceiling_arr[i].CEILING_ABS_X > CaveSystem::CAVE_START_ABS_X && ceiling_arr[i].CEILING_ABS_X < CaveSystem::CAVE_END_ABS_X)
+            {
+                ceiling_arr[i].enabled = false;
+            }
+
+            if (floor_arr[i].FLOOR_ABS_X > CaveSystem::CAVE_START_ABS_X && floor_arr[i].FLOOR_ABS_X < CaveSystem::CAVE_END_ABS_X)
+            {
+                floor_arr[i].enabled = false;
+            }
+        }
+
+    }
+
+
     for (i = 0; i < blocks_arr.size(); i++)
     {
         // Only render the Turret if will be screen
@@ -473,29 +512,36 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     }
 
     // Render floor
-    for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
-    {
-        SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-        SDL_Rect border1 = { i, SCREEN_HEIGHT - WallBlock::block_side - WallBlock::border, WallBlock::block_side, WallBlock::block_side - WallBlock::border};
-        SDL_RenderFillRect(gRenderer, &border1);
+    // for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
+    // {
+    //     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+    //     SDL_Rect border1 = { i, SCREEN_HEIGHT - WallBlock::block_side - WallBlock::border, WallBlock::block_side, WallBlock::block_side - WallBlock::border};
+    //     SDL_RenderFillRect(gRenderer, &border1);
 
-       // SDL_Rect border2 = {i, 0, WallBlock::block_side, WallBlock::block_side + WallBlock::border};
-       // SDL_RenderFillRect(gRenderer, &border2);
+    //    // SDL_Rect border2 = {i, 0, WallBlock::block_side, WallBlock::block_side + WallBlock::border};
+    //    // SDL_RenderFillRect(gRenderer, &border2);
 
-        SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
-        SDL_Rect fillRectWall1 = { i, SCREEN_HEIGHT - WallBlock::block_side, WallBlock::block_side, WallBlock::block_side };
-        SDL_RenderFillRect(gRenderer, &fillRectWall1);
+    //     SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
+    //     SDL_Rect fillRectWall1 = { i, SCREEN_HEIGHT - WallBlock::block_side, WallBlock::block_side, WallBlock::block_side };
+    //     SDL_RenderFillRect(gRenderer, &fillRectWall1);
 
-       // SDL_Rect fillRectWall2 = {i, 0, WallBlock::block_side, WallBlock::block_side};
-       // SDL_RenderFillRect(gRenderer, &fillRectWall);
-    }
+    //    // SDL_Rect fillRectWall2 = {i, 0, WallBlock::block_side, WallBlock::block_side};
+    //    // SDL_RenderFillRect(gRenderer, &fillRectWall);
+    // }
 
-    //Render Ceiling
+    //Render Ceiling and floor
     for(i=0; i<CEILING_N; i++){
 
         if(ceiling_arr[i].CEILING_REL_X < SCREEN_WIDTH && ceiling_arr[i].CEILING_REL_Y < SCREEN_HEIGHT && ceiling_arr[i].enabled)
         {
             SDL_Rect fillRect = {ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side};
+            SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
+            SDL_RenderFillRect(gRenderer, &fillRect);
+        }
+
+        if(floor_arr[i].FLOOR_REL_X < SCREEN_WIDTH && floor_arr[i].FLOOR_REL_Y < SCREEN_HEIGHT && floor_arr[i].enabled)
+        {
+            SDL_Rect fillRect = {floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side};
             SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
