@@ -11,8 +11,18 @@ class WallBlock
 public:
     static const int block_side = 72;
     static const int border = 1;
+    int CEILING_ABS_X;
+    int CEILING_ABS_Y;
+
+    int CEILING_REL_X;
+    int CEILING_REL_Y;
+
+    bool enabled;
+
     WallBlock();
+    WallBlock(int num, bool cave);
 };
+
 
 class Stalagmite
 {
@@ -26,8 +36,10 @@ public:
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
 
+    bool enabled;
+
     Stalagmite();
-    Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
+    Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
     SDL_Texture* sprite;
     int stalagShapeNum;
@@ -45,8 +57,10 @@ public:
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
 
+    bool enabled;
+
     Stalagtite();
-    Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
+    Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
     SDL_Texture* sprite;
     int stalagShapeNum;
@@ -79,17 +93,16 @@ public:
 
     int BLOCK_SPRITE; // Map to which sprite image this Turret will use.
 
+    SDL_Texture* sprite;
+
+
     Turret();
-    Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
+    Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
 	int getRelX();
 	int getRelY();
 	int getAbsX();
 	int getAbsY();
-
-    //Sprites for turrets
-    SDL_Texture* sprite1;
-	SDL_Texture* sprite2;
 
     //defines the turret asset
     SDL_Rect FB_sprite;
@@ -145,15 +158,19 @@ public:
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
 
-	SDL_Renderer *gRenderer;
+    static const int CEILING_N = 100000/72;
+
+	   SDL_Renderer *gRenderer;
 
     std::vector<Turret> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
     std::vector<Stalagtite> stalagt_arr;
     std::vector<Explosion> explosion_arr;
+    std::vector<WallBlock> ceiling_arr;
 
     MapBlocks();
-    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width);
+
+    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
     void moveBlocks(int camX, int camY);
@@ -163,6 +180,7 @@ public:
 	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
 
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+	void addExplosion(int x, int y, int w, int h);
 
 private:
     //Animation frequency

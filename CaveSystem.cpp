@@ -38,7 +38,6 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
 
             curr_block->CAVE_BLOCK_REL_X = curr_block->CAVE_BLOCK_ABS_X;
             curr_block->CAVE_BLOCK_REL_Y = curr_block->CAVE_BLOCK_ABS_Y;
-            if(i == 0) std::cout << "X: " << std::to_string(curr_block->CAVE_BLOCK_REL_X) << " Y: " << std::to_string(curr_block->CAVE_BLOCK_REL_Y) << " OFFSET_X: " << std::to_string(offsetX) << std::endl;
 
             cave_system[i][j] = curr_block;
         }
@@ -86,8 +85,9 @@ void CaveSystem::generateRandomCave()
         {
             cx = path->x[i];
             cy = path->y[i];
-            // printf("Inserting (X: %d, Y: %d)\n", cx, cy);
-            for(j = (y_padding * -1); j < y_padding; j++)
+
+            int padding = (3 * cos(i/7) + y_padding) + rand() % 2;
+            for (j = (padding * -1); j < padding; j++)
             {
                 if (cy + j >= 0 && cy + j < CaveSystem::CAVE_SYSTEM_HEIGHT)
                     mat[cy + j][cx]->enabled = 0;
@@ -110,7 +110,7 @@ void CaveSystem::generateRandomCave()
             return -1;
     };
 
-    auto uti_rline = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
+    auto bresenham_line = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
         // The Bresenham line algorithm. Not symmetrical.
         // Generates a starting line from one end of the cave to other
         
@@ -176,24 +176,16 @@ void CaveSystem::generateRandomCave()
     // Start and end point
     // y values are have a 5 point padding so that it doesnt interfere with the walls
     x1 = 0;
-    y1 = 6 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 5);
+    y1 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
 
     x2 = CaveSystem::CAVE_SYSTEM_WIDTH;
-    y2 = 6 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 5);
+    y2 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
 
     PathSequence path;
 
-    uti_rline(&path, x1, y1, x2, y2);
+    bresenham_line(&path, x1, y1, x2, y2);
 
-    for (j = 0; j < CAVE_SYSTEM_WIDTH - 1; j++)
-    {
-        printf("(X: %d, Y: %d)\n", path.x[j], path.y[j]);
-    }
-
-    printf("PATH LENGTH: %d\n", path.length);
-
-    insert_path(CaveSystem::cave_system, &path, 4);
-
+    insert_path(CaveSystem::cave_system, &path, rand() % 6 + 8);
 }
 
 void CaveSystem::moveCaveBlocks(int camX, int camY)
