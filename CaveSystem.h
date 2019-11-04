@@ -35,6 +35,10 @@ public:
     static const int CAVE_SYSTEM_HEIGHT = CaveBlock::CAVE_SYSTEM_PIXEL_HEIGHT / CaveBlock::CAVE_BLOCK_HEIGHT;
     static const int CAVE_SYSTEM_WIDTH = CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH / CaveBlock::CAVE_BLOCK_WIDTH;
 	static const int CAVE_SYSTEM_FREQ = 10000;
+    
+    static int CAVE_START_ABS_X;
+    static int CAVE_END_ABS_X; 
+
     bool isEnabled = false;
     CaveBlock *cave_system[CAVE_SYSTEM_HEIGHT][CAVE_SYSTEM_WIDTH];
 
