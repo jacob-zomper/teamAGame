@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "Player.h"
 #include "Enemy.h"
+#include "CaveSystem.h"
 #include <vector>
 
 class WallBlock
@@ -13,9 +14,13 @@ public:
     static const int border = 1;
     int CEILING_ABS_X;
     int CEILING_ABS_Y;
+    int FLOOR_ABS_X;
+    int FLOOR_ABS_Y;
 
     int CEILING_REL_X;
     int CEILING_REL_Y;
+    int FLOOR_REL_X;
+    int FLOOR_REL_Y;
 
     bool enabled;
 
@@ -160,13 +165,14 @@ public:
 
     static const int CEILING_N = 100000/72;
 
-	   SDL_Renderer *gRenderer;
+    SDL_Renderer *gRenderer;
 
     std::vector<Turret> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
     std::vector<Stalagtite> stalagt_arr;
     std::vector<Explosion> explosion_arr;
     std::vector<WallBlock> ceiling_arr;
+    std::vector<WallBlock> floor_arr;
 
     MapBlocks();
 
@@ -179,7 +185,8 @@ public:
 	bool checkCollision(Bullet *b);
 	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
 
-    void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+    void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer, bool isCaveEnabled);
+	void addExplosion(int x, int y, int w, int h);
 
 private:
     //Animation frequency

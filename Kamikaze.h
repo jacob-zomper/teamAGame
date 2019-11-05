@@ -13,7 +13,7 @@ class Kamikaze
     SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     //Constructor initializing the variables
-    Kamikaze(int x, int y, int w, int h, SDL_Renderer *gRenderer);
+    Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer *gRenderer);
 
     //Shows Kamikaze on screen
     void renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
@@ -22,14 +22,15 @@ class Kamikaze
     //the y axis then assults the player after a certain period
     //of time
     void move(Player* p, int SCREEN_WIDTH);
-    void checkCollision(Player *p);
+	
+	bool checkCollisionBullet(int bullX, int bullY, int bullW, int bullH);
+	bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
     //Position, dimensions, and velocity accessors
     int getX();
     int getY();
     void setX(int x);
     void setY(int y);
-    bool gCheck();
     int getWidth();
     int getHeight();
 
@@ -39,9 +40,9 @@ class Kamikaze
 
   private:
     static const int ANIMATION_FREQ = 100;
-    static const int ASSULT_FREQ = 4000;
+    static const int ASSAULT_FREQ = 4000;
     static const int MAX_MOVE_VELO = 175;
-    static const int MAX_ASSULT_VELO = 800;
+    static const int MAX_ASSAULT_VELO = 800;
     double xPos;
     double yPos;
     int xVelo;
@@ -52,13 +53,11 @@ class Kamikaze
     double tiltAngle;
 
     // Move times, used for handling framerate-independent movement
-		int time_since_move;
-		int last_move;
+	int time_since_move;
+	int last_move;
 
-    int time_since_assult;
-    int last_assult;
-
-    bool isGone;
+	// Time when the kamikaze arrives on the screen
+	int arrival_time;
 
     SDL_Rect kam_sprite;
     SDL_Rect kam_hitbox;

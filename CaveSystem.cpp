@@ -1,4 +1,8 @@
 #include "CaveSystem.h"
+#include "time.h"
+
+int CaveSystem::CAVE_END_ABS_X;
+int CaveSystem::CAVE_START_ABS_X;
 
 CaveBlock::CaveBlock(){}
 PathSequence::PathSequence(){}
@@ -6,6 +10,8 @@ PathSequence::PathSequence(){}
 
 CaveSystem::CaveSystem()
 {
+    CAVE_END_ABS_X = -1;
+    CAVE_START_ABS_X = -1;
     isEnabled = false;
 }
 
@@ -29,6 +35,10 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
 {
     int i, j;
     int offsetX = camX;
+
+    CAVE_START_ABS_X = offsetX + SCREEN_WIDTH;
+    CAVE_END_ABS_X = offsetX + CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH + SCREEN_WIDTH;
+
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
@@ -42,6 +52,8 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
             cave_system[i][j] = curr_block;
         }
 
+
+    isEnabled = true;
     generateRandomCave();
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
 }
@@ -58,6 +70,8 @@ void CaveSystem::generateRandomCave()
         It uses a lot of lamda functions because its more organized
     */
     int i, j, x1, x2, y1, y2;
+
+    srand(time(NULL));
 
     // FILL THE BOARD WITH BLOCKS
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
@@ -232,6 +246,7 @@ void CaveSystem::checkCollision(Player *p)
 void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer)
 {
     int i, j;
+    bool isStillShowing = false;
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
@@ -243,5 +258,14 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
                 SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
                 SDL_RenderFillRect(gRenderer, &fillRect);
             }
+
+            if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH + 5 && curr_block->CAVE_BLOCK_REL_X >= 0 && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT)
+                isStillShowing = true;
         }
+
+    if(!isStillShowing)
+    {
+        isEnabled = false;
+        // printf("CAVE SYSTEM DONE SHOWING!\n");
+    }
 }
