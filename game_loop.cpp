@@ -20,6 +20,7 @@ constexpr int SCREEN_HEIGHT = 720;
 constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
+constexpr int FLOOR_BOTTOM = 720-79;
 
 // Function declarations
 bool init();
@@ -279,20 +280,25 @@ int main() {
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
 			bool destroyed = false;
-			if (bullets[i]->getX() > SCREEN_WIDTH || bullets[i]->getX() < 0) {
-				destroyed = true;
+			if(bullets[i]->getY() > FLOOR_BOTTOM){
+				destroyed = bullets[i]->ricochetFloor(); // rng chance to ricochet or get destroyed
 			}
-			else if (blocks->checkCollision(bullets[i])){
-				destroyed = true;
-			}
-			else if (player->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
-				destroyed = true;
-				player->hit(5);
-			}
-			else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
-				destroyed = true;
-				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
-				kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			if(!destroyed){
+				if (bullets[i]->getX() > SCREEN_WIDTH || bullets[i]->getX() < 0) {
+					destroyed = true;
+				}
+				else if (blocks->checkCollision(bullets[i])){
+					destroyed = true;
+				}
+				else if (player->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+					destroyed = true;
+					player->hit(5);
+				}
+				else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+					destroyed = true;
+					blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
+					kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+				}
 			}
 			if (destroyed) {
 				bullets.erase(bullets.begin() + i);
