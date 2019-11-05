@@ -276,7 +276,7 @@ int main() {
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
 		blocks->checkCollision(en);
-		kam->checkCollision(player, gRenderer);
+		//kam->checkCollision(player, gRenderer);
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
 			bool destroyed = false;
@@ -311,12 +311,14 @@ int main() {
 			cave_system->moveCaveBlocks(camX, camY);
 			cave_system->checkCollision(player);
 		}
-		
+
 		// If the player hits the kamikaze, blow up the kamikaze, damage the player, and make a new kamikaze
 		if (player->checkCollisionKami(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())) {
 			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
 			player->hit(10);
 			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			// kam->setX(SCREEN_WIDTH+125);
+			// kam->setY(SCREEN_HEIGHT/2);
 		}
 
 		// Clear the screen
@@ -360,11 +362,11 @@ int main() {
 		high_score_string.append(std::to_string(high_score));
 		Text high_score_text(gRenderer, "sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
 		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
-		
+
 		std::string health_string = "Health ";
 		Text healthText(gRenderer, "sprites/comic.ttf", 20, health_string, {255, 255, 255, 255});
 		healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
-		
+
 		int health = player->getHealth();
 		SDL_Rect outline = {199, SCREEN_HEIGHT - 56, 202, 32};
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);

@@ -6,7 +6,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Player.h"
-#include "MapBlocks.h"
 
 class Kamikaze
 {
@@ -34,7 +33,6 @@ class Kamikaze
     void setY(int y);
     int getWidth();
     int getHeight();
-    bool checkCol(int x, int y, int w, int h, int tx, int ty, int tw, int th);
 
     SDL_Rect* getHitbox();
     SDL_Texture* sprite1;
@@ -55,15 +53,11 @@ class Kamikaze
     double tiltAngle;
 
     // Move times, used for handling framerate-independent movement
-	int time_since_move;
-	int last_move;
+	  int time_since_move;
+	  int last_move;
 
 	// Time when the kamikaze arrives on the screen
-	int arrival_time;
-
-    //Explosion when hit something
-    std::vector<Explosion> boom;
-    bool expActive;
+	  int arrival_time;
 
     SDL_Rect kam_sprite;
     SDL_Rect kam_hitbox;
