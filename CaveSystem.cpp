@@ -266,6 +266,6 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
     if(!isStillShowing)
     {
         isEnabled = false;
-        printf("CAVE SYSTEM DONE SHOWING!\n");
+        // printf("CAVE SYSTEM DONE SHOWING!\n");
     }
 }
