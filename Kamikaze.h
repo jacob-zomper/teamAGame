@@ -33,10 +33,12 @@ class Kamikaze
     void setY(int y);
     int getWidth();
     int getHeight();
+    void setArrivalTime(int a);
 
     SDL_Rect* getHitbox();
     SDL_Texture* sprite1;
     SDL_Texture* sprite2;
+
 
   private:
     static const int ANIMATION_FREQ = 100;

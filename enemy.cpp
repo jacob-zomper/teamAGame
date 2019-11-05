@@ -28,16 +28,22 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 }
 
     Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
-	  enemy_sprite = {(int) xPos, (int) yPos, width, height};
+	  	enemy_sprite = {(int) xPos, (int) yPos, width, height};
       enemy_hitbox = enemy_sprite;
       sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
       sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
       tiltAngle = 0;
-	  last_move = SDL_GetTicks();
+	  	last_move = SDL_GetTicks();
+			time_hit = SDL_GetTicks() - FLICKER_TIME;
+			health = 20;
     }
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
-      if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+			if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
+				return;
+			}
+
+			if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
       SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
       }
       else {
@@ -227,6 +233,31 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		}
 	}
 
+	bool Enemy::checkBullet(int bullX, int bullY, int bullW, int bullH) {
+		return checkCollide(bullX, bullY, bullW, bullH, xPos, yPos, width, height);
+	}
+
+	bool Enemy::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
+	{
+	    if (x + pWidth < xTwo || x > xTwo + pTwoWidth)
+	        return false;
+	    if (y + pHeight < yTwo || y > yTwo + pTwoHeight)
+	        return false;
+	    return true;
+	}
+
+	void Enemy::hit(int d){
+		// If the player has just been hit, they should be invunerable, so don't damage them
+		if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
+			return;
+		}
+
+		time_hit = SDL_GetTicks();
+		health -= d;
+		if (health < 0) {
+			health = 0;
+		}
+	}
 
     int Enemy::getX(){
       return (int) xPos;
@@ -288,3 +319,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     		}
     		return nullptr;
     }
+
+		int Enemy::getHealth(){
+			return health;
+		}

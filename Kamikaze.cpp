@@ -121,3 +121,7 @@ int Kamikaze::getHeight() {
 SDL_Rect* Kamikaze::getHitbox(){
   return &kam_hitbox;
 }
+
+void Kamikaze::setArrivalTime(int delay){
+  arrival_time = SDL_GetTicks()+delay;
+}
