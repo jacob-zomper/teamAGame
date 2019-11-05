@@ -10,11 +10,14 @@ class Bullet
 public:
 
 	static const int BULLET_SIZE = 5;
+	static const int FLOOR_BOTTOM = 720-79;
 
     Bullet(int x, int y, int vel);
 	Bullet(int x, int y, int xvel, int yvel);
 
     void renderBullet(SDL_Renderer* gRenderer);
+
+    bool ricochetFloor();
 
     void move();
 
