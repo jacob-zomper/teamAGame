@@ -1,11 +1,16 @@
 #include "CaveSystem.h"
 
+int CaveSystem::CAVE_END_ABS_X;
+int CaveSystem::CAVE_START_ABS_X;
+
 CaveBlock::CaveBlock(){}
 PathSequence::PathSequence(){}
 
 
 CaveSystem::CaveSystem()
 {
+    CAVE_END_ABS_X = -1;
+    CAVE_START_ABS_X = -1;
     isEnabled = false;
 }
 
@@ -29,6 +34,10 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
 {
     int i, j;
     int offsetX = camX;
+
+    CAVE_START_ABS_X = offsetX + SCREEN_WIDTH;
+    CAVE_END_ABS_X = offsetX + CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH + SCREEN_WIDTH;
+
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
@@ -42,6 +51,8 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
             cave_system[i][j] = curr_block;
         }
 
+
+    isEnabled = true;
     generateRandomCave();
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
 }
@@ -78,7 +89,7 @@ void CaveSystem::generateRandomCave()
         // It is this 2D array that is finally rendered to the screen
 
         // y_padding will increase the height of the cave
-        
+
         int i, j, cx, cy;
 
         for(i = 0; i < path->length; i++)
@@ -113,7 +124,7 @@ void CaveSystem::generateRandomCave()
     auto bresenham_line = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
         // The Bresenham line algorithm. Not symmetrical.
         // Generates a starting line from one end of the cave to other
-        
+
         int xstep, ystep, xc, yc, acc, cnt;
         cnt = 0;
 
@@ -172,6 +183,38 @@ void CaveSystem::generateRandomCave()
         seq->length = cnt;
     };
 
+    auto uti_perturb = [&](PathSequence *seq, int mindist, int maxdist, int pertamt) {
+        int i;
+        int nx, ny;
+        int lox, loy, hix, hiy;
+        int lod2, hid2;
+        int ri, rdir;
+        int mind2, maxd2;
+        int Xoff[8] = {1, 1, 0, -1, -1, -1, 0, 1};
+        int Yoff[8] = {0, 1, 1, 1, 0, -1, -1, -1};
+
+        mind2 = mindist * mindist;
+        maxd2 = maxdist * maxdist;
+        for (i = 0; i < pertamt * seq->length; i++)
+        {
+            ri = 1 + rnd_i0(seq->length - 2);
+            rdir = rnd_i0(8);
+            nx = seq->x[ri] + Xoff[rdir];
+            ny = seq->y[ri] + Yoff[rdir];
+            lox = seq->x[ri - 1];
+            loy = seq->y[ri - 1];
+            hix = seq->x[ri + 1];
+            hiy = seq->y[ri + 1];
+            lod2 = ((nx - lox) * (nx - lox)) + ((ny - loy) * (ny - loy));
+            hid2 = ((nx - hix) * (nx - hix)) + ((ny - hiy) * (ny - hiy));
+
+            if ((lod2 < mind2) || (lod2 > maxd2) || (hid2 < mind2) || (hid2 > maxd2))
+                continue;
+
+            // seq->x[ri] = nx;
+            seq->y[ri] = ny;
+        }
+    };
 
     // Start and end point
     // y values are have a 5 point padding so that it doesnt interfere with the walls
@@ -184,6 +227,7 @@ void CaveSystem::generateRandomCave()
     PathSequence path;
 
     bresenham_line(&path, x1, y1, x2, y2);
+    uti_perturb(&path, 2, 5, 40);
 
     insert_path(CaveSystem::cave_system, &path, rand() % 6 + 8);
 }
@@ -232,6 +276,7 @@ void CaveSystem::checkCollision(Player *p)
 void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer)
 {
     int i, j;
+    bool isStillShowing = false;
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
@@ -243,5 +288,14 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
                 SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
                 SDL_RenderFillRect(gRenderer, &fillRect);
             }
+
+            if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH + 5 && curr_block->CAVE_BLOCK_REL_X >= 0 && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT)
+                isStillShowing = true;
         }
+
+    if(!isStillShowing)
+    {
+        isEnabled = false;
+        // printf("CAVE SYSTEM DONE SHOWING!\n");
+    }
 }

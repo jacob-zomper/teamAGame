@@ -1,5 +1,5 @@
-
 #include "bullet.h"
+#include "time.h"
 
 
 // Math constants
@@ -32,11 +32,22 @@ Bullet::Bullet(int x, int y, int xvel, int yvel) :xPos{(double)x}, yPos{(double)
 	
 	air_time = 0;
 	last_move = SDL_GetTicks();
+    	srand(time(NULL));
 };
 
 void Bullet::renderBullet(SDL_Renderer* gRenderer){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(gRenderer, &bullet_sprite);
+}
+
+bool Bullet::ricochetFloor(){
+	if(((rand() % 100) + (yVel/20)) > 80){ // about 20-40% chance of destruction, higher Velocity = less likely to ricochet
+		return true; // destroyed
+	}
+	yPos = FLOOR_BOTTOM - 3;
+	yVel /= -1.5;
+	
+	return false; // ricocheted
 }
 
 void Bullet::move(){
