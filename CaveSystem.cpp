@@ -124,6 +124,24 @@ void CaveSystem::generateRandomCave()
             return -1;
     };
 
+    auto uti_signcos2 = [&](int x0, int y0, int x1, int y1, int x2, int y2)
+    {
+        int sqlen01, sqlen12, prod, val;
+
+        sqlen01 = ((x1 - x0) * (x1 - x0)) + ((y1 - y0) * (y1 - y0));
+        sqlen12 = ((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1));
+
+        prod = (x1 - x0) * (x2 - x1) + (y1 - y0) * (y2 - y1);
+        val = 1000 * (prod * prod / sqlen01) / sqlen12; /* Overflow? */
+        if (val < 0)
+        {
+            val = -val;
+        }
+
+        // printf("uti_signcos2 output: %d\n", val);
+        return (val);
+    };
+
     auto bresenham_line = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
         // The Bresenham line algorithm. Not symmetrical.
         // Generates a starting line from one end of the cave to other
@@ -186,6 +204,61 @@ void CaveSystem::generateRandomCave()
         seq->length = cnt;
     };
 
+    auto uti_perturb = [&](PathSequence *seq, int mindist, int maxdist, int pertamt) {
+        int i;
+        int nx, ny;
+        int lox, loy, hix, hiy;
+        int lod2, hid2;
+        int ri, rdir;
+        int mind2, maxd2;
+        const int mincos2 = 100; /* cos^2 in 1/1000, for angles < 45 degrees */
+        int Xoff[8] = {1, 1, 0, -1, -1, -1, 0, 1};
+        int Yoff[8] = {0, 1, 1, 1, 0, -1, -1, -1};
+
+        mind2 = mindist * mindist;
+        maxd2 = maxdist * maxdist;
+        for (i = 0; i < pertamt * seq->length; i++)
+        {
+            ri = 1 + rnd_i0(seq->length - 2);
+            rdir = rnd_i0(8);
+            nx = seq->x[ri] + Xoff[rdir];
+            ny = seq->y[ri] + Yoff[rdir];
+            lox = seq->x[ri - 1];
+            loy = seq->y[ri - 1];
+            hix = seq->x[ri + 1];
+            hiy = seq->y[ri + 1];
+            lod2 = ((nx - lox) * (nx - lox)) + ((ny - loy) * (ny - loy));
+            hid2 = ((nx - hix) * (nx - hix)) + ((ny - hiy) * (ny - hiy));
+
+            if ((lod2 < mind2) || (lod2 > maxd2) || (hid2 < mind2) || (hid2 > maxd2))
+                continue;
+
+
+            // if (uti_signcos2(lox, loy, nx, ny, hix, hiy) < mincos2)
+            // {
+            //     continue;
+            // }
+
+            // if ((ri > 1) && (uti_signcos2(seq->x[ri - 2], seq->y[ri - 2],
+            //                               lox, loy, nx, ny) < mincos2))
+            // {
+            //     continue;
+            // }
+
+            // printf("Past check 3 on %d\n", i);
+
+            // if ((ri < seq->length - 2) && (uti_signcos2(nx, ny, hix, hiy,
+            //                                             seq->x[ri + 2], seq->y[ri + 2]) < mincos2))
+            // {
+            //     continue;
+            // }
+
+
+            // seq->x[ri] = nx;
+            seq->y[ri] = ny;
+        }
+        return (1);
+    };
 
     // Start and end point
     // y values are have a 5 point padding so that it doesnt interfere with the walls
@@ -198,6 +271,7 @@ void CaveSystem::generateRandomCave()
     PathSequence path;
 
     bresenham_line(&path, x1, y1, x2, y2);
+    uti_perturb(&path, 2, 5, 40);
 
     insert_path(CaveSystem::cave_system, &path, rand() % 6 + 8);
 }
