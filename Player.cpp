@@ -43,6 +43,8 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     yn_decel = false;
 	last_fshot = SDL_GetTicks() - SHOOT_FREQ;
 	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
+	time_hit = SDL_GetTicks() - FLICKER_TIME;
+	health = 100;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -161,12 +163,13 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         y_pos = 0;
     }
     
+	/*
     // If they are near the bottom of the screen, scroll down
     else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
     {
         y_pos = (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT;
         camY += (double) (y_vel * time_since_move) / 1000;
-    }
+    }*/
     // Stop the player if they hit the bottom
     else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
     {
@@ -188,10 +191,16 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 //Shows the player on the screen relative to the camera
 void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT)
 {
+	// Background loading (not sure why this is in the Player class )
 	SDL_Rect bgRect = {-((int)bg_X % SCREEN_WIDTH), 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
     bgRect.x += SCREEN_WIDTH;
     SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+	
+	// Don't render the player if they're flickering after being hit
+	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
+		return;
+	}
     
     SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
 	// Alternates through the two sprites every ANIMATION_FREQ ticks
@@ -201,6 +210,39 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	else {
 		SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
 	}
+}
+
+// Damages the player if they've been hit
+void Player::hit(int damage) {
+	// If the player has just been hit, they should be invunerable, so don't damage them
+	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
+		return;
+	}
+	
+	time_hit = SDL_GetTicks();
+	health -= damage;
+	if (health < 0) {
+		health = 0;
+	}
+}
+
+// Checks if the player collided with a kamikaze, returning true if so
+bool Player::checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH) {
+	return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT);
+}
+
+// Checks if the player collided with a bullet, returning true if so
+bool Player::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
+	return checkCollide(bullX, bullY, bullW, bullH, x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT);
+}
+
+bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
+{
+    if (x + pWidth < xTwo || x > xTwo + pTwoWidth)
+        return false;
+    if (y + pHeight < yTwo || y > yTwo + pTwoHeight)
+        return false;
+    return true;
 }
 
 Bullet* Player::handleForwardFiring()
@@ -218,7 +260,7 @@ Bullet* Player::handleBackwardFiring()
 {
 	time_since_bshot = SDL_GetTicks() - last_bshot;
 	if (time_since_bshot > SHOOT_FREQ) {
-		Bullet* b = new Bullet(x_pos,y_pos+PLAYER_HEIGHT/2,-450);
+		Bullet* b = new Bullet(x_pos - 10,y_pos+PLAYER_HEIGHT/2,-450);
 		last_bshot = SDL_GetTicks();
 		return b;
 	}
@@ -234,6 +276,9 @@ int Player::getVelX() { return x_vel; };
 int Player::getVelY() { return y_vel; };
 void Player::setPosX(int x) { x_pos = x; }
 void Player::setPosY(int y) { y_pos = y; }
+int Player::getWidth() { return PLAYER_WIDTH; }
+int Player::getHeight() { return PLAYER_HEIGHT; }
+int Player::getHealth() { return health; };
 
 // Methods that can be used to undo the user's moves when dealing with collisions
 void Player::undoXMove() {x_pos -= (double) (x_vel * time_since_move) / 1000;}
