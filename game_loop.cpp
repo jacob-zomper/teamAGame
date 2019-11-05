@@ -418,6 +418,8 @@ int main() {
 		{
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
+			camX = 0;
+            camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 		}
 
 

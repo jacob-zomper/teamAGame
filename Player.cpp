@@ -228,12 +228,12 @@ void Player::hit(int damage) {
 
 // Checks if the player collided with a kamikaze, returning true if so
 bool Player::checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH) {
-	return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT);
+	return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
 }
 
 // Checks if the player collided with a bullet, returning true if so
 bool Player::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
-	return checkCollide(bullX, bullY, bullW, bullH, x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT);
+	return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
 }
 
 bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
