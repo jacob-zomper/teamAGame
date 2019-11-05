@@ -84,6 +84,8 @@ public:
     int getVelY();
     void setPosX(int x);
     void setPosY(int y);
+	int getWidth();
+	int getHeight();
 	int getHealth();
 	
 	// Methods that can be used to undo the user's moves when dealing with collisions

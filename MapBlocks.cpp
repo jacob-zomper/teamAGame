@@ -27,7 +27,7 @@ SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer) {
 }
 
 WallBlock::WallBlock(){};
-WallBlock::WallBlock(int num, bool cave){
+WallBlock::WallBlock(int num){
     CEILING_ABS_X = num * block_side;
     FLOOR_ABS_X = num * block_side;
     CEILING_ABS_Y = 0;
@@ -36,11 +36,6 @@ WallBlock::WallBlock(int num, bool cave){
     FLOOR_REL_X = FLOOR_ABS_X;
     CEILING_REL_Y = CEILING_ABS_Y; 
     FLOOR_REL_Y = FLOOR_ABS_Y;
-    if(cave){
-        enabled=true;
-    }else{
-        enabled=false;
-    }
 }
 
 Stalagmite::Stalagmite()
@@ -55,20 +50,14 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 	
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
     STALAG_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - STALAG_HEIGHT;//growing from bottom of cave
-	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width) {
+	// Select a new x coordinate if the current one is in a cave or open air section
+	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width || (STALAG_ABS_X>(openAir*72) && STALAG_ABS_X+STALAG_WIDTH<(openAir+openAirLength)*72)) {
 		STALAG_ABS_X = rand() % LEVEL_WIDTH;
 	}
     //STALAG_ABS_Y= rand() % LEVEL_HEIGHT;
 
     STALAG_REL_X = STALAG_ABS_X;
     STALAG_REL_Y = STALAG_ABS_Y;
-
-    //if  in open air enabled = false
-    if(STALAG_ABS_X>(openAir*72) && STALAG_ABS_X+STALAG_WIDTH<(openAir+openAirLength)*72){
-        enabled=false;
-    }else{
-        enabled=true;
-    }
 
     stalagShapeNum = rand() % 4 + 1;
 }
@@ -86,20 +75,14 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
 
     STALAG_ABS_Y = LEVEL_HEIGHT - 720 + WallBlock::block_side;//growing from top of cave
-	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width) {
+	// Select a new x coordinate if the current one is in a cave or open air section
+	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width || (STALAG_ABS_X>(openAir*72) && STALAG_ABS_X+STALAG_WIDTH<(openAir+openAirLength)*72)) {
 		STALAG_ABS_X = rand() % LEVEL_WIDTH;
 	}
     //STALAG_ABS_Y= rand() % LEVEL_HEIGHT;
 
     STALAG_REL_X = STALAG_ABS_X;
     STALAG_REL_Y = STALAG_ABS_Y;
-
-    //if open air enabled = false
-    if(STALAG_ABS_X>(openAir*72) && STALAG_ABS_X+STALAG_WIDTH<(openAir+openAirLength)*72){
-        enabled=false;
-    }else{
-        enabled=true;
-    }
 
     stalagShapeNum = rand() % 4 + 1;
 
@@ -210,13 +193,12 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 	
     int i;
     for(i = 0; i<CEILING_N; i++){
-        if(i>openAir && i<openAir+openAirLength && openAir+openAirLength<CEILING_N){
-        ceiling_arr.push_back(WallBlock(i,false));
-        }else{
-        ceiling_arr.push_back(WallBlock(i,true));
+        // Create blocks on the top of the screen if it isn't an open air section
+		if(!(i>openAir && i<openAir+openAirLength && openAir+openAirLength<CEILING_N)){
+			ceiling_arr.push_back(WallBlock(i));
         }
-
-        floor_arr.push_back(WallBlock(i, true));
+		// Create blocks on the bottom of the screen
+        floor_arr.push_back(WallBlock(i));
     }
 
     for (i = 0; i < BLOCKS_N; i++)
@@ -253,9 +235,12 @@ void MapBlocks::moveBlocks(int camX, int camY)
         blocks_arr[i].BLOCK_REL_Y = blocks_arr[i].BLOCK_ABS_Y - camY;
 	}
     //ceiling and floor
-    for(i=0; i<CEILING_N; i++)
+    for(i = 0; i < ceiling_arr.size(); i++)
     {
         ceiling_arr[i].CEILING_REL_X = ceiling_arr[i].CEILING_ABS_X - camX;
+	}
+    for(i = 0; i < floor_arr.size(); i++)
+	{
         floor_arr[i].FLOOR_REL_X = floor_arr[i].FLOOR_ABS_X - camX;
     }
 
@@ -324,7 +309,7 @@ void MapBlocks::checkCollision(Player *p)
     for (i = stalagm_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, damage the player and blow up the stalagmite
-        if (stalagm_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, gRenderer));
@@ -335,7 +320,7 @@ void MapBlocks::checkCollision(Player *p)
 	for (i = stalagt_arr.size() - 1; i >= 0; i--)
 	{
 		// If there's a collision, damage the player and blow up the stalactite
-        if (stalagt_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, gRenderer));
@@ -343,8 +328,8 @@ void MapBlocks::checkCollision(Player *p)
         }
     }
     //ceiling and floor
-    for(i=0; i<CEILING_N; i++){
-        if(ceiling_arr[i].enabled == true && (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+    for(i = 0; i < ceiling_arr.size(); i++){
+        if((checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
             p->undoXMove();
             p->undoYMove();
@@ -356,8 +341,10 @@ void MapBlocks::checkCollision(Player *p)
             }
 
         }
-
-        if(floor_arr[i].enabled == true && (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+	}
+	for (i = 0; i < floor_arr.size(); i++) {
+		
+        if((checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
             p->undoXMove();
             p->undoYMove();
@@ -369,12 +356,6 @@ void MapBlocks::checkCollision(Player *p)
             }
 
         }
-    }
-    
-
-    if(p->getPosY()>=720-72-p->PLAYER_HEIGHT){//floor collisions stopped working, not sure why, this needs a better fix but this works
-        p->setPosY(720-72-p->PLAYER_HEIGHT);
-        p->undoYMove();
     }
 }
 
@@ -399,7 +380,7 @@ void MapBlocks::checkCollision(Enemy *e)
     for (i = 0; i < stalagm_arr.size(); i++)
     {
         // If there's a collision, cancel the player's move
-        if (stalagm_arr[i].enabled==true && checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
             e->undoXMove();
             e->undoYMove();
@@ -412,7 +393,7 @@ void MapBlocks::checkCollision(Enemy *e)
         }
 	}
 	for (i = 0; i < stalagt_arr.size(); i++) {
-        if (stalagt_arr[i].enabled==true && checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
         {
             e->undoXMove();
             e->undoYMove();
@@ -443,14 +424,14 @@ bool MapBlocks::checkCollision(Bullet *b)
     // Not sure what we want to do with the stalagmites but reworked to stalagtites fall when shot
     for (int i = 0; i < stalagm_arr.size(); i++)
 	{
-        if (stalagm_arr[i].enabled==true && checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
             return true;
         }
 	}
 	for (int i = 0; i < stalagt_arr.size(); i++)
 	{
-        if (stalagt_arr[i].enabled==true && checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
         {
             stalagt_arr[i].beenShot = 1;
             stalagt_arr[i].last_move = SDL_GetTicks();
@@ -468,16 +449,18 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 
     if(caveIsEnabled && CaveSystem::CAVE_START_ABS_X != -1)
     {
-        for (i = 0; i < ceiling_arr.size(); i++)
+        for (i = ceiling_arr.size() - 1; i >= 0; i--)
         {
             if (ceiling_arr[i].CEILING_ABS_X > CaveSystem::CAVE_START_ABS_X && ceiling_arr[i].CEILING_ABS_X < CaveSystem::CAVE_END_ABS_X)
             {
-                ceiling_arr[i].enabled = false;
+				ceiling_arr.erase(ceiling_arr.begin() + i);
             }
-
+		}
+		for (i = floor_arr.size() - 1; i >= 0; i--)
+		{
             if (floor_arr[i].FLOOR_ABS_X > CaveSystem::CAVE_START_ABS_X && floor_arr[i].FLOOR_ABS_X < CaveSystem::CAVE_END_ABS_X)
             {
-                floor_arr[i].enabled = false;
+				floor_arr.erase(floor_arr.begin() + i);
             }
         }
 
@@ -518,16 +501,19 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     // }
 
     //Render Ceiling and floor
-    for(i=0; i<CEILING_N; i++){
-
-        if(ceiling_arr[i].CEILING_REL_X < SCREEN_WIDTH && ceiling_arr[i].CEILING_REL_Y < SCREEN_HEIGHT && ceiling_arr[i].enabled)
+    for(i = 0; i < ceiling_arr.size(); i++)
+	{
+        if(ceiling_arr[i].CEILING_REL_X < SCREEN_WIDTH && ceiling_arr[i].CEILING_REL_Y < SCREEN_HEIGHT)
         {
             SDL_Rect fillRect = {ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side};
             SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
-
-        if(floor_arr[i].FLOOR_REL_X < SCREEN_WIDTH && floor_arr[i].FLOOR_REL_Y < SCREEN_HEIGHT && floor_arr[i].enabled)
+	}
+	
+	for (i = 0; i < floor_arr.size(); i++)
+	{
+        if(floor_arr[i].FLOOR_REL_X < SCREEN_WIDTH && floor_arr[i].FLOOR_REL_Y < SCREEN_HEIGHT)
         {
             SDL_Rect fillRect = {floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side};
             SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
@@ -539,7 +525,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < stalagm_arr.size(); i++)
     {
         // Only render the Stalag if will be screen
-        if (stalagm_arr[i].enabled==true && stalagm_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_HEIGHT && stalagm_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_WIDTH && stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
+        if (stalagm_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_HEIGHT && stalagm_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_WIDTH && stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
         {
             SDL_Rect fillRect = {stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT};
             if (stalagm_arr[i].stalagShapeNum == 1) {
@@ -560,7 +546,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < stalagt_arr.size(); i++)
     {
         // Only render the Stalag if will be screen
-        if (stalagt_arr[i].enabled==true && stalagt_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_WIDTH && stalagt_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_HEIGHT && stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
+        if (stalagt_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_WIDTH && stalagt_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_HEIGHT && stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
             
 			SDL_Rect fillRect = {stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT};
             if (stalagt_arr[i].stalagShapeNum == 1) {

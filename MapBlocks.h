@@ -22,10 +22,8 @@ public:
     int FLOOR_REL_X;
     int FLOOR_REL_Y;
 
-    bool enabled;
-
     WallBlock();
-    WallBlock(int num, bool cave);
+    WallBlock(int num);
 };
 
 
@@ -40,8 +38,6 @@ public:
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
-
-    bool enabled;
 
     Stalagmite();
     Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -60,8 +56,6 @@ public:
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
-
-    bool enabled;
 
     Stalagtite();
     Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
