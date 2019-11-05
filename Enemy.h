@@ -61,6 +61,7 @@ class Enemy
 		static const int FIRING_FREQ = 1000;
     static const int FLICKER_FREQ = 50;
     static const int FLICKER_TIME = 500;
+    static const int SPAWN_FREQ = 3000;
 
 		// Limits on where the enemy can go
 		static const int MIN_X = 0;
@@ -104,7 +105,9 @@ class Enemy
 
     //health variables for the enemy
     int time_hit;
+    int time_destroyed;
     int health;
+    bool is_destroyed;
 };
 
 #endif

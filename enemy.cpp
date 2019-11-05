@@ -35,7 +35,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
       tiltAngle = 0;
 	  	last_move = SDL_GetTicks();
 			time_hit = SDL_GetTicks() - FLICKER_TIME;
-			health = 20;
+			is_destroyed = false;
+			health = 10;
     }
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
@@ -43,13 +44,19 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 				return;
 			}
 
-			if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
-      SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-      }
-      else {
-        SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-      }
-      enemy_hitbox=enemy_sprite;
+			if (!is_destroyed){
+				if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+      		SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+      	}else {
+        	SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+      	}
+      	enemy_hitbox=enemy_sprite;
+			}
+
+			if ((SDL_GetTicks() - time_destroyed) >= SPAWN_FREQ && is_destroyed){
+				health = 10;
+				is_destroyed = false;
+			}
     }
 
     void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY)
@@ -254,8 +261,10 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
 		time_hit = SDL_GetTicks();
 		health -= d;
-		if (health < 0) {
+		if (health <= 0) {
 			health = 0;
+			time_destroyed = SDL_GetTicks();
+			is_destroyed = true;
 		}
 	}
 
@@ -311,13 +320,15 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
     Bullet* Enemy::handleFiring()
     {
-		time_since_shoot = SDL_GetTicks() - last_shot;
+			if (!is_destroyed){
+				time_since_shoot = SDL_GetTicks() - last_shot;
     		if (time_since_shoot > FIRING_FREQ) {
     			Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
     			last_shot = SDL_GetTicks();
     			return b;
     		}
-    		return nullptr;
+			}
+    	return nullptr;
     }
 
 		int Enemy::getHealth(){

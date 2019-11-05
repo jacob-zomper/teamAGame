@@ -303,7 +303,9 @@ int main() {
 				kam->setArrivalTime(5000);
 			}else if (en->checkBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
 				destroyed = true;
-				blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight());
+				en->hit(5);
+				if (en->getHealth() == 0)
+					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight());
 			}
 			if (destroyed) {
 				bullets.erase(bullets.begin() + i);
