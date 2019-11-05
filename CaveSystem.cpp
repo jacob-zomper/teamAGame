@@ -71,7 +71,7 @@ void CaveSystem::generateRandomCave()
     */
     int i, j, x1, x2, y1, y2;
 
-    srand(time(NULL));
+    srand(time_t(NULL));
 
     // FILL THE BOARD WITH BLOCKS
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
@@ -92,7 +92,7 @@ void CaveSystem::generateRandomCave()
         // It is this 2D array that is finally rendered to the screen
 
         // y_padding will increase the height of the cave
-        
+
         int i, j, cx, cy;
 
         for(i = 0; i < path->length; i++)
@@ -145,7 +145,7 @@ void CaveSystem::generateRandomCave()
     auto bresenham_line = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
         // The Bresenham line algorithm. Not symmetrical.
         // Generates a starting line from one end of the cave to other
-        
+
         int xstep, ystep, xc, yc, acc, cnt;
         cnt = 0;
 

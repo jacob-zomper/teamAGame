@@ -252,7 +252,10 @@ int main() {
 		}
 		// If the kamikaze is offscreen, create a new one
 		if (kam->getX() < -kam->getWidth()) {
-			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
+			//kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
 		}
 
 
@@ -277,28 +280,32 @@ int main() {
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
 		blocks->checkCollision(en);
+		//kam->checkCollision(player, gRenderer);
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
 			bool destroyed = false;
 			if(bullets[i]->getY() > FLOOR_BOTTOM){
 				destroyed = bullets[i]->ricochetFloor(); // rng chance to ricochet or get destroyed
 			}
-			if(!destroyed){
-				if (bullets[i]->getX() > SCREEN_WIDTH || bullets[i]->getX() < 0) {
-					destroyed = true;
-				}
-				else if (blocks->checkCollision(bullets[i])){
-					destroyed = true;
-				}
-				else if (player->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
-					destroyed = true;
-					player->hit(5);
-				}
-				else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
-					destroyed = true;
-					blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
-					kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
-				}
+			else if (blocks->checkCollision(bullets[i])){
+				destroyed = true;
+			}
+			else if (player->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+				destroyed = true;
+				player->hit(5);
+			}
+			else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+				destroyed = true;
+				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
+				// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+				kam->setX(SCREEN_WIDTH+125);
+				kam->setY(SCREEN_HEIGHT/2);
+				kam->setArrivalTime(5000);
+			}else if (en->checkBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
+				destroyed = true;
+				en->hit(5);
+				if (en->getHealth() == 0)
+					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight());
 			}
 			if (destroyed) {
 				bullets.erase(bullets.begin() + i);
@@ -316,12 +323,15 @@ int main() {
 			cave_system->moveCaveBlocks(camX, camY);
 			cave_system->checkCollision(player);
 		}
-		
+
 		// If the player hits the kamikaze, blow up the kamikaze, damage the player, and make a new kamikaze
 		if (player->checkCollisionKami(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())) {
 			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
 			player->hit(10);
-			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			//kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
 		}
 
 		// Clear the screen
@@ -365,11 +375,11 @@ int main() {
 		high_score_string.append(std::to_string(high_score));
 		Text high_score_text(gRenderer, "sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
 		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
-		
+
 		std::string health_string = "Health ";
 		Text healthText(gRenderer, "sprites/comic.ttf", 20, health_string, {255, 255, 255, 255});
 		healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
-		
+
 		int health = player->getHealth();
 		SDL_Rect outline = {199, SCREEN_HEIGHT - 56, 202, 32};
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
