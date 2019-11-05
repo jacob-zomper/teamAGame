@@ -1,5 +1,4 @@
 #include "CaveSystem.h"
-#include "time.h"
 
 int CaveSystem::CAVE_END_ABS_X;
 int CaveSystem::CAVE_START_ABS_X;
@@ -70,9 +69,7 @@ void CaveSystem::generateRandomCave()
         It uses a lot of lamda functions because its more organized
     */
     int i, j, x1, x2, y1, y2;
-
-    srand(time_t(NULL));
-
+    
     // FILL THE BOARD WITH BLOCKS
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)

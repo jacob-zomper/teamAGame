@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <SDL.h>
+#include <time.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "MapBlocks.h"
@@ -177,6 +178,8 @@ int main() {
 		close();
 		return 1;
 	}
+
+	srand(time(NULL));
 
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
