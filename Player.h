@@ -17,8 +17,12 @@ public:
 
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
+	static const int SHOOT_FREQ = 300;
+	
+	// Animation frequency, the frequency with which the player flickers when hit, and the amount of time the player flickers after being hit
 	static const int ANIMATION_FREQ = 100;
-	static const int SHOOT_FREQ = 2000;
+	static const int FLICKER_FREQ = 50;
+	static const int FLICKER_TIME = 500;
 	
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
@@ -27,6 +31,10 @@ public:
 	int last_fshot;
 	int time_since_bshot;
 	int last_bshot;
+	
+	// Last time the player was hit, and their current health (out of 100)
+	int time_hit;
+	int health;
 	
 	double bg_X;
     double tiltAngle;
@@ -55,11 +63,19 @@ public:
     //Shows the player on the screen relative to the camera
     void render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT);
     
+	// Damages the player when they've been hit
+	void hit(int damage);
+	
+	// Handle collisions
+	bool checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH);
+	bool checkCollisionBullet(int bullX, int bullY, int bullW, int bullH);
+	bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
+	
 	// Creates bullets when the player wants to fire forwards or backwards
 	Bullet* handleForwardFiring();
 	Bullet* handleBackwardFiring();
 	
-	//Position and velocity accessors
+	//Accessors
     int getPosX();
     int getPosY();
     void setVelX(int vel_x);
@@ -68,6 +84,7 @@ public:
     int getVelY();
     void setPosX(int x);
     void setPosY(int y);
+	int getHealth();
 	
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();

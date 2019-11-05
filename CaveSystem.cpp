@@ -1,11 +1,16 @@
 #include "CaveSystem.h"
 
+int CaveSystem::CAVE_END_ABS_X;
+int CaveSystem::CAVE_START_ABS_X;
+
 CaveBlock::CaveBlock(){}
 PathSequence::PathSequence(){}
 
 
 CaveSystem::CaveSystem()
 {
+    CAVE_END_ABS_X = -1;
+    CAVE_START_ABS_X = -1;
     isEnabled = false;
 }
 
@@ -29,6 +34,10 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
 {
     int i, j;
     int offsetX = camX;
+
+    CAVE_START_ABS_X = offsetX + SCREEN_WIDTH;
+    CAVE_END_ABS_X = offsetX + CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH + SCREEN_WIDTH;
+
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
@@ -38,11 +47,12 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
 
             curr_block->CAVE_BLOCK_REL_X = curr_block->CAVE_BLOCK_ABS_X;
             curr_block->CAVE_BLOCK_REL_Y = curr_block->CAVE_BLOCK_ABS_Y;
-            if(i == 0) std::cout << "X: " << std::to_string(curr_block->CAVE_BLOCK_REL_X) << " Y: " << std::to_string(curr_block->CAVE_BLOCK_REL_Y) << " OFFSET_X: " << std::to_string(offsetX) << std::endl;
 
             cave_system[i][j] = curr_block;
         }
 
+
+    isEnabled = true;
     generateRandomCave();
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
 }
@@ -59,6 +69,8 @@ void CaveSystem::generateRandomCave()
         It uses a lot of lamda functions because its more organized
     */
     int i, j, x1, x2, y1, y2;
+
+    srand(time(NULL));
 
     // FILL THE BOARD WITH BLOCKS
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
@@ -86,8 +98,9 @@ void CaveSystem::generateRandomCave()
         {
             cx = path->x[i];
             cy = path->y[i];
-            // printf("Inserting (X: %d, Y: %d)\n", cx, cy);
-            for(j = (y_padding * -1); j < y_padding; j++)
+
+            int padding = (3 * cos(i/7) + y_padding) + rand() % 2;
+            for (j = (padding * -1); j < padding; j++)
             {
                 if (cy + j >= 0 && cy + j < CaveSystem::CAVE_SYSTEM_HEIGHT)
                     mat[cy + j][cx]->enabled = 0;
@@ -110,7 +123,7 @@ void CaveSystem::generateRandomCave()
             return -1;
     };
 
-    auto uti_rline = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
+    auto bresenham_line = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
         // The Bresenham line algorithm. Not symmetrical.
         // Generates a starting line from one end of the cave to other
         
@@ -176,24 +189,16 @@ void CaveSystem::generateRandomCave()
     // Start and end point
     // y values are have a 5 point padding so that it doesnt interfere with the walls
     x1 = 0;
-    y1 = 6 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 5);
+    y1 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
 
     x2 = CaveSystem::CAVE_SYSTEM_WIDTH;
-    y2 = 6 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 5);
+    y2 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
 
     PathSequence path;
 
-    uti_rline(&path, x1, y1, x2, y2);
+    bresenham_line(&path, x1, y1, x2, y2);
 
-    for (j = 0; j < CAVE_SYSTEM_WIDTH - 1; j++)
-    {
-        printf("(X: %d, Y: %d)\n", path.x[j], path.y[j]);
-    }
-
-    printf("PATH LENGTH: %d\n", path.length);
-
-    insert_path(CaveSystem::cave_system, &path, 4);
-
+    insert_path(CaveSystem::cave_system, &path, rand() % 6 + 8);
 }
 
 void CaveSystem::moveCaveBlocks(int camX, int camY)
@@ -240,6 +245,7 @@ void CaveSystem::checkCollision(Player *p)
 void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer)
 {
     int i, j;
+    bool isStillShowing = false;
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
@@ -251,5 +257,14 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
                 SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
                 SDL_RenderFillRect(gRenderer, &fillRect);
             }
+
+            if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH + 5 && curr_block->CAVE_BLOCK_REL_X >= 0 && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT)
+                isStillShowing = true;
         }
+
+    if(!isStillShowing)
+    {
+        isEnabled = false;
+        printf("CAVE SYSTEM DONE SHOWING!\n");
+    }
 }
