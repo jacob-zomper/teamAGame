@@ -1,4 +1,5 @@
 #include "CaveSystem.h"
+#include "time.h"
 
 int CaveSystem::CAVE_END_ABS_X;
 int CaveSystem::CAVE_START_ABS_X;
