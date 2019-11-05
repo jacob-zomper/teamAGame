@@ -71,18 +71,6 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     }
 
     stalagShapeNum = rand() % 4 + 1;
-    if (stalagShapeNum == 1) {
-        sprite = loadImage("sprites/stalagm1.png", gRenderer);
-    }
-    else if (stalagShapeNum == 2) {
-        sprite = loadImage("sprites/stalagm2.png", gRenderer);
-    }
-    else if (stalagShapeNum == 3) {
-        sprite = loadImage("sprites/stalagm3.png", gRenderer);
-    }
-    else if (stalagShapeNum == 4) {
-        sprite = loadImage("sprites/stalagm4.png", gRenderer);
-    }
 }
 
 Stalagtite::Stalagtite()
@@ -114,18 +102,6 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     }
 
     stalagShapeNum = rand() % 4 + 1;
-    if (stalagShapeNum == 1) {
-        sprite = loadImage("sprites/stalagt1.png", gRenderer);
-    }
-    else if (stalagShapeNum == 2) {
-        sprite = loadImage("sprites/stalagt2.png", gRenderer);
-    }
-    else if (stalagShapeNum == 3) {
-        sprite = loadImage("sprites/stalagt3.png", gRenderer);
-    }
-    else if (stalagShapeNum == 4) {
-        sprite = loadImage("sprites/stalagt4.png", gRenderer);
-    }
 
     beenShot = 0;
     acceleration = 0;
@@ -159,11 +135,9 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
     BLOCK_HEIGHT = 50;
 
     // Select the ceiling or floor turret sprite
+	bottom = 0;
     if(BLOCK_ABS_Y == LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT){
-        sprite = loadImage("sprites/bottomturret.png", gRenderer);
-    }
-    else{
-        sprite = loadImage("sprites/topturret.png", gRenderer);
+        bottom = 1;
     }
     
     FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
@@ -210,7 +184,6 @@ Explosion::Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer)
 	center_y = y_loc;
 	abs_x = center_x - current_size / 2;
 	abs_y = center_y - current_size / 2;
-    sprite = loadImage("sprites/Explosion.png", gRenderer);
 	explosion_time = SDL_GetTicks();
 }
 
@@ -222,8 +195,19 @@ MapBlocks::MapBlocks()
 
 MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength)
 {
-  gRenderer = gr;
-  
+	gRenderer = gr;
+	explosionSprite = loadImage("sprites/Explosion.png", gRenderer);
+	topTurretSprite = loadImage("sprites/topturret.png", gRenderer);
+	bottomTurretSprite = loadImage("sprites/bottomturret.png", gRenderer);
+	stalactiteSprite1 = loadImage("sprites/stalagt1.png", gRenderer);
+	stalactiteSprite2 = loadImage("sprites/stalagt2.png", gRenderer);
+	stalactiteSprite3 = loadImage("sprites/stalagt3.png", gRenderer);
+	stalactiteSprite4 = loadImage("sprites/stalagt4.png", gRenderer);
+	stalagmiteSprite1 = loadImage("sprites/stalagm1.png", gRenderer);
+	stalagmiteSprite2 = loadImage("sprites/stalagm2.png", gRenderer);
+	stalagmiteSprite3 = loadImage("sprites/stalagm3.png", gRenderer);
+	stalagmiteSprite4 = loadImage("sprites/stalagm4.png", gRenderer);
+	
     int i;
     for(i = 0; i<CEILING_N; i++){
         if(i>openAir && i<openAir+openAirLength && openAir+openAirLength<CEILING_N){
@@ -506,8 +490,12 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y >= WallBlock::block_side)
         {
             SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
-            SDL_RenderCopyEx(gRenderer, blocks_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-            
+            if (blocks_arr[i].bottom == 1) {
+				SDL_RenderCopyEx(gRenderer, bottomTurretSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
+			else {
+				SDL_RenderCopyEx(gRenderer, topTurretSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
         }
     }
 
@@ -554,7 +542,18 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         if (stalagm_arr[i].enabled==true && stalagm_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_HEIGHT && stalagm_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_WIDTH && stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
         {
             SDL_Rect fillRect = {stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT};
-            SDL_RenderCopyEx(gRenderer, stalagm_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+            if (stalagm_arr[i].stalagShapeNum == 1) {
+				SDL_RenderCopyEx(gRenderer, stalagmiteSprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
+			else if (stalagm_arr[i].stalagShapeNum == 2) {
+				SDL_RenderCopyEx(gRenderer, stalagmiteSprite2, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
+			else if (stalagm_arr[i].stalagShapeNum == 3) {
+				SDL_RenderCopyEx(gRenderer, stalagmiteSprite3, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
+			else {
+				SDL_RenderCopyEx(gRenderer, stalagmiteSprite4, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
         }
     }
 
@@ -564,12 +563,23 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         if (stalagt_arr[i].enabled==true && stalagt_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_WIDTH && stalagt_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_HEIGHT && stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
             
 			SDL_Rect fillRect = {stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT};
-            SDL_RenderCopyEx(gRenderer, stalagt_arr[i].sprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+            if (stalagt_arr[i].stalagShapeNum == 1) {
+				SDL_RenderCopyEx(gRenderer, stalactiteSprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
+			else if (stalagt_arr[i].stalagShapeNum == 2) {
+				SDL_RenderCopyEx(gRenderer, stalactiteSprite2, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
+			else if (stalagt_arr[i].stalagShapeNum == 3) {
+				SDL_RenderCopyEx(gRenderer, stalactiteSprite3, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
+			else {
+				SDL_RenderCopyEx(gRenderer, stalactiteSprite4, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+			}
         }
     }
 
 	for (i = 0; i < explosion_arr.size(); i++) {
-		SDL_RenderCopyEx(gRenderer, explosion_arr[i].sprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(gRenderer, explosionSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
 	}
 }
 

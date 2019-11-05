@@ -46,7 +46,6 @@ public:
     Stalagmite();
     Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
-    SDL_Texture* sprite;
     int stalagShapeNum;
 };
 
@@ -67,7 +66,6 @@ public:
     Stalagtite();
     Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
-    SDL_Texture* sprite;
     int stalagShapeNum;
 
     int beenShot;
@@ -97,8 +95,9 @@ public:
     int BLOCK_WIDTH;
 
     int BLOCK_SPRITE; // Map to which sprite image this Turret will use.
-
-    SDL_Texture* sprite;
+	
+	// 1 if bottom turret, 0 if top
+    int bottom;
 
 
     Turret();
@@ -143,9 +142,6 @@ public:
 	Explosion();
 	Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer);
 
-    //Explosion sprite
-    SDL_Texture* sprite;
-
 	//defines the explosion
     SDL_Rect hitbox;
 };
@@ -166,6 +162,19 @@ public:
     static const int CEILING_N = 100000/72;
 
     SDL_Renderer *gRenderer;
+
+    SDL_Texture* explosionSprite;
+	SDL_Texture* topTurretSprite;
+	SDL_Texture* bottomTurretSprite;
+	SDL_Texture* stalactiteSprite1;
+	SDL_Texture* stalactiteSprite2;
+	SDL_Texture* stalactiteSprite3;
+	SDL_Texture* stalactiteSprite4;
+	SDL_Texture* stalagmiteSprite1;
+	SDL_Texture* stalagmiteSprite2;
+	SDL_Texture* stalagmiteSprite3;
+	SDL_Texture* stalagmiteSprite4;
+
 
     std::vector<Turret> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
