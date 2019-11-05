@@ -301,7 +301,7 @@ int main() {
 				kam->setX(SCREEN_WIDTH+125);
 				kam->setY(SCREEN_HEIGHT/2);
 				kam->setArrivalTime(5000);
-			}else if (en->checkBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
+			}else if (en->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
 				destroyed = true;
 				en->hit(5);
 				if (en->getHealth() == 0)
@@ -310,6 +310,14 @@ int main() {
 			if (destroyed) {
 				bullets.erase(bullets.begin() + i);
 			}
+		}
+		
+		// Check collisions between enemy and player
+		if (en->checkCollision(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight())) {
+			player->hit(10);
+			en->hit(10);
+			if (en->getHealth() == 0)
+				blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight());
 		}
 
 		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)

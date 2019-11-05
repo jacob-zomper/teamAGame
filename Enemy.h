@@ -25,7 +25,7 @@ class Enemy
         //Moves the enemy
         void move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY);
         bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
-        bool checkBullet(int x, int y, int w, int h);
+        bool checkCollision(int x, int y, int w, int h);
         void hit(int d);
 
         //Position, dimensions, and velocity accessors

@@ -163,12 +163,13 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         y_pos = 0;
     }
     
+	/*
     // If they are near the bottom of the screen, scroll down
     else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
     {
         y_pos = (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT;
         camY += (double) (y_vel * time_since_move) / 1000;
-    }
+    }*/
     // Stop the player if they hit the bottom
     else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
     {
@@ -275,6 +276,8 @@ int Player::getVelX() { return x_vel; };
 int Player::getVelY() { return y_vel; };
 void Player::setPosX(int x) { x_pos = x; }
 void Player::setPosY(int y) { y_pos = y; }
+int Player::getWidth() { return PLAYER_WIDTH; }
+int Player::getHeight() { return PLAYER_HEIGHT; }
 int Player::getHealth() { return health; };
 
 // Methods that can be used to undo the user's moves when dealing with collisions

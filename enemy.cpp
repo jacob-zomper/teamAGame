@@ -29,14 +29,15 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
     Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
 	  	enemy_sprite = {(int) xPos, (int) yPos, width, height};
-      enemy_hitbox = enemy_sprite;
-      sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
-      sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
-      tiltAngle = 0;
+		enemy_hitbox = enemy_sprite;
+		sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
+		sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
+		tiltAngle = 0;
 	  	last_move = SDL_GetTicks();
-			time_hit = SDL_GetTicks() - FLICKER_TIME;
-			is_destroyed = false;
-			health = 10;
+		time_hit = SDL_GetTicks() - FLICKER_TIME;
+		last_shot = SDL_GetTicks() - FIRING_FREQ;
+		is_destroyed = false;
+		health = 10;
     }
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
@@ -240,8 +241,9 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		}
 	}
 
-	bool Enemy::checkBullet(int bullX, int bullY, int bullW, int bullH) {
-		return checkCollide(bullX, bullY, bullW, bullH, xPos, yPos, width, height);
+	bool Enemy::checkCollision(int objX, int objY, int objW, int objH) {
+		if (is_destroyed) return false;
+		return checkCollide(objX, objY, objW, objH, xPos, yPos, width, height);
 	}
 
 	bool Enemy::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -320,14 +322,14 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
     Bullet* Enemy::handleFiring()
     {
-			if (!is_destroyed){
-				time_since_shoot = SDL_GetTicks() - last_shot;
-    		if (time_since_shoot > FIRING_FREQ) {
-    			Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
-    			last_shot = SDL_GetTicks();
-    			return b;
-    		}
+		if (!is_destroyed){
+			time_since_shoot = SDL_GetTicks() - last_shot;
+			if (time_since_shoot > FIRING_FREQ) {
+				Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
+				last_shot = SDL_GetTicks();
+				return b;
 			}
+		}
     	return nullptr;
     }
 
