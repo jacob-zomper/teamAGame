@@ -69,7 +69,7 @@ void CaveSystem::generateRandomCave()
         It uses a lot of lamda functions because its more organized
     */
     int i, j, x1, x2, y1, y2;
-    
+
     // FILL THE BOARD WITH BLOCKS
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
@@ -119,24 +119,6 @@ void CaveSystem::generateRandomCave()
             return 0;
         else
             return -1;
-    };
-
-    auto uti_signcos2 = [&](int x0, int y0, int x1, int y1, int x2, int y2)
-    {
-        int sqlen01, sqlen12, prod, val;
-
-        sqlen01 = ((x1 - x0) * (x1 - x0)) + ((y1 - y0) * (y1 - y0));
-        sqlen12 = ((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1));
-
-        prod = (x1 - x0) * (x2 - x1) + (y1 - y0) * (y2 - y1);
-        val = 1000 * (prod * prod / sqlen01) / sqlen12; /* Overflow? */
-        if (val < 0)
-        {
-            val = -val;
-        }
-
-        // printf("uti_signcos2 output: %d\n", val);
-        return (val);
     };
 
     auto bresenham_line = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
@@ -208,7 +190,6 @@ void CaveSystem::generateRandomCave()
         int lod2, hid2;
         int ri, rdir;
         int mind2, maxd2;
-        const int mincos2 = 100; /* cos^2 in 1/1000, for angles < 45 degrees */
         int Xoff[8] = {1, 1, 0, -1, -1, -1, 0, 1};
         int Yoff[8] = {0, 1, 1, 1, 0, -1, -1, -1};
 
@@ -230,31 +211,9 @@ void CaveSystem::generateRandomCave()
             if ((lod2 < mind2) || (lod2 > maxd2) || (hid2 < mind2) || (hid2 > maxd2))
                 continue;
 
-
-            // if (uti_signcos2(lox, loy, nx, ny, hix, hiy) < mincos2)
-            // {
-            //     continue;
-            // }
-
-            // if ((ri > 1) && (uti_signcos2(seq->x[ri - 2], seq->y[ri - 2],
-            //                               lox, loy, nx, ny) < mincos2))
-            // {
-            //     continue;
-            // }
-
-            // printf("Past check 3 on %d\n", i);
-
-            // if ((ri < seq->length - 2) && (uti_signcos2(nx, ny, hix, hiy,
-            //                                             seq->x[ri + 2], seq->y[ri + 2]) < mincos2))
-            // {
-            //     continue;
-            // }
-
-
             // seq->x[ri] = nx;
             seq->y[ri] = ny;
         }
-        return (1);
     };
 
     // Start and end point
