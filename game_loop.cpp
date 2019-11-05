@@ -383,6 +383,10 @@ int main() {
 		SDL_Rect health_rect = {200, SCREEN_HEIGHT - 55, 2 * health, 30};
 		SDL_RenderFillRect(gRenderer, &health_rect);
 
+		if(health < 1){
+			game_over->isGameOver = true;
+			game_over->handleEvent(e, player, blocks,gRenderer);
+		}
 		if(game_over->isGameOver)
 		{
 			game_over->stopGame(player, blocks);
