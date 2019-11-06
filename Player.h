@@ -69,6 +69,9 @@ public:
     
 	// Damages the player when they've been hit
 	void hit(int damage);
+
+	//heals player
+	void heal(int amount);
 	
 	// Handle collisions
 	bool checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH);
