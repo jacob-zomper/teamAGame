@@ -31,7 +31,9 @@ void GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, 
         else if (y < RESTART_BUTTON_Y){ inside_button = false; }
         else if (y > RESTART_BUTTON_Y + RESTART_BUTTON_HEIGHT){ inside_button = false; }
 
-        if (inside_button && e.type == SDL_MOUSEBUTTONUP){ restart(player, map_blocks, gRenderer); }
+        if (inside_button && e.type == SDL_MOUSEBUTTONUP){ 
+            restart(player, map_blocks, gRenderer); 
+        }
     }
 }
 
@@ -58,4 +60,5 @@ void GameOver::restart(Player *player, MapBlocks *map_blocks, SDL_Renderer* gRen
     map_blocks->BLOCKS_N = map_blocks->BLOCKS_STARTING_N;
     map_blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT,gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, 0,0);
     isGameOver = false;
+    player->hit(-1*(100-player->getHealth())); // reset hp to 100
 }
