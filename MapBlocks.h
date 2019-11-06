@@ -195,6 +195,8 @@ public:
 	SDL_Texture* stalagmiteSprite2;
 	SDL_Texture* stalagmiteSprite3;
 	SDL_Texture* stalagmiteSprite4;
+    SDL_Texture* healthSprite;
+
 
 
     std::vector<Turret> blocks_arr;

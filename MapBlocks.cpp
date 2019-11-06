@@ -232,6 +232,7 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 	stalagmiteSprite2 = loadImage("sprites/stalagm2.png", gRenderer);
 	stalagmiteSprite3 = loadImage("sprites/stalagm3.png", gRenderer);
 	stalagmiteSprite4 = loadImage("sprites/stalagm4.png", gRenderer);
+    healthSprite=loadImage("sprites/health.png", gRenderer);
 	
     int i;
     for(i = 0; i<CEILING_N; i++){
@@ -587,8 +588,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         if (health_arr[i].HEALTH_REL_X < SCREEN_WIDTH && health_arr[i].HEALTH_REL_Y < SCREEN_HEIGHT&& health_arr[i].enabled)
         {
             SDL_Rect fillRect = {health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT};
-            SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
-            SDL_RenderFillRect(gRenderer, &fillRect);
+            SDL_RenderCopyEx(gRenderer, healthSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
 
