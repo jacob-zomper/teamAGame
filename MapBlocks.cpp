@@ -42,6 +42,31 @@ WallBlock::WallBlock(int num, bool cave){
         enabled=false;
     }
 }
+HealthBlock::HealthBlock(){
+    SDL_Renderer *gRenderer= nullptr;
+    HealthBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+}
+HealthBlock::HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
+    HEALTH_HEIGHT=20;
+    HEALTH_WIDTH=20;
+    HEALTH_ABS_X = rand() % LEVEL_WIDTH;
+    HEALTH_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
+
+    while ((HEALTH_ABS_X - 1280) % cave_freq <= cave_width) {
+        HEALTH_ABS_X = rand() % LEVEL_WIDTH;
+    }
+
+    HEALTH_REL_X=HEALTH_ABS_X;
+    HEALTH_REL_Y=HEALTH_ABS_Y;
+
+    if(HEALTH_ABS_X>(openAir*72) && HEALTH_ABS_X+HEALTH_WIDTH<(openAir+openAirLength)*72){
+        enabled=false;
+    }else{
+        enabled=true;
+    }
+
+
+}
 
 Stalagmite::Stalagmite()
 {
@@ -223,7 +248,11 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     {
         blocks_arr.push_back(Turret(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength)); // Initiating each Turret
     }
-   
+
+    for (i=0; i < HEALTH_N; i++)
+    {
+        health_arr.push_back(HealthBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the stalagmites
+    }
 
     for (i=0; i < STALAG_N; i++)
     {
@@ -257,6 +286,12 @@ void MapBlocks::moveBlocks(int camX, int camY)
     {
         ceiling_arr[i].CEILING_REL_X = ceiling_arr[i].CEILING_ABS_X - camX;
         floor_arr[i].FLOOR_REL_X = floor_arr[i].FLOOR_ABS_X - camX;
+    }
+
+    for (i = 0; i < health_arr.size(); i++)
+    {
+        health_arr[i].HEALTH_REL_X = health_arr[i].HEALTH_ABS_X - camX;
+        health_arr[i].HEALTH_REL_Y = health_arr[i].HEALTH_ABS_Y-camY;
     }
 
 
@@ -320,6 +355,17 @@ void MapBlocks::checkCollision(Player *p)
 			blocks_arr.erase(blocks_arr.begin() + i);
         }
     }
+
+    for (i = health_arr.size() - 1; i >= 0; i--)
+    {
+        // If there's a collision, heal the player and delete health powerup
+        if (health_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT))
+        {
+            p->heal(20);
+            health_arr.erase(health_arr.begin() + i);
+        }
+    }
+    
 
     for (i = stalagm_arr.size() - 1; i >= 0; i--)
     {
@@ -531,6 +577,17 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         {
             SDL_Rect fillRect = {floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side};
             SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
+            SDL_RenderFillRect(gRenderer, &fillRect);
+        }
+    }
+
+    for (i = 0; i < health_arr.size(); i++)
+    {
+        // Only render the health powerup if it will be screen
+        if (health_arr[i].HEALTH_REL_X < SCREEN_WIDTH && health_arr[i].HEALTH_REL_Y < SCREEN_HEIGHT&& health_arr[i].enabled)
+        {
+            SDL_Rect fillRect = {health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT};
+            SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
     }

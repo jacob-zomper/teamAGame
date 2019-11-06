@@ -225,6 +225,13 @@ void Player::hit(int damage) {
 	}
 }
 
+void Player::heal(int amount) {
+    health += amount;
+    if (health > 100) {
+        health = 100;
+    }
+}
+
 // Checks if the player collided with a kamikaze, returning true if so
 bool Player::checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH) {
 	return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT);
