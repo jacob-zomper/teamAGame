@@ -77,7 +77,7 @@ class Missile
 
 		// Calculates how far the entity is to this missile,
 		// using the basic distance formula for two points in a X and Y plane
-		double calculate_distance(int entity_x, int entity_y)
+		double calculate_distance(double entity_x, double entity_y)
 		{
 			return abs(sqrt(pow(x_position - entity_x, 2) + pow(y_position - entity_y, 2)));
 		}
@@ -85,7 +85,7 @@ class Missile
 		// Calculates how much damage the warhead will do to entity,
 		// depending on the entity's distance to the warhead
 		// Using a very simple rational function for now
-		double calculate_damage(int entity_x, int entity_y)
+		double calculate_damage(double entity_x, double entity_y)
 		{
 			double distance = calculate_distance(entity_x, entity_y);
 
@@ -161,7 +161,6 @@ int main()
 			plane->move();
 			cout << "Plane x: " << plane->x_position << " y: " << plane->y_position << endl;
 		}
-
 
 		wait(750);
 	}
