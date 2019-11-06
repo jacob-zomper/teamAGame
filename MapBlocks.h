@@ -26,6 +26,24 @@ public:
     WallBlock(int num);
 };
 
+class HealthBlock
+{
+public:
+    int HEALTH_ABS_Y;
+    int HEALTH_ABS_X;
+
+    int HEALTH_REL_Y;
+    int HEALTH_REL_X;
+
+    int HEALTH_HEIGHT;
+    int HEALTH_WIDTH;
+
+    bool enabled;
+
+    HealthBlock();
+    HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
 
 class Stalagmite
 {
@@ -150,6 +168,9 @@ public:
     static const int STALAG_STARTING_N=50;
     int STALAG_N = 50;
 
+    static const int HEALTH_STARTING_N=20;
+    int HEALTH_N = 20;
+
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
 
@@ -168,6 +189,8 @@ public:
 	SDL_Texture* stalagmiteSprite2;
 	SDL_Texture* stalagmiteSprite3;
 	SDL_Texture* stalagmiteSprite4;
+    SDL_Texture* healthSprite;
+
 
 
     std::vector<Turret> blocks_arr;
@@ -176,6 +199,8 @@ public:
     std::vector<Explosion> explosion_arr;
     std::vector<WallBlock> ceiling_arr;
     std::vector<WallBlock> floor_arr;
+    std::vector<HealthBlock> health_arr;
+
 
     MapBlocks();
 
