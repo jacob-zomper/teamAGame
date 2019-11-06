@@ -125,3 +125,48 @@ void wait(int time)
 	this_thread::sleep_for(chrono::milliseconds(time));
 }
 
+int main()
+{
+	// Hit points, starting x and y position, starting x and y velocity, and velocity direction
+	Plane* plane1 = new Plane(100, 10, 0, 0, 0, 0);
+	Plane* plane2 = new Plane(100, 11, 0, 0, 0, 0);
+
+	planes.push_back(plane1);
+	planes.push_back(plane2);
+
+	// Damage, starting x and y position, starting x and y velocity, velocity direction, and blast radius
+	Missile* missile1 = new Missile(100, 0, 0, 0, 0, 0, 10);
+
+	cout << "Before missile blast:" << endl;
+
+	for (auto plane : planes)
+	{
+		cout << "Plane hitpoints: " << plane->hit_points << endl;
+	}
+
+	check_blast(missile1);
+
+	cout << "After missile blast:" << endl;
+
+	for (auto plane : planes)
+	{
+		cout << "Plane hitpoints: " << plane->hit_points << endl;
+	}
+
+	bool gameon = true;
+	while (gameon)
+	{
+		for (auto& plane : planes)
+		{
+			plane->move();
+			cout << "Plane x: " << plane->x_position << " y: " << plane->y_position << endl;
+		}
+
+
+		wait(750);
+	}
+
+	delete(plane1);
+	delete(plane2);
+	delete(missile1);
+}
