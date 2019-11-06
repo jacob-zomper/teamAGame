@@ -1,5 +1,8 @@
 // Using only public variables to make the demo easier
 
+#include <chrono>
+#include <thread>
+
 #include <cmath>
 #include <vector>
 #include <iostream>
@@ -114,5 +117,11 @@ void check_blast(Missile* missile)
 			plane->deal_damage(damage);
 		}
 	}
+}
+
+// Waits for passed number of nanoseconds
+void wait(int time)
+{
+	this_thread::sleep_for(chrono::milliseconds(time));
 }
 
