@@ -128,25 +128,31 @@ void wait(int time)
 int main()
 {
 	// Hit points, starting x and y position, starting x and y velocity, and velocity direction
-	Plane* plane1 = new Plane(100, 10, 0, 0, 0, 0);
-	Plane* plane2 = new Plane(100, 11, 0, 0, 0, 0);
+	Plane* plane1 = new Plane(100, 0, 1, 1, 0, 0);
+	Plane* plane2 = new Plane(100, 6, 2, 1, 0, 0);
 
 	planes.push_back(plane1);
 	planes.push_back(plane2);
 
 	// Damage, starting x and y position, starting x and y velocity, velocity direction, and blast radius
-	Missile* missile1 = new Missile(100, 0, 0, 0, 0, 0, 10);
+	Missile* missile1 = new Missile(100, -3, -3, 3, 3, 0, 10);
 
 	bool gameon = true;
 	while (gameon)
 	{
+		// Plane distances from the missile
+		cout << "Plane distances: ";
+
+		// Move each plane
 		for (auto& plane : planes)
 		{
 			plane->move();
-			cout << "Plane x: " << plane->x_position << " y: " << plane->y_position << endl;
+			cout << missile1->calculate_distance(plane->x_position, plane->y_position) << " ";
 		}
 
-		cout << endl;
+		missile1->move();
+
+		cout << endl << endl;
 
 		cout << "Before missile blast:" << endl;
 
@@ -166,7 +172,7 @@ int main()
 
 		cout << endl;
 
-		wait(1250);
+		wait(1500);
 	}
 
 	delete(plane1);
