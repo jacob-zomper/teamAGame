@@ -137,22 +137,6 @@ int main()
 	// Damage, starting x and y position, starting x and y velocity, velocity direction, and blast radius
 	Missile* missile1 = new Missile(100, 0, 0, 0, 0, 0, 10);
 
-	cout << "Before missile blast:" << endl;
-
-	for (auto plane : planes)
-	{
-		cout << "Plane hitpoints: " << plane->hit_points << endl;
-	}
-
-	check_blast(missile1);
-
-	cout << "After missile blast:" << endl;
-
-	for (auto plane : planes)
-	{
-		cout << "Plane hitpoints: " << plane->hit_points << endl;
-	}
-
 	bool gameon = true;
 	while (gameon)
 	{
@@ -162,7 +146,27 @@ int main()
 			cout << "Plane x: " << plane->x_position << " y: " << plane->y_position << endl;
 		}
 
-		wait(750);
+		cout << endl;
+
+		cout << "Before missile blast:" << endl;
+
+		for (auto plane : planes)
+		{
+			cout << "Plane hitpoints: " << plane->hit_points << endl;
+		}
+
+		check_blast(missile1);
+
+		cout << "After missile blast:" << endl;
+
+		for (auto plane : planes)
+		{
+			cout << "Plane hitpoints: " << plane->hit_points << endl;
+		}
+
+		cout << endl;
+
+		wait(1250);
 	}
 
 	delete(plane1);
