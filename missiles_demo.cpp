@@ -32,7 +32,7 @@ class Plane
 		double direction;
 
 		// Deals damage to the plane's hitpoints
-		double deal_damage(double damage)
+		void deal_damage(double damage)
 		{
 			if (damage >= hit_points)
 			{
