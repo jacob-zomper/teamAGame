@@ -95,3 +95,24 @@ class Missile
 			y_position += y_velocity * sin(direction * degree_to_radian);
 		}
 };
+
+// Vector that stores all planes in the game
+vector<Plane*> planes;
+
+// Deals damage to all planes that are within the blast radius of the missile
+void check_blast(Missile* missile)
+{
+	vector<Plane*> affected_planes;
+
+	for (auto& plane : planes)
+	{
+		double distance = missile->calculate_distance(plane->x_position, plane->y_position);
+
+		if (distance <= missile->blast_radius)
+		{
+			double damage = missile->calculate_damage(plane->x_position, plane->y_position);
+			plane->deal_damage(damage);
+		}
+	}
+}
+
