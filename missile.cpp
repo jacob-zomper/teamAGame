@@ -31,35 +31,35 @@ double Missile::calculate_damage(double entity_x, double entity_y)
 
 int Missile::getX()
 {
-
+	return xPos;
 }
 
 int Missile::getY()
 {
-
+	return yPos;
 }
 
 int Missile::getWidth()
 {
-
+	return width;
 }
 
 int Missile::getHeight()
 {
-
+	return height;
 }
 
 int Missile::getXVel()
 {
-
+	return xVel;
 }
 
 int Missile::getYVel()
 {
-
+	return yVel;
 }
 
 SDL_Rect* getHitbox()
 {
-
+	return hitbox;
 }
