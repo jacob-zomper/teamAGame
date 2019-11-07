@@ -8,9 +8,9 @@
 class Missile
 {
     public:
-        static const int MISSILE_SIZE = 15;
+        static const int MISSILE_SIZE = 25;
 
-        Missile(int damage, int blast_radius, int x, int y, int xvel, int yvel);
+        Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel);
 
         void renderMissile(SDL_Renderer* gRenderer);
 
@@ -64,10 +64,10 @@ class Missile
         // Missile specific variables:
 
         // Amount of damage the warhead deals at the center of the blast radius
-		double damage;
+		int damage;
 
         // Radius where most damage is caused by the warhead
-		double blast_radius;
+		int blast_radius;
 };
 
 #endif

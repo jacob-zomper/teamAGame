@@ -1,15 +1,12 @@
-#include <missile.h>
+#include "missile.h"
 #include <SDL.h>
 #include <iostream>
 #include <cmath>
 
-Missile::Missile(int damage, int blast_radius, int x, int y, int xvel, int yvel) :
+Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel) :
 	damage{ damage }, blast_radius{ blast_radius }, xPos{ x }, yPos{ y },
-	xVel { xvel }, yVel{ yvel } 
+	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 5}
 	{
-		width = MISSILE_SIZE;
-		height = MISSILE_SIZE / 5;
-
 		missile_sprite = {(int)xPos, (int)yPos, width, height};
 		hitbox = missile_sprite;
 
@@ -43,7 +40,7 @@ void Missile::move()
 // using the basic distance formula for two points in a X and Y plane
 double Missile::calculate_distance(double entity_x, double entity_y)
 {
-	return abs(sqrt(pow(x_position - entity_x, 2) + pow(y_position - entity_y, 2)));
+	return abs(sqrt(pow(xPos - entity_x, 2) + pow(yPos - entity_y, 2)));
 }
 
 // Calculates how much damage the warhead will do to entity,
@@ -86,7 +83,7 @@ int Missile::getYVel()
 	return yVel;
 }
 
-SDL_Rect* getHitbox()
+SDL_Rect* Missile::getHitbox()
 {
-	return hitbox;
+	return &hitbox;
 }
