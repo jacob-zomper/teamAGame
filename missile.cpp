@@ -3,7 +3,9 @@
 #include <iostream>
 #include <cmath>
 
-Missile::Missile(int damage, int blast_radius, int x, int y, int xvel, int yvel) {}
+Missile::Missile(int damage, int blast_radius, int x, int y, int xvel, int yvel) :
+	damage{ damage }, blast_radius{ blast_radius }, xPos{ x }, yPos{ y },
+	xVel { xvel }, yVel{ yvel } {}
 
 void Missile::renderMissile(SDL_Renderer* gRenderer)
 {
