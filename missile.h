@@ -10,7 +10,7 @@ class Missile
     public:
         static const int MISSILE_SIZE = 15;
 
-        Missile(int x, int y, int xvel, int yvel);
+        Missile(int damage, int blast_radius, int x, int y, int xvel, int yvel);
 
         void renderMissile(SDL_Renderer* gRenderer);
 
@@ -21,6 +21,8 @@ class Missile
 
         // Calculates how much damage the warhead will do to entity
 		double calculate_damage(double entity_x, double entity_y);
+
+        // Accessor functions:
 
         int getX();
         int getY();
@@ -35,6 +37,7 @@ class Missile
 
     private:
         // The following variables are the same as from bullet
+        // We could have just used inheritance, but it's too late for that
 
         // Size of missile
         const int width, height;
