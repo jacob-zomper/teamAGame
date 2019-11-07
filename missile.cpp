@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-Missile::Missile() {}
+Missile::Missile(int damage, int blast_radius, int x, int y, int xvel, int yvel) {}
 
 void Missile::renderMissile(SDL_Renderer* gRenderer)
 {
@@ -57,5 +57,7 @@ int Missile::getYVel()
 
 }
 
+SDL_Rect* getHitbox()
+{
 
-
+}
