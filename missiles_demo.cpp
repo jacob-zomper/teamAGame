@@ -34,6 +34,8 @@ class Plane
 		// Deals damage to the plane's hitpoints
 		void deal_damage(double damage)
 		{
+			cout << "Damage delt: " << damage << endl;
+
 			if (damage >= hit_points)
 			{
 				hit_points = 0;
@@ -72,7 +74,7 @@ class Missile
 		// Direction angle in degrees
 		double direction;
 
-		// Maximum distance the warhead can cause damage
+		// Radius where most damage is caused by the warhead
 		double blast_radius;
 
 		// Calculates how far the entity is to this missile,
@@ -88,8 +90,7 @@ class Missile
 		double calculate_damage(double entity_x, double entity_y)
 		{
 			double distance = calculate_distance(entity_x, entity_y);
-
-			return damage / distance;
+			return blast_radius / pow(distance, 2) * damage;
 		}
 
 		void move()
@@ -128,14 +129,14 @@ void wait(int time)
 int main()
 {
 	// Hit points, starting x and y position, starting x and y velocity, and velocity direction
-	Plane* plane1 = new Plane(100, 0, 1, 1, 0, 0);
-	Plane* plane2 = new Plane(100, 6, 2, 1, 0, 0);
+	Plane* plane1 = new Plane(100, 10, 0, 1, 0, 0);
+	Plane* plane2 = new Plane(100, 10, 0, 1, 0, 0);
 
 	planes.push_back(plane1);
 	planes.push_back(plane2);
 
 	// Damage, starting x and y position, starting x and y velocity, velocity direction, and blast radius
-	Missile* missile1 = new Missile(100, -3, -3, 3, 3, 0, 10);
+	Missile* missile1 = new Missile(25, -3, -3, 3, 3, 0, 10);
 
 	bool gameon = true;
 	while (gameon)
@@ -172,7 +173,7 @@ int main()
 
 		cout << endl;
 
-		wait(1500);
+		wait(3000);
 	}
 
 	delete(plane1);
