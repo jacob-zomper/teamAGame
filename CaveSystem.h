@@ -44,6 +44,7 @@ public:
 
     CaveSystem();
     CaveSystem(int camX, int camY, int SCREEN_WIDTH);
+    ~CaveSystem();
 
     void render(SDL_Renderer *gRenderer);
     void moveCaveBlocks(int camX, int camY);

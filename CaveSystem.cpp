@@ -57,6 +57,21 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
 }
 
+CaveSystem::~CaveSystem()
+{
+    std::cout << "Dealocating Cave System" << std::endl;
+    for(int i=0;i<CAVE_SYSTEM_HEIGHT;i++)
+    {
+        for(int j=0;j<CAVE_SYSTEM_WIDTH; j++)
+        {
+            std::cout << "dealocating item " << i << " , " << j << " from " << cave_system[i][j] << std::endl;
+            delete cave_system[i][j];
+            std::cout << "deleted"<< std::endl;
+        }
+    }
+    //delete[] &cave_system;
+}
+
 void CaveSystem::generateRandomCave()
 {
     /*
@@ -296,6 +311,7 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
     if(!isStillShowing)
     {
         isEnabled = false;
+        this->~CaveSystem();
         // printf("CAVE SYSTEM DONE SHOWING!\n");
     }
 }
