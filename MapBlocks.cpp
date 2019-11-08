@@ -181,10 +181,10 @@ Bullet * Turret::handleFiring(int posX, int posY) {
 Explosion::Explosion()
 {
     SDL_Renderer *gRenderer= nullptr;
-    Explosion(1, 1, gRenderer);
+    Explosion(1, 1, 0, gRenderer);
 }
 
-Explosion::Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer)
+Explosion::Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer)
 {
 	// Initialize all necessary variables
 	current_size = (double) INITIAL_EXPLOSION_SIZE;
@@ -193,6 +193,7 @@ Explosion::Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer)
 	abs_x = center_x - current_size / 2;
 	abs_y = center_y - current_size / 2;
 	explosion_time = SDL_GetTicks();
+    type = t;
 }
 
 MapBlocks::MapBlocks()
@@ -205,6 +206,7 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 {
 	gRenderer = gr;
 	explosionSprite = loadImage("sprites/Explosion.png", gRenderer);
+    dustCloudSprite = loadImage("sprites/dustCloud.png", gRenderer);
 	topTurretSprite = loadImage("sprites/topturret.png", gRenderer);
 	bottomTurretSprite = loadImage("sprites/bottomturret.png", gRenderer);
 	stalactiteSprite1 = loadImage("sprites/stalagt1.png", gRenderer);
@@ -337,7 +339,7 @@ void MapBlocks::checkCollision(Player *p)
 		if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
             p->hit(5);
-			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, gRenderer));
+			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
 			blocks_arr.erase(blocks_arr.begin() + i);
         }
     }
@@ -359,7 +361,7 @@ void MapBlocks::checkCollision(Player *p)
         if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
-			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, gRenderer));
+			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
 			stalagm_arr.erase(stalagm_arr.begin() + i);
         }
 	}
@@ -370,7 +372,7 @@ void MapBlocks::checkCollision(Player *p)
         if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
-			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, gRenderer));
+			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
 			stalagt_arr.erase(stalagt_arr.begin() + i);
         }
     }
@@ -462,7 +464,7 @@ bool MapBlocks::checkCollision(Bullet *b)
         // If there's a collision with one of the planes, destroy the plane and the bullet
 		if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
-			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, gRenderer));
+			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
             blocks_arr.erase(blocks_arr.begin() + i);
             return true;
         }
@@ -619,14 +621,25 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 				SDL_RenderCopyEx(gRenderer, stalactiteSprite4, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
 			}
         }
+
+        if(stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT >= SCREEN_HEIGHT + 35 - WallBlock::block_side && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT <= SCREEN_HEIGHT + 37 - WallBlock::block_side){ 
+            int x = stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2;
+            int y = stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2;
+            explosion_arr.push_back(Explosion(x, y, 1, gRenderer));
+        }
     }
 
 	for (i = 0; i < explosion_arr.size(); i++) {
-		SDL_RenderCopyEx(gRenderer, explosionSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
-	}
+        if(explosion_arr[i].type == 0){
+		    SDL_RenderCopyEx(gRenderer, explosionSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+        else{
+            SDL_RenderCopyEx(gRenderer, dustCloudSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
 }
 
 // Add an explosion at the given location
-void MapBlocks::addExplosion(int x, int y, int w, int h) {
-	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, gRenderer));
+void MapBlocks::addExplosion(int x, int y, int w, int h, int type) {
+	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
 }
