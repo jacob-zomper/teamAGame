@@ -59,17 +59,22 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
 
 CaveSystem::~CaveSystem()
 {
-    std::cout << "Dealocating Cave System" << std::endl;
+    std::cout << "Deallocating Cave System" << std::endl;
     for(int i=0;i<CAVE_SYSTEM_HEIGHT;i++)
     {
         for(int j=0;j<CAVE_SYSTEM_WIDTH; j++)
         {
-            std::cout << "dealocating item " << i << " , " << j << " from " << cave_system[i][j] << std::endl;
+            // std::cout << "deallocating item " << i << " , " << j << " from " << cave_system[i][j] << std::endl;
             delete cave_system[i][j];
-            std::cout << "deleted"<< std::endl;
+            // std::cout << "deleted"<< std::endl;
         }
     }
-    //delete[] &cave_system;
+    // delete[] &cave_system;
+}
+
+PathSequence* CaveSystem::getPathSequence()
+{
+    return &path;    
 }
 
 void CaveSystem::generateRandomCave()
@@ -234,12 +239,10 @@ void CaveSystem::generateRandomCave()
     // Start and end point
     // y values are have a 5 point padding so that it doesnt interfere with the walls
     x1 = 0;
-    y1 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
+    y1 = 3 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 1);
 
     x2 = CaveSystem::CAVE_SYSTEM_WIDTH;
-    y2 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
-
-    PathSequence path;
+    y2 = 3 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 1);
 
     bresenham_line(&path, x1, y1, x2, y2);
     uti_perturb(&path, 2, 5, 40);
