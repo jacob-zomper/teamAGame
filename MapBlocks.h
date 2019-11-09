@@ -151,8 +151,11 @@ public:
 	double rel_x;
 	double rel_y;
 
+    //0 for explosion, 1 for dust cloud
+    int type;
+
 	Explosion();
-	Explosion(int x_loc, int y_loc, SDL_Renderer *gRenderer);
+	Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer);
 
 	//defines the explosion
     SDL_Rect hitbox;
@@ -179,6 +182,7 @@ public:
     SDL_Renderer *gRenderer;
 
     SDL_Texture* explosionSprite;
+    SDL_Texture* dustCloudSprite;
 	SDL_Texture* topTurretSprite;
 	SDL_Texture* bottomTurretSprite;
 	SDL_Texture* stalactiteSprite1;
@@ -214,7 +218,7 @@ public:
 	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
 
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer, bool isCaveEnabled);
-	void addExplosion(int x, int y, int w, int h);
+	void addExplosion(int x, int y, int w, int h, int type);
 
 private:
     //Animation frequency

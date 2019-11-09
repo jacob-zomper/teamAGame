@@ -181,6 +181,7 @@ int main() {
 
 	srand(time(NULL));
 
+
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
 
@@ -255,9 +256,8 @@ int main() {
 		}
 		// If the kamikaze is offscreen, create a new one
 		if (kam->getX() < -kam->getWidth()) {
-			//kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
-			kam->setX(SCREEN_WIDTH+125);
-			kam->setY(SCREEN_HEIGHT/2);
+			delete kam;
+			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
 			kam->setArrivalTime(5000);
 		}
 
@@ -299,7 +299,7 @@ int main() {
 			}
 			else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
 				destroyed = true;
-				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
+				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
 				// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 				kam->setX(SCREEN_WIDTH+125);
 				kam->setY(SCREEN_HEIGHT/2);
@@ -308,7 +308,7 @@ int main() {
 				destroyed = true;
 				en->hit(5);
 				if (en->getHealth() == 0)
-					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight());
+					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
 			}
 			if (destroyed) {
 				bullets.erase(bullets.begin() + i);
@@ -320,7 +320,7 @@ int main() {
 			player->hit(10);
 			en->hit(10);
 			if (en->getHealth() == 0)
-				blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight());
+				blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
 		}
 
 		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
@@ -337,7 +337,7 @@ int main() {
 
 		// If the player hits the kamikaze, blow up the kamikaze, damage the player, and make a new kamikaze
 		if (player->checkCollisionKami(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())) {
-			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight());
+			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
 			player->hit(10);
 			//kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 			kam->setX(SCREEN_WIDTH+125);
