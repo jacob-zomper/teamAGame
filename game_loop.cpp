@@ -7,6 +7,7 @@
 #include <time.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include "MapBlocks.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -44,6 +45,10 @@ std::vector<Bullet*> bullets;
 Enemy* en;
 Kamikaze* kam;
 
+// Music stuff
+Mix_Music *trash_beat = NULL;
+
+
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
 int last_horiz_scroll = SDL_GetTicks();
@@ -53,9 +58,8 @@ Uint32 fps_last_time = SDL_GetTicks();
 Uint32 fps_cur_time = 0;
 int framecount;
 
-
 bool init() {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
@@ -81,7 +85,13 @@ bool init() {
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
 	}
-
+	
+	//Initialize SDL_mixer
+	if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+	{
+		printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+		return false;
+	}
 	// Set renderer draw/clear color
 	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 
@@ -107,9 +117,23 @@ SDL_Texture* loadImage(std::string fname) {
 	return newText;
 }
 
+Mix_Music* loadMusic(std::string fname) {
+	Mix_Music* newMusic = Mix_LoadMUS(fname.c_str());
+	
+	if( newMusic == NULL )
+    {
+        printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+        return nullptr;
+    }
+	return newMusic;
+}
+
 void close() {
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
+	
+	Mix_FreeMusic(trash_beat);
+	
 	gWindow = nullptr;
 	gRenderer = nullptr;
 	TTF_Quit();
@@ -178,6 +202,8 @@ int main() {
 		close();
 		return 1;
 	}
+	
+	trash_beat = loadMusic("sounds/lebron_trash_beat.wav");
 
 	srand(time(NULL));
 
@@ -416,6 +442,7 @@ int main() {
 		}
 		if(game_over->isGameOver)
 		{
+			if (Mix_PlayingMusic() == 0) Mix_PlayMusic(trash_beat, -1);
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 			camX = 0;
