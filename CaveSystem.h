@@ -29,6 +29,17 @@ public:
 };
 
 
+class PathSequence
+{
+public:
+    int x[CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH / CaveBlock::CAVE_BLOCK_WIDTH];
+    int y[CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH / CaveBlock::CAVE_BLOCK_WIDTH];
+    int length;
+
+    PathSequence();
+};
+
+
 class CaveSystem
 {
 public:
@@ -40,6 +51,7 @@ public:
     static int CAVE_END_ABS_X; 
 
     bool isEnabled = false;
+    PathSequence path;
     CaveBlock *cave_system[CAVE_SYSTEM_HEIGHT][CAVE_SYSTEM_WIDTH];
 
     CaveSystem();
@@ -50,19 +62,11 @@ public:
     void moveCaveBlocks(int camX, int camY);
     void checkCollision(Player *p);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+    PathSequence* getPathSequence();
 
 private:
     void generateRandomCave();
 };
 
-class PathSequence
-{
-public:
-    int x[CaveSystem::CAVE_SYSTEM_WIDTH];
-    int y[CaveSystem::CAVE_SYSTEM_WIDTH];
-    int length;
-
-    PathSequence();
-};
 
 #endif
