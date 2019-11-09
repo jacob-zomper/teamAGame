@@ -41,6 +41,7 @@ MapBlocks *blocks;
 GameOver *game_over;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
+std::vector<Missile*> missiles;
 Enemy* en;
 Kamikaze* kam;
 
@@ -271,12 +272,19 @@ int main() {
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
-		bullets = blocks->handleFiring(bullets, player->getPosX(), player->getPosY());
+		
+		missiles = blocks->handleFiring(missiles, player->getPosX(), player->getPosY());
 
 		kam->move(player, SCREEN_WIDTH);
 		//move the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
+		}
+
+		//move the missiles
+		for (auto& missile : missiles)
+		{
+			missile->move();
 		}
 
 		//Move Blocks and check collisions
@@ -363,6 +371,12 @@ int main() {
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->renderBullet(gRenderer);
+		}
+
+		//draw the missiles
+		for (auto& missile : missiles)
+		{
+			missile->renderMissile(gRenderer);
 		}
 
 		framecount++;
