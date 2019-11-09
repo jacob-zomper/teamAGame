@@ -94,7 +94,7 @@ public:
 	// Move and shooting times, needed for framerate-independent shooting
 	int time_since_move;
 	int last_move;
-	static const int SHOOT_FREQ = 1000;
+	static const int SHOOT_FREQ = 3000;
 
     // absolute coordinates of each Turret
     int BLOCK_ABS_X;
@@ -112,6 +112,7 @@ public:
 	// 1 if bottom turret, 0 if top
     int bottom;
 
+    SDL_Renderer* gRenderer;
 
     Turret();
     Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);

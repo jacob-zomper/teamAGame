@@ -4,13 +4,14 @@
 #include <SDL.h>
 #include <iostream>
 #include <cmath>
+#include <SDL_image.h>
 
 class Missile
 {
     public:
         static const int MISSILE_SIZE = 25;
 
-        Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel);
+        Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer);
 
         void renderMissile(SDL_Renderer* gRenderer);
 
@@ -33,7 +34,9 @@ class Missile
         int getXVel();
         int getYVel();
 
-        SDL_Rect* getHitbox();
+        SDL_Texture* sprite;
+
+        SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     private:
         // The following variables are the same as from bullet
@@ -50,9 +53,6 @@ class Missile
 
         // Velocity direction in radians
         double pitch;
-
-        SDL_Rect missile_sprite;
-        SDL_Rect hitbox;
 
         // Timing
         int time_since_move;
