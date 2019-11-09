@@ -47,6 +47,7 @@ Kamikaze* kam;
 
 // Music stuff
 Mix_Music *trash_beat = NULL;
+int current_track = 0;
 
 
 // Scrolling-related times so that scroll speed is independent of framerate
@@ -235,7 +236,11 @@ int main() {
 	bool gameon = true;
 
 	while(gameon) {
-
+		
+		if (current_track != 0 && !game_over->isGameOver) {
+			current_track = 0;
+			Mix_HaltMusic();
+		}
 		// Scroll to the side, unless the end of the level has been reached
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
@@ -442,7 +447,10 @@ int main() {
 		}
 		if(game_over->isGameOver)
 		{
-			if (Mix_PlayingMusic() == 0) Mix_PlayMusic(trash_beat, -1);
+			if (current_track != 1) {
+				Mix_PlayMusic(trash_beat, -1);
+				current_track = 1;
+			}
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 			camX = 0;
