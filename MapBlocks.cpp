@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include "Player.h"
 #include "MapBlocks.h"
+#include "missile.h"
 #include "iostream"
 #include <vector>
 
@@ -159,9 +160,12 @@ int Turret::getRelY() { return BLOCK_REL_Y; }
 int Turret::getAbsX() { return BLOCK_ABS_X; }
 int Turret::getAbsY() { return BLOCK_ABS_Y; }
 
-Bullet * Turret::handleFiring(int posX, int posY) {
+Missile * Turret::handleFiring(int posX, int posY) {
+    int damage = 100;
+    int blast_radius = 10;
+
 	time_since_move = SDL_GetTicks() - last_move;
-	Bullet * b = nullptr;
+	Missile * m = nullptr;
 	if (time_since_move >= SHOOT_FREQ) {
 		last_move = SDL_GetTicks();
 		int xDist = posX - BLOCK_REL_X;
@@ -169,13 +173,13 @@ Bullet * Turret::handleFiring(int posX, int posY) {
 		double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
 		double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
 		if (BLOCK_REL_Y >= posY){
-			b = new Bullet(BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
+			m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
 		}
 		else {
-			b = new Bullet(BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
+			m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
 		}
 	}
-	return b;
+	return m;
 }
 
 Explosion::Explosion()
@@ -317,16 +321,16 @@ void MapBlocks::moveBlocks(int camX, int camY)
 	}
 }
 
-std::vector<Bullet*> MapBlocks::handleFiring(std::vector<Bullet*> bullets, int posX, int posY) {
+std::vector<Missile*> MapBlocks::handleFiring(std::vector<Missile*> missiles, int posX, int posY) {
 	for (int i = 0; i < blocks_arr.size(); i++) {
 		if (blocks_arr[i].BLOCK_REL_X > 0 && blocks_arr[i].BLOCK_REL_Y > 0 && blocks_arr[i].BLOCK_REL_X <= 1280 && blocks_arr[i].BLOCK_REL_Y <= 720) {
-			Bullet * newBullet = blocks_arr[i].handleFiring(posX, posY);
-			if (newBullet != nullptr) {
-				bullets.push_back(newBullet);
+			Missile * newMissile = blocks_arr[i].handleFiring(posX, posY);
+			if (newMissile != nullptr) {
+				missiles.push_back(newMissile);
 			}
 		}
 	}
-	return bullets;
+	return missiles;
 }
 
 void MapBlocks::checkCollision(Player *p)

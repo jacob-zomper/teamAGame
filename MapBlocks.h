@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "CaveSystem.h"
 #include <vector>
+#include "missile.h"
 
 class WallBlock
 {
@@ -125,7 +126,7 @@ public:
     //defines the hitbox of the turret
     SDL_Rect FB_hitbox;
 
-	Bullet * handleFiring(int posX, int posY);
+	Missile* handleFiring(int posX, int posY);
 };
 
 class Explosion
@@ -215,7 +216,7 @@ public:
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
 	bool checkCollision(Bullet *b);
-	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
+	std::vector<Missile*> handleFiring(std::vector<Missile*> missiles, int posX, int posY);
 
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer, bool isCaveEnabled);
 	void addExplosion(int x, int y, int w, int h, int type);
