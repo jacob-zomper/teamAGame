@@ -98,8 +98,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		// Otherwise, just follow the cave
 		else
 		{
-			if (cave_y > yPos + 5) yPos += (double) (maxYVelo * time_since_move) / 1000;
-			else if (cave_y < yPos - 5) yPos -= (double) (maxYVelo * time_since_move) / 1000;
+			if (cave_y > yPos + height / 2 + 5) yPos += (double) (maxYVelo * time_since_move) / 1000;
+			else if (cave_y < yPos + height / 2 - 5) yPos -= (double) (maxYVelo * time_since_move) / 1000;
 		}
 		enemy_sprite = {(int)xPos,(int)yPos,width,height};
 		last_move = SDL_GetTicks();
