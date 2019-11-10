@@ -44,7 +44,6 @@ CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
 Enemy* en;
 Kamikaze* kam;
-int caveCounter = 0;
 bool caveCounterHelp = false;
 
 // Music stuff
@@ -170,27 +169,23 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 	int kamiX = kam->getX();
 	int kamiY = kam->getY(); 
 	PathSequence * path = cave_system->getPathSequence();
-	/*
-	path->x is the width of the cave
-	path->y is the value of the padding of the cave 
-	at line 127 in the CaveSystem.cpp I commented out some printf statements that show how the padding works, if you take a 
-		screen shot of the game with the cave, you can see how the padding works. Its easier to explain in person if you need help on how it works
-	the hardest part for me(Brandon) on understanding how to implement this is how we can attribute the cave moving across the screen and add that to the risk score for the x value.
-		I can draw this up to on how to get it implemented too
-	*/
-
-	 int en_x = path->x[caveCounter/20];
-	 int cave_y = 20 * (path->y[caveCounter/20]); 
 	
-
-	if(cave_system->isEnabled && caveCounter < 4000)
-	{	
-		printf("cave y: %d\n", cave_y);
-		caveCounter++;
+	int cave_y = -1;				// y coordinate of the center of the cave. -1 if there is no relevant cave
+	int abs_enemy_x = en->getX() + en->getWidth() / 2 + camX;
+	// Absolute start and end coordinates of the cave
+	int startX = cave_system->getStartX();
+	int endX = cave_system->getEndX();
+	int index = -1;
+	if (abs_enemy_x > startX && abs_enemy_x < endX)
+	{
+		index = (abs_enemy_x - startX) / CaveBlock::CAVE_BLOCK_WIDTH;
+		cave_y = path->y[index] * CaveBlock::CAVE_BLOCK_HEIGHT;
 	}
-	
-	if(!cave_system->isEnabled)
-		caveCounter = 0;
+	else if (abs_enemy_x < startX && abs_enemy_x + 400 > startX)
+	{
+		index = 0;
+		cave_y = path->y[0] * CaveBlock::CAVE_BLOCK_HEIGHT;
+	}
 	
 	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY, cave_y);
 }

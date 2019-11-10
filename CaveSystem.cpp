@@ -75,7 +75,7 @@ CaveSystem::~CaveSystem()
 
 PathSequence* CaveSystem::getPathSequence()
 {
-    return &path;    
+    return &path;
 }
 
 void CaveSystem::generateRandomCave()
@@ -350,4 +350,14 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
         this->~CaveSystem();
         // printf("CAVE SYSTEM DONE SHOWING!\n");
     }
+}
+
+int CaveSystem::getStartX()
+{
+	return CAVE_START_ABS_X;
+}
+
+int CaveSystem::getEndX()
+{
+	return CAVE_END_ABS_X;
 }

@@ -62,35 +62,45 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
     void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY, int cave_y)
     {
-        time_since_move = SDL_GetTicks() - last_move;
-		xVelo = 0;
-		yVelo = 0;
+		// If there is no cave, use the risk scores
+		if (cave_y == -1)
+		{
+			time_since_move = SDL_GetTicks() - last_move;
+			xVelo = 0;
+			yVelo = 0;
 
-        // tiltAngle = 0;
-		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY, cave_y);
-		int direction = chooseDirection();
+			// tiltAngle = 0;
+			calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+			int direction = chooseDirection();
 
-		// Move right if that's the optimal direction
-        if(direction == 3 || direction == 4 || direction == 5 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) < SQUARE_WIDTH / 4))){
-			xVelo = maxXVelo;
-        }
-		// Move left if that's the optimal direction
-		if (direction == 1 || direction == 8 || direction == 7 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
-			xVelo = -maxXVelo;
-		}
-		// Move up if that's the optimal direction
-		if (direction == 1 || direction == 2 || direction == 3 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
-			yVelo = -maxYVelo;
-			// tiltAngle = 15;
-		}
-		// Move down if that's the optimal direction
-		if (direction == 5 || direction == 6 || direction == 7 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) < SQUARE_WIDTH / 4))) {
-			yVelo = maxYVelo;
-			// tiltAngle = -15;
-		}
+			// Move right if that's the optimal direction
+			if(direction == 3 || direction == 4 || direction == 5 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) < SQUARE_WIDTH / 4))){
+				xVelo = maxXVelo;
+			}
+			// Move left if that's the optimal direction
+			if (direction == 1 || direction == 8 || direction == 7 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
+				xVelo = -maxXVelo;
+			}
+			// Move up if that's the optimal direction
+			if (direction == 1 || direction == 2 || direction == 3 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
+				yVelo = -maxYVelo;
+				// tiltAngle = 15;
+			}
+			// Move down if that's the optimal direction
+			if (direction == 5 || direction == 6 || direction == 7 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) < SQUARE_WIDTH / 4))) {
+				yVelo = maxYVelo;
+				// tiltAngle = -15;
+			}
 
-		xPos += (double) (xVelo * time_since_move) / 1000;
-		yPos += (double) (yVelo * time_since_move) / 1000;
+			xPos += (double) (xVelo * time_since_move) / 1000;
+			yPos += (double) (yVelo * time_since_move) / 1000;
+		}
+		// Otherwise, just follow the cave
+		else
+		{
+			if (cave_y > yPos + 5) yPos += (double) (maxYVelo * time_since_move) / 1000;
+			else if (cave_y < yPos - 5) yPos -= (double) (maxYVelo * time_since_move) / 1000;
+		}
 		enemy_sprite = {(int)xPos,(int)yPos,width,height};
 		last_move = SDL_GetTicks();
     }
@@ -159,7 +169,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		return leastRisky;
 	}
 
-	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY, int cave_y) {
+	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY) {
 		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[i][j] = 0;
@@ -216,25 +226,6 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 				riskScores[xBlock][j] += 10;
 			}
 		}
-
-		// For the enemey to navigate the plane
-		// Trying to find a way for the enemy to recogonize the cave_system x moving acorss the scree
-		if(!cave_y == 0)
-		{
-			xBlock = (20 - MIN_X)/SQUARE_WIDTH;
-			yBlock = (cave_y - MIN_Y)/SQUARE_WIDTH;
-			if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) {
-				for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
-					riskScores[j][yBlock] += 100;
-				}
-			}
-			if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) {
-				for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
-					riskScores[xBlock][j] += 100;
-				}
-			}	
-		}
-		
 
 		// Factor proximity to the edge of the screen into the risk score
 		double center = ((MAX_Y - MIN_Y) / 2.0) / SQUARE_WIDTH - 0.5;

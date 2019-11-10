@@ -48,7 +48,7 @@ class Enemy
         SDL_Rect* getHitbox();
         Bullet* handleFiring();
 		int chooseDirection();
-		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY, int cave_y);
+		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY);
 
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
