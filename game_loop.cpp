@@ -47,7 +47,8 @@ Kamikaze* kam;
 
 // Music stuff
 Mix_Music *trash_beat = NULL;
-int current_track = 0;
+Mix_Music* song = NULL;
+int current_track = -1;
 
 
 // Scrolling-related times so that scroll speed is independent of framerate
@@ -205,6 +206,7 @@ int main() {
 	}
 	
 	trash_beat = loadMusic("sounds/lebron_trash_beat.wav");
+	song = loadMusic("sounds/track_2.wav");
 
 	srand(time(NULL));
 
@@ -239,7 +241,7 @@ int main() {
 		
 		if (current_track != 0 && !game_over->isGameOver) {
 			current_track = 0;
-			Mix_HaltMusic();
+			Mix_PlayMusic(song, -1);
 		}
 		// Scroll to the side, unless the end of the level has been reached
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
