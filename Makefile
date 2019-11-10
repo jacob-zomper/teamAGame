@@ -61,6 +61,7 @@ brandon: SDLCredits.cpp game_loop.cpp
 	g++ $(GAMEOVER_CLASS) $(BRANDON_LIB)
 	g++ $(MAPBLOCKS_CLASS) $(BRANDON_LIB)
 	g++ $(TEXT_CLASS) $(BRANDON_LIB)
+	g++ $(KAMIKAZE_CLASS) $(BRANDON_LIB)
 	g++ $(INCLUDED_CLASSES) game_loop.cpp $(BRANDON_LIB) -o game_loop
 
 brandon_enemy: test_enemy_move.cpp

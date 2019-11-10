@@ -60,14 +60,14 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			}
     }
 
-    void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY)
+    void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY, int cave_y)
     {
         time_since_move = SDL_GetTicks() - last_move;
 		xVelo = 0;
 		yVelo = 0;
 
         // tiltAngle = 0;
-		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY, cave_y);
 		int direction = chooseDirection();
 
 		// Move right if that's the optimal direction
@@ -159,7 +159,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		return leastRisky;
 	}
 
-	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY) {
+	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY, int cave_y) {
 		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[i][j] = 0;
@@ -216,6 +216,25 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 				riskScores[xBlock][j] += 10;
 			}
 		}
+
+		// For the enemey to navigate the plane
+		// Trying to find a way for the enemy to recogonize the cave_system x moving acorss the scree
+		if(!cave_y == 0)
+		{
+			xBlock = (20 - MIN_X)/SQUARE_WIDTH;
+			yBlock = (cave_y - MIN_Y)/SQUARE_WIDTH;
+			if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) {
+				for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
+					riskScores[j][yBlock] += 100;
+				}
+			}
+			if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) {
+				for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
+					riskScores[xBlock][j] += 100;
+				}
+			}	
+		}
+		
 
 		// Factor proximity to the edge of the screen into the risk score
 		double center = ((MAX_Y - MIN_Y) / 2.0) / SQUARE_WIDTH - 0.5;
