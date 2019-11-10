@@ -44,6 +44,7 @@ CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
 Enemy* en;
 Kamikaze* kam;
+bool caveCounterHelp = false;
 
 // Music stuff
 Mix_Music *trash_beat = NULL;
@@ -166,8 +167,27 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 	// 	}
 	// }
 	int kamiX = kam->getX();
-	int kamiY = kam->getY();
-	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+	int kamiY = kam->getY(); 
+	PathSequence * path = cave_system->getPathSequence();
+	
+	int cave_y = -1;				// y coordinate of the center of the cave. -1 if there is no relevant cave
+	int abs_enemy_x = en->getX() + en->getWidth() / 2 + camX;
+	// Absolute start and end coordinates of the cave
+	int startX = cave_system->getStartX();
+	int endX = cave_system->getEndX();
+	int index = -1;
+	if (abs_enemy_x > startX && abs_enemy_x < endX)
+	{
+		index = (abs_enemy_x - startX) / CaveBlock::CAVE_BLOCK_WIDTH;
+		cave_y = path->y[index] * CaveBlock::CAVE_BLOCK_HEIGHT;
+	}
+	else if (abs_enemy_x < startX && abs_enemy_x + 400 > startX)
+	{
+		index = 0;
+		cave_y = path->y[0] * CaveBlock::CAVE_BLOCK_HEIGHT;
+	}
+	
+	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY, cave_y);
 }
 
 int getScore(){ return (int) (camX / 100); }
