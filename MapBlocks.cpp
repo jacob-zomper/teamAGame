@@ -83,6 +83,8 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 
     STALAG_REL_X = STALAG_ABS_X;
     STALAG_REL_Y = STALAG_ABS_Y;
+    beenShot = 0;
+    alreadyExploded = 0;
 
     stalagShapeNum = rand() % 4 + 1;
 }
@@ -287,6 +289,12 @@ void MapBlocks::moveBlocks(int camX, int camY)
     {
         stalagm_arr[i].STALAG_REL_X = stalagm_arr[i].STALAG_ABS_X - camX;
         stalagm_arr[i].STALAG_REL_Y = stalagm_arr[i].STALAG_ABS_Y-camY;
+        if(stalagm_arr[i].beenShot == 1 && stalagm_arr[i].alreadyExploded == 0){
+            int x = stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2;
+            int y = stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2;
+            stalagm_arr[i].alreadyExploded = 1;
+            explosion_arr.push_back(Explosion(x, y, 1, gRenderer));
+        }
     }
     for (i = 0; i < stalagt_arr.size(); i++)
     {
@@ -470,11 +478,11 @@ bool MapBlocks::checkCollision(Bullet *b)
         }
     }
     // If there's a collision with a stalagmite or a stalagtite, detroy the bullet. The stalag will be fine; stalags are strong.
-    // Not sure what we want to do with the stalagmites but reworked to stalagtites fall when shot
     for (int i = 0; i < stalagm_arr.size(); i++)
 	{
         if (checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
+            stalagm_arr[i].beenShot = 1;
             return true;
         }
 	}
@@ -584,7 +592,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < stalagm_arr.size(); i++)
     {
         // Only render the Stalag if will be screen
-        if (stalagm_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_HEIGHT && stalagm_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_WIDTH && stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
+        if (stalagm_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_HEIGHT && stalagm_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_WIDTH && stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagm_arr[i].beenShot == 0)
         {
             SDL_Rect fillRect = {stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT};
             if (stalagm_arr[i].stalagShapeNum == 1) {
