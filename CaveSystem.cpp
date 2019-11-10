@@ -124,12 +124,12 @@ void CaveSystem::generateRandomCave()
                 if (cy + j >= 0 && cy + j < CaveSystem::CAVE_SYSTEM_HEIGHT)
                 {
                       mat[cy + j][cx]->enabled = 0;
-                      printf("this is cy+j inside if: %d x: %d\n", (cy+j), cx);
+                      //printf("this is cy+j inside if: %d x: %d\n", (cy+j), cx);
                 }
-                else
-                {
-                    printf("this is cy+j else if: %d x: %d\n", (cy+j), cx);
-                }
+                // else
+                // {
+                //     printf("this is cy+j else if: %d x: %d\n", (cy+j), cx);
+                // }
                 
                   
             }

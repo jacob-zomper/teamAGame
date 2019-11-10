@@ -144,25 +144,29 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 	int kamiX = kam->getX();
 	int kamiY = kam->getY(); 
 	PathSequence * path = cave_system->getPathSequence();
+	/*
+	path->x is the width of the cave
+	path->y is the value of the padding of the cave 
+	at line 127 in the CaveSystem.cpp I commented out some printf statements that show how the padding works, if you take a 
+		screen shot of the game with the cave, you can see how the padding works. Its easier to explain in person if you need help on how it works
+	the hardest part for me(Brandon) on understanding how to implement this is how we can attribute the cave moving across the screen and add that to the risk score for the x value.
+		I can draw this up to on how to get it implemented too
+	*/
+
+	 int en_x = path->x[caveCounter/20];
+	 int cave_y = 20 * (path->y[caveCounter/20]); 
 	
 
-	//printf("This is the path sequence x: %d, y: %d\n", path->x[caveCounter], path->y[caveCounter]);
-	// if()
-	// for (size_t i = 0; i < path->length; i++)
-	// {
-	// 	printf("This is the path sequence x: %d, y: %d\n", path->x[i], path->y[i]);
-	// }
-	
-	if(cave_system->isEnabled && caveCounter < 200)
-	{
-		printf("This is the path sequence x: %d, y: %d\n", path->x[caveCounter], path->y[caveCounter]);
+	if(cave_system->isEnabled && caveCounter < 4000)
+	{	
+		printf("cave y: %d\n", cave_y);
 		caveCounter++;
 	}
 	
 	if(!cave_system->isEnabled)
 		caveCounter = 0;
 	
-	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
+	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY, cave_y);
 }
 
 int getScore(){ return (int) (camX / 100); }
@@ -348,7 +352,6 @@ int main() {
 		{
 			// std::cout << "Creating Cave System" << std::endl;
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
-			caveCounter++;
 		}
 
 		if(cave_system->isEnabled)
