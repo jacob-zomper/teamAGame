@@ -1,4 +1,4 @@
-LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -I/usr/include/SDL2
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -I/usr/include/SDL2
 
 PLAYER_CLASS = -c Player.cpp -o Player.o
 MAPBLOCKS_CLASS = -c MapBlocks.cpp -o MapBlocks.o
@@ -69,10 +69,11 @@ brandon_enemy: test_enemy_move.cpp
 	g++ $(INCLUDED_CLASSES) brandon_enemy.o test_enemy_move.cpp -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib -o test_enemy_move
 
 jake: SDLCredits.cpp game_loop.cpp
-	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop
+	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -lSDL2_mixer -std=c++11 -o game_loop
 
 cleanjake:
 	rm game_loop
+	rm highscore
 
 clean:
 	rm *.o

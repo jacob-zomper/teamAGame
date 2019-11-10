@@ -51,7 +51,8 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
             cave_system[i][j] = curr_block;
         }
 
-
+    ceilSprite = nullptr;
+    floorSprite = nullptr;
     isEnabled = true;
     generateRandomCave();
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
@@ -303,6 +304,20 @@ void CaveSystem::checkCollision(Player *p)
 
 void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer)
 {
+    if(ceilSprite == nullptr){
+        SDL_Texture* newText = nullptr;
+        std::string fname = "sprites/stalagt1.png";
+	    SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	    newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	    SDL_FreeSurface(startSurf);
+        ceilSprite = newText;
+        newText = nullptr;
+        fname = "sprites/stalagm1.png";
+	    startSurf = IMG_Load(fname.c_str());
+	    newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	    SDL_FreeSurface(startSurf);
+        floorSprite = newText;
+    }
     int i, j;
     bool isStillShowing = false;
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
@@ -313,8 +328,16 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
             if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT && curr_block->enabled == 1)
             {
                 SDL_Rect fillRect = {curr_block->CAVE_BLOCK_REL_X, curr_block->CAVE_BLOCK_REL_Y, CaveBlock::CAVE_BLOCK_WIDTH, CaveBlock::CAVE_BLOCK_HEIGHT};
+                if(i != 0 && CaveSystem::cave_system[i-1][j]->enabled == 0){
+                    SDL_RenderCopyEx(gRenderer, floorSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+                }
+                else if(i != CaveSystem::CAVE_SYSTEM_HEIGHT - 1 && CaveSystem::cave_system[i+1][j]->enabled == 0){
+                    SDL_RenderCopyEx(gRenderer, ceilSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+                }
+                else{
                 SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
                 SDL_RenderFillRect(gRenderer, &fillRect);
+                }   
             }
 
             if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH + 5 && curr_block->CAVE_BLOCK_REL_X >= 0 && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT)
