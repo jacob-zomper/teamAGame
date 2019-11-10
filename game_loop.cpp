@@ -43,6 +43,8 @@ CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
 Enemy* en;
 Kamikaze* kam;
+int caveCounter = 0;
+bool caveCounterHelp = false;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
@@ -140,7 +142,26 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 	// 	}
 	// }
 	int kamiX = kam->getX();
-	int kamiY = kam->getY();
+	int kamiY = kam->getY(); 
+	PathSequence * path = cave_system->getPathSequence();
+	
+
+	//printf("This is the path sequence x: %d, y: %d\n", path->x[caveCounter], path->y[caveCounter]);
+	// if()
+	// for (size_t i = 0; i < path->length; i++)
+	// {
+	// 	printf("This is the path sequence x: %d, y: %d\n", path->x[i], path->y[i]);
+	// }
+	
+	if(cave_system->isEnabled && caveCounter < 200)
+	{
+		printf("This is the path sequence x: %d, y: %d\n", path->x[caveCounter], path->y[caveCounter]);
+		caveCounter++;
+	}
+	
+	if(!cave_system->isEnabled)
+		caveCounter = 0;
+	
 	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
 }
 
@@ -327,6 +348,7 @@ int main() {
 		{
 			// std::cout << "Creating Cave System" << std::endl;
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
+			caveCounter++;
 		}
 
 		if(cave_system->isEnabled)

@@ -120,8 +120,18 @@ void CaveSystem::generateRandomCave()
             int padding = (3 * cos(i/7) + y_padding) + rand() % 2;
             for (j = (padding * -1); j < padding; j++)
             {
+               
                 if (cy + j >= 0 && cy + j < CaveSystem::CAVE_SYSTEM_HEIGHT)
-                    mat[cy + j][cx]->enabled = 0;
+                {
+                      mat[cy + j][cx]->enabled = 0;
+                      printf("this is cy+j inside if: %d x: %d\n", (cy+j), cx);
+                }
+                else
+                {
+                    printf("this is cy+j else if: %d x: %d\n", (cy+j), cx);
+                }
+                
+                  
             }
         }
     };
