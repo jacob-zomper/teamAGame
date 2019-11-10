@@ -61,6 +61,8 @@ public:
     Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
     int stalagShapeNum;
+    int beenShot;
+    int alreadyExploded;
 };
 
 class Stalagtite
