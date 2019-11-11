@@ -173,6 +173,38 @@ int readHighScore()
 	}
 }
 
+void check_missile_collisions()
+{
+	for (int i = 0; i < missiles.size(); i++)
+	{
+		bool destroyed = false;
+
+		if (missiles[i]->getY() > FLOOR_BOTTOM)
+		{
+			destroyed = missiles[i]->ricochet();
+		}
+		else
+		{
+			double distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
+
+			if (distance <= missiles[i]->get_blast_radius())
+			{
+				double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
+				player->hit(damage);
+
+				std::cout << "Dealed " << damage << " damage to the player " << std::endl;
+			}
+
+			destroyed = true;
+		}
+
+		if (destroyed)
+		{
+			missiles.erase(missiles.begin() + i);
+		}
+	}
+}
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -322,6 +354,8 @@ int main() {
 				bullets.erase(bullets.begin() + i);
 			}
 		}
+
+		check_missile_collisions();
 		
 		// Check collisions between enemy and player
 		if (en->checkCollision(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight())) {
