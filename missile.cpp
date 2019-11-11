@@ -68,6 +68,11 @@ double Missile::calculate_damage(double entity_x, double entity_y)
 	return blast_radius / pow(distance, 2) * damage;
 }
 
+bool Missile::ricocheet()
+{
+	return true;
+}
+
 // Accessor methods
 
 int Missile::getX()

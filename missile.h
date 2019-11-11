@@ -23,6 +23,8 @@ class Missile
         // Calculates how much damage the warhead will do to entity
 		double calculate_damage(double entity_x, double entity_y);
 
+        double ricochet();
+
         // Accessor functions:
 
         int getX();
