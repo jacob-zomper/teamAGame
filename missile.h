@@ -23,7 +23,7 @@ class Missile
         // Calculates how much damage the warhead will do to entity
 		double calculate_damage(double entity_x, double entity_y);
 
-        double ricochet();
+        bool ricochet();
 
         // Accessor functions:
 
@@ -35,6 +35,8 @@ class Missile
 
         int getXVel();
         int getYVel();
+
+        int get_blast_radius();
 
         SDL_Texture* sprite;
 
