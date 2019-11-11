@@ -11,7 +11,7 @@ class Missile
     public:
         static const int MISSILE_SIZE = 25;
 
-        Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer);
+        Missile(int time, int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer);
 
         void renderMissile(SDL_Renderer* gRenderer);
 
@@ -24,6 +24,8 @@ class Missile
 		double calculate_damage(double entity_x, double entity_y);
 
         bool ricochet();
+
+        bool depleted();
 
         // Accessor functions:
 
@@ -72,6 +74,9 @@ class Missile
 
         // Radius where most damage is caused by the warhead
 		int blast_radius;
+
+        // Time (seconds) the missile will be in the air before it explodes
+        int max_flight_time;
 };
 
 #endif
