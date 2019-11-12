@@ -1,5 +1,4 @@
 #include "CaveSystem.h"
-#include "time.h"
 
 int CaveSystem::CAVE_END_ABS_X;
 int CaveSystem::CAVE_START_ABS_X;
@@ -52,10 +51,31 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
             cave_system[i][j] = curr_block;
         }
 
-
+    ceilSprite = nullptr;
+    floorSprite = nullptr;
     isEnabled = true;
     generateRandomCave();
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
+}
+
+CaveSystem::~CaveSystem()
+{
+    std::cout << "Deallocating Cave System" << std::endl;
+    for(int i=0;i<CAVE_SYSTEM_HEIGHT;i++)
+    {
+        for(int j=0;j<CAVE_SYSTEM_WIDTH; j++)
+        {
+            // std::cout << "deallocating item " << i << " , " << j << " from " << cave_system[i][j] << std::endl;
+            delete cave_system[i][j];
+            // std::cout << "deleted"<< std::endl;
+        }
+    }
+    // delete[] &cave_system;
+}
+
+PathSequence* CaveSystem::getPathSequence()
+{
+    return &path;
 }
 
 void CaveSystem::generateRandomCave()
@@ -70,8 +90,6 @@ void CaveSystem::generateRandomCave()
         It uses a lot of lamda functions because its more organized
     */
     int i, j, x1, x2, y1, y2;
-
-    srand(time(NULL));
 
     // FILL THE BOARD WITH BLOCKS
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
@@ -92,7 +110,7 @@ void CaveSystem::generateRandomCave()
         // It is this 2D array that is finally rendered to the screen
 
         // y_padding will increase the height of the cave
-        
+
         int i, j, cx, cy;
 
         for(i = 0; i < path->length; i++)
@@ -103,8 +121,18 @@ void CaveSystem::generateRandomCave()
             int padding = (3 * cos(i/7) + y_padding) + rand() % 2;
             for (j = (padding * -1); j < padding; j++)
             {
+               
                 if (cy + j >= 0 && cy + j < CaveSystem::CAVE_SYSTEM_HEIGHT)
-                    mat[cy + j][cx]->enabled = 0;
+                {
+                      mat[cy + j][cx]->enabled = 0;
+                      //printf("this is cy+j inside if: %d x: %d\n", (cy+j), cx);
+                }
+                // else
+                // {
+                //     printf("this is cy+j else if: %d x: %d\n", (cy+j), cx);
+                // }
+                
+                  
             }
         }
     };
@@ -127,7 +155,7 @@ void CaveSystem::generateRandomCave()
     auto bresenham_line = [&](PathSequence *seq, int x1, int y1, int x2, int y2) {
         // The Bresenham line algorithm. Not symmetrical.
         // Generates a starting line from one end of the cave to other
-        
+
         int xstep, ystep, xc, yc, acc, cnt;
         cnt = 0;
 
@@ -186,18 +214,49 @@ void CaveSystem::generateRandomCave()
         seq->length = cnt;
     };
 
+    auto uti_perturb = [&](PathSequence *seq, int mindist, int maxdist, int pertamt) {
+        int i;
+        int nx, ny;
+        int lox, loy, hix, hiy;
+        int lod2, hid2;
+        int ri, rdir;
+        int mind2, maxd2;
+        int Xoff[8] = {1, 1, 0, -1, -1, -1, 0, 1};
+        int Yoff[8] = {0, 1, 1, 1, 0, -1, -1, -1};
+
+        mind2 = mindist * mindist;
+        maxd2 = maxdist * maxdist;
+        for (i = 0; i < pertamt * seq->length; i++)
+        {
+            ri = 1 + rnd_i0(seq->length - 2);
+            rdir = rnd_i0(8);
+            nx = seq->x[ri] + Xoff[rdir];
+            ny = seq->y[ri] + Yoff[rdir];
+            lox = seq->x[ri - 1];
+            loy = seq->y[ri - 1];
+            hix = seq->x[ri + 1];
+            hiy = seq->y[ri + 1];
+            lod2 = ((nx - lox) * (nx - lox)) + ((ny - loy) * (ny - loy));
+            hid2 = ((nx - hix) * (nx - hix)) + ((ny - hiy) * (ny - hiy));
+
+            if ((lod2 < mind2) || (lod2 > maxd2) || (hid2 < mind2) || (hid2 > maxd2))
+                continue;
+
+            // seq->x[ri] = nx;
+            seq->y[ri] = ny;
+        }
+    };
 
     // Start and end point
     // y values are have a 5 point padding so that it doesnt interfere with the walls
     x1 = 0;
-    y1 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
+    y1 = 3 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 1);
 
     x2 = CaveSystem::CAVE_SYSTEM_WIDTH;
-    y2 = 11 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 10);
-
-    PathSequence path;
+    y2 = 3 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 1);
 
     bresenham_line(&path, x1, y1, x2, y2);
+    uti_perturb(&path, 2, 5, 40);
 
     insert_path(CaveSystem::cave_system, &path, rand() % 6 + 8);
 }
@@ -245,6 +304,20 @@ void CaveSystem::checkCollision(Player *p)
 
 void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer)
 {
+    if(ceilSprite == nullptr){
+        SDL_Texture* newText = nullptr;
+        std::string fname = "sprites/stalagt1.png";
+	    SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	    newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	    SDL_FreeSurface(startSurf);
+        ceilSprite = newText;
+        newText = nullptr;
+        fname = "sprites/stalagm1.png";
+	    startSurf = IMG_Load(fname.c_str());
+	    newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	    SDL_FreeSurface(startSurf);
+        floorSprite = newText;
+    }
     int i, j;
     bool isStillShowing = false;
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
@@ -255,8 +328,16 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
             if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT && curr_block->enabled == 1)
             {
                 SDL_Rect fillRect = {curr_block->CAVE_BLOCK_REL_X, curr_block->CAVE_BLOCK_REL_Y, CaveBlock::CAVE_BLOCK_WIDTH, CaveBlock::CAVE_BLOCK_HEIGHT};
+                if(i != 0 && CaveSystem::cave_system[i-1][j]->enabled == 0){
+                    SDL_RenderCopyEx(gRenderer, floorSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+                }
+                else if(i != CaveSystem::CAVE_SYSTEM_HEIGHT - 1 && CaveSystem::cave_system[i+1][j]->enabled == 0){
+                    SDL_RenderCopyEx(gRenderer, ceilSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+                }
+                else{
                 SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
                 SDL_RenderFillRect(gRenderer, &fillRect);
+                }   
             }
 
             if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH + 5 && curr_block->CAVE_BLOCK_REL_X >= 0 && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT)
@@ -266,6 +347,17 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
     if(!isStillShowing)
     {
         isEnabled = false;
-        printf("CAVE SYSTEM DONE SHOWING!\n");
+        this->~CaveSystem();
+        // printf("CAVE SYSTEM DONE SHOWING!\n");
     }
+}
+
+int CaveSystem::getStartX()
+{
+	return CAVE_START_ABS_X;
+}
+
+int CaveSystem::getEndX()
+{
+	return CAVE_END_ABS_X;
 }
