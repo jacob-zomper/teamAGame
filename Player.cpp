@@ -121,7 +121,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     float accelerate_by = 0.003*time_since_move;
     float deccelerate_factor = 4.0;
     acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
-    tiltAngle = 180 * sin(y_accel / 12);
+    if(!yp_decel && !yn_decel && y_vel > 0) tiltAngle = 180 * sin(y_accel / 12) > 0 ? 180 * sin(y_accel / 12) : 0;
+    else if(!yp_decel && !yn_decel && y_vel < 0) tiltAngle = -180 * sin(y_accel / 12) < 0 ? -180 * sin(y_accel / 12) : 0;
+    else tiltAngle = 180 * sin(y_accel / 12);
     acceleration(xp_decel, xn_decel, x_accel, accelerate_by, deccelerate_factor, x_vel);
 
     if (y_vel > MAX_PLAYER_VEL)
@@ -256,7 +258,7 @@ Bullet* Player::handleForwardFiring()
 {
 	time_since_fshot = SDL_GetTicks() - last_fshot;
 	if (time_since_fshot > SHOOT_FREQ) {
-		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5,y_pos+PLAYER_HEIGHT/2,450);
+		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -abs(PLAYER_WIDTH/2*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*2*sin(tiltAngle), abs(450*cos(tiltAngle)), tiltAngle >= 0 ? abs(450*sin(tiltAngle)) : -abs(450*sin(tiltAngle)));
 		last_fshot = SDL_GetTicks();
 		return b;
 	}
@@ -267,7 +269,7 @@ Bullet* Player::handleBackwardFiring()
 {
 	time_since_bshot = SDL_GetTicks() - last_bshot;
 	if (time_since_bshot > SHOOT_FREQ) {
-		Bullet* b = new Bullet(x_pos - 10,y_pos+PLAYER_HEIGHT/2,-450);
+		Bullet* b = new Bullet(x_pos-10 +abs(PLAYER_WIDTH/2*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*2*sin(tiltAngle), -abs(450*cos(tiltAngle)), tiltAngle >= 0 ? -abs(450*sin(tiltAngle)) : abs(450*sin(tiltAngle)));
 		last_bshot = SDL_GetTicks();
 		return b;
 	}
