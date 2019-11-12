@@ -400,6 +400,13 @@ int main() {
 			// kam->setArrivalTime(5000);
 		}
 
+		if (en->checkCollision(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())){
+			blocks->addExplosion(kam->getX() + camX, kam->getY()+camY, kam->getWidth(), kam->getHeight(),0);
+			en->hit(10);
+			delete kam;
+			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+		}
+
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
