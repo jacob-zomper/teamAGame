@@ -72,6 +72,7 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 {
     STALAG_WIDTH = rand() % 16 + 60;
     STALAG_HEIGHT = rand() % 141 + 50;
+    hitboxWidth = STALAG_WIDTH / 2;
 
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
     STALAG_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - STALAG_HEIGHT;//growing from bottom of cave
@@ -97,6 +98,7 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 {
     STALAG_WIDTH = rand() % 16 + 60;
     STALAG_HEIGHT = rand() % 141 + 50;
+    hitboxWidth = STALAG_WIDTH / 2;
 
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
 
@@ -359,7 +361,7 @@ void MapBlocks::checkCollision(Player *p)
     for (i = stalagm_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, damage the player and blow up the stalagmite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X + stalagm_arr[i].STALAG_WIDTH / 4, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].hitboxWidth, stalagm_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
@@ -370,7 +372,7 @@ void MapBlocks::checkCollision(Player *p)
 	for (i = stalagt_arr.size() - 1; i >= 0; i--)
 	{
 		// If there's a collision, damage the player and blow up the stalactite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X + stalagt_arr[i].STALAG_WIDTH / 4, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].hitboxWidth, stalagt_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
