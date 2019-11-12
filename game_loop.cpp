@@ -309,9 +309,11 @@ int main() {
 		}
 		// If the kamikaze is offscreen, create a new one
 		if (kam->getX() < -kam->getWidth()) {
-			delete kam;
-			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
-			// kam->setArrivalTime(5000);
+			// delete kam;
+			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
 		}
 
 
@@ -353,11 +355,11 @@ int main() {
 			else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
 				destroyed = true;
 				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
-				delete kam;
-				kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
-				// kam->setX(SCREEN_WIDTH+125);
-				// kam->setY(SCREEN_HEIGHT/2);
-				// kam->setArrivalTime(5000);
+				// delete kam;
+				// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+				kam->setX(SCREEN_WIDTH+125);
+				kam->setY(SCREEN_HEIGHT/2);
+				kam->setArrivalTime(5000);
 			}else if (en->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
 				destroyed = true;
 				en->hit(5);
@@ -393,18 +395,21 @@ int main() {
 		if (player->checkCollisionKami(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())) {
 			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
 			player->hit(10);
-			delete kam;
-			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
-			// kam->setX(SCREEN_WIDTH+125);
-			// kam->setY(SCREEN_HEIGHT/2);
-			// kam->setArrivalTime(5000);
+			// delete kam;
+			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
 		}
 
 		if (en->checkCollision(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())){
 			blocks->addExplosion(kam->getX() + camX, kam->getY()+camY, kam->getWidth(), kam->getHeight(),0);
 			en->hit(10);
-			delete kam;
-			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			// delete kam;
+			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
 		}
 
 		// Clear the screen

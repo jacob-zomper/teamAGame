@@ -14,7 +14,7 @@ class Kamikaze
 
     //Constructor initializing the variables
     Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer *gRenderer);
-
+    ~Kamikaze();
     //Shows Kamikaze on screen
     void renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
 
