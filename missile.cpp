@@ -4,9 +4,9 @@
 #include <cmath>
 #include <SDL_image.h>
 
-Missile::Missile(int time, int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer) :
+Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer) :
 	damage{ damage }, blast_radius{ blast_radius }, xPos{ x }, yPos{ y },
-	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 5}, max_flight_time{ time }
+	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 5}
 {
 	sprite = loadImage("sprites/missile.png", gRenderer);
 
@@ -71,19 +71,6 @@ double Missile::calculate_damage(double entity_x, double entity_y)
 bool Missile::ricochet()
 {
 	return true;
-}
-
-// Returns true if the missile has been in the air for its max time
-bool Missile::depleted()
-{
-	if (air_time >= max_flight_time)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 // Accessor methods

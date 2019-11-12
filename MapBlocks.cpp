@@ -162,8 +162,8 @@ int Turret::getAbsX() { return BLOCK_ABS_X; }
 int Turret::getAbsY() { return BLOCK_ABS_Y; }
 
 Missile * Turret::handleFiring(int posX, int posY) {
-    int damage = 100;
-    int blast_radius = 10;
+    int damage = 500;
+    int blast_radius = 150;
 
 	time_since_move = SDL_GetTicks() - last_move;
 	Missile * m = nullptr;

@@ -177,29 +177,57 @@ void check_missile_collisions()
 {
 	for (int i = 0; i < missiles.size(); i++)
 	{
+		missiles[i]->move();
+
 		bool destroyed = false;
 
+		// Check if the missile is out of the screen boundaries
 		if (missiles[i]->getY() > FLOOR_BOTTOM)
 		{
+			// Destroy if so
 			destroyed = missiles[i]->ricochet();
 		}
 		else
 		{
-			double distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
+			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
+			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
 
-			if (distance <= missiles[i]->get_blast_radius())
+			int missile_hitbox = missiles[i]->get_blast_radius() / 2;
+
+			// Explode the warhead if the missile hits the enemy or player
+			if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
 			{
-				double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
-				player->hit(damage);
+				// Deal damage to the player and/or enemy depending on their distance and blast radius
 
-				std::cout << "Dealed " << damage << " damage to the player " << std::endl;
+				if (player_distance <= missiles[i]->get_blast_radius())
+				{
+					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
+					player->hit(damage);
+
+					std::cout << "Dealed " << damage << " damage to the player " << std::endl;
+
+					destroyed = true;
+				}
+
+				if (enemy_distance <= missiles[i]->get_blast_radius())
+				{
+					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
+					en->hit(damage);
+
+					std::cout << "Dealed " << damage << " damage to the enemy" << std::endl;
+
+					destroyed = true;
+				}
+
+				destroyed = true;
 			}
-
-			destroyed = true;
 		}
 
+		// Remove missiles from the game if they are destroyed
+		// after rendering explosion
 		if (destroyed)
 		{
+			blocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
 			missiles.erase(missiles.begin() + i);
 		}
 	}
@@ -294,7 +322,6 @@ int main() {
 			kam->setArrivalTime(5000);
 		}
 
-
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
@@ -311,12 +338,6 @@ int main() {
 		//move the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
-		}
-
-		//move the missiles
-		for (auto& missile : missiles)
-		{
-			missile->move();
 		}
 
 		//Move Blocks and check collisions
@@ -390,7 +411,6 @@ int main() {
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
-
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
@@ -407,7 +427,7 @@ int main() {
 			bullets[i]->renderBullet(gRenderer);
 		}
 
-		//draw the missiles
+		// Render the missiles
 		for (auto& missile : missiles)
 		{
 			missile->renderMissile(gRenderer);
