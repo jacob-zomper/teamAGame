@@ -11,7 +11,7 @@ KAMIKAZE_CLASS = -c Kamikaze.cpp -o Kamikaze.o
 MISSILE_CLASS = -c missile.cpp -o missile.o
 
 INCLUDED_CLASSES = CaveSystem.cpp Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp text.cpp Kamikaze.cpp missile.cpp
-BRANDON_LIB = -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -lSDL2_ttf -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
+BRANDON_LIB = -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -lSDL2_ttf -lSDL2_mixer -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 JERRY_WIN = -lSDL2 -lSDL2_image -lSDL2_ttf -LC:\wingw_dev_lib\i686-w64-mingw32\bin -LC:\wingw_dev_lib\SDL2-2.0.10\x86_64-w64-mingw32\lib -IC:\wingw_dev_lib\SDL2-2.0.10\x86_64-w64-mingw32\include\SDL2
 
 all: SDLCredits.cpp game_loop.cpp
@@ -32,8 +32,8 @@ jerryWin: game_loop.cpp
 
 
 jlg: game_loop.cpp
-	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS) 
-	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
+	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS)
+	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS)
 	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
 	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
 	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
@@ -41,8 +41,8 @@ jlg: game_loop.cpp
 
 
 jlet: test_enemy_move.cpp
-	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS) 
-	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS) 
+	clang++ $(LINKER_FLAGS) $(PLAYER_CLASS)
+	clang++ $(LINKER_FLAGS) $(MAPBLOCKS_CLASS)
 	clang++ $(LINKER_FLAGS) $(BULLET_CLASS)
 	clang++ $(LINKER_FLAGS) $(ENEMY_CLASS)
 	clang++ $(LINKER_FLAGS) $(GAMEOVER_CLASS)
