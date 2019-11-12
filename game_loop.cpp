@@ -23,6 +23,7 @@ constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
 constexpr int FLOOR_BOTTOM = 720-79;
+constexpr int ROOF_TOP = 72;
 
 // Function declarations
 bool init();
@@ -344,6 +345,9 @@ int main() {
 			bool destroyed = false;
 			if(bullets[i]->getY() > FLOOR_BOTTOM){
 				destroyed = bullets[i]->ricochetFloor(); // rng chance to ricochet or get destroyed
+			}
+			else if(bullets[i]->getY() < ROOF_TOP){
+				destroyed = bullets[i]->ricochetRoof(); // rng chance to ricochet or get destroyed
 			}
 			else if (blocks->checkCollision(bullets[i])){
 				destroyed = true;

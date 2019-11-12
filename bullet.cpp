@@ -46,6 +46,16 @@ bool Bullet::ricochetFloor(){
 	return false; // ricocheted
 }
 
+bool Bullet::ricochetRoof(){
+	if(((rand() % 100) + (yVel/20)) > 80){ // about 20-40% chance of destruction, higher Velocity = less likely to ricochet
+		return true; // destroyed
+	}
+	yPos = ROOF_TOP + 3;
+	yVel /= -1.5;
+	
+	return false; // ricocheted
+}
+
 void Bullet::move(){
 	time_since_move = SDL_GetTicks() - last_move;
 
