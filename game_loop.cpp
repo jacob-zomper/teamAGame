@@ -152,6 +152,14 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 	std::vector<int> bulletX;
 	std::vector<int> bulletY;
 	std::vector<int> bulletVelX;
+	std::vector<int> bulletVelY;
+	std::vector<int> stalagmX;
+	std::vector<int> stalagmH;
+	std::vector<int> stalagtX;
+	std::vector<int> stalagtH;
+	std::vector<int> turretX;
+	std::vector<int> turretBottom;
+	std::vector<int> turretH;
 	// std::vector<int> kamiX;
 	// std::vector<int> kamiY;
 	// std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
@@ -159,6 +167,29 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 		bulletX.push_back(bullets[i]->getX());
 		bulletY.push_back(bullets[i]->getY());
 		bulletVelX.push_back(bullets[i]->getXVel());
+		bulletVelY.push_back(bullets[i]->getYVel());
+	}
+	std::vector<Stalagmite> stalagmites = blocks->getStalagmites();
+	std::vector<Stalagtite> stalagtites = blocks->getStalagtites();
+	std::vector<Turret> turrets = blocks->getTurrets();
+	for (int i = 0; i < stalagmites.size(); i++) {
+		if (stalagmites[i].STALAG_ABS_X - camX > 0 && stalagmites[i].STALAG_ABS_X - camX < SCREEN_WIDTH) {
+			stalagmX.push_back(stalagmites[i].STALAG_ABS_X - camX);
+			stalagmH.push_back(stalagmites[i].STALAG_HEIGHT + WallBlock::block_side);
+		}
+	}
+	for (int i = 0; i < stalagtites.size(); i++) {
+		if (stalagtites[i].STALAG_ABS_X - camX > 0 && stalagtites[i].STALAG_ABS_X - camX < SCREEN_WIDTH) {
+			stalagtX.push_back(stalagtites[i].STALAG_ABS_X - camX);
+			stalagtH.push_back(stalagtites[i].STALAG_HEIGHT + WallBlock::block_side);
+		}
+	}
+	for (int i = 0; i < turrets.size(); i++) {
+		if (turrets[i].BLOCK_ABS_X - camX > 0 && turrets[i].BLOCK_ABS_X - camX < SCREEN_WIDTH) {
+			turretX.push_back(turrets[i].BLOCK_ABS_X - camX);
+			turretBottom.push_back(turrets[i].bottom);
+			turretH.push_back(turrets[i].BLOCK_HEIGHT + WallBlock::block_side);
+		}
 	}
 	// for (int i = 0; i < kamikazes.size(); i++) {
 	// 	if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
@@ -187,7 +218,7 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 		cave_y = path->y[0] * CaveBlock::CAVE_BLOCK_HEIGHT;
 	}
 	
-	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY, cave_y);
+	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, bulletVelY, stalagmX, stalagmH, stalagtX, stalagtH, turretX, turretH, turretBottom, kamiX, kamiY, cave_y);
 }
 
 int getScore(){ return (int) (camX / 100); }

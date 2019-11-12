@@ -635,3 +635,15 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 void MapBlocks::addExplosion(int x, int y, int w, int h, int type) {
 	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
 }
+
+std::vector<Stalagmite> MapBlocks::getStalagmites() {
+	return stalagm_arr;
+}
+
+std::vector<Stalagtite> MapBlocks::getStalagtites() {
+	return stalagt_arr;
+}
+
+std::vector<Turret> MapBlocks::getTurrets() {
+	return blocks_arr;
+}
