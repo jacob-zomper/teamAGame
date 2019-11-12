@@ -367,6 +367,7 @@ int main() {
 					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
 			}
 			if (destroyed) {
+				delete bullets[i];
 				bullets.erase(bullets.begin() + i);
 			}
 		}
