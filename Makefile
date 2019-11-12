@@ -18,7 +18,7 @@ all: SDLCredits.cpp game_loop.cpp
 	g++ $(INCLUDED_CLASSES) game_loop.cpp -o game_loop $(LINKER_FLAGS)
 
 dilan: SDLCredits.cpp
-	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop.o
+	g++ $(INCLUDED_CLASSES) game_loop.cpp -lSDL2_mixer -lSDL2_image -lSDL2_ttf $$(sdl2-config --cflags --libs) -std=c++11 -o game_loop.o
 
 connor: SDLCredits.cpp game_loop.cpp
 	g++ SDLCredits.cpp $(LINKER_FLAGS) -std=c++11 -o SDLCredits
