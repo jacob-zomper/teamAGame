@@ -23,6 +23,7 @@ constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
 constexpr int FLOOR_BOTTOM = 720-79;
+constexpr int ROOF_TOP = 73;
 
 // Function declarations
 bool init();
@@ -88,7 +89,7 @@ bool init() {
 		std::cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		return  false;
 	}
-	
+
 	//Initialize SDL_mixer
 	if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
 	{
@@ -122,7 +123,7 @@ SDL_Texture* loadImage(std::string fname) {
 
 Mix_Music* loadMusic(std::string fname) {
 	Mix_Music* newMusic = Mix_LoadMUS(fname.c_str());
-	
+
 	if( newMusic == NULL )
     {
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
@@ -134,9 +135,9 @@ Mix_Music* loadMusic(std::string fname) {
 void close() {
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
-	
+
 	Mix_FreeMusic(trash_beat);
-	
+
 	gWindow = nullptr;
 	gRenderer = nullptr;
 	TTF_Quit();
@@ -198,9 +199,9 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 	// 	}
 	// }
 	int kamiX = kam->getX();
-	int kamiY = kam->getY(); 
+	int kamiY = kam->getY();
 	PathSequence * path = cave_system->getPathSequence();
-	
+
 	int cave_y = -1;				// y coordinate of the center of the cave. -1 if there is no relevant cave
 	int abs_enemy_x = en->getX() + en->getWidth() / 2 + camX;
 	// Absolute start and end coordinates of the cave
@@ -217,7 +218,6 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 		index = 0;
 		cave_y = path->y[0] * CaveBlock::CAVE_BLOCK_HEIGHT;
 	}
-	
 	en->move(playerX, playerY, bulletX, bulletY, bulletVelX, bulletVelY, stalagmX, stalagmH, stalagtX, stalagtH, turretX, turretH, turretBottom, kamiX, kamiY, cave_y);
 }
 
@@ -255,7 +255,7 @@ int main() {
 		close();
 		return 1;
 	}
-	
+
 	trash_beat = loadMusic("sounds/lebron_trash_beat.wav");
 	song = loadMusic("sounds/track_2.wav");
 
@@ -289,7 +289,7 @@ int main() {
 	bool gameon = true;
 
 	while(gameon) {
-		
+
 		if (current_track != 0 && !game_over->isGameOver) {
 			current_track = 0;
 			Mix_PlayMusic(song, -1);
@@ -340,8 +340,10 @@ int main() {
 		}
 		// If the kamikaze is offscreen, create a new one
 		if (kam->getX() < -kam->getWidth()) {
-			delete kam;
-			kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
+			// delete kam;
+			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
 			kam->setArrivalTime(5000);
 		}
 
@@ -374,6 +376,9 @@ int main() {
 			if(bullets[i]->getY() > FLOOR_BOTTOM){
 				destroyed = bullets[i]->ricochetFloor(); // rng chance to ricochet or get destroyed
 			}
+			else if(bullets[i]->getY() < ROOF_TOP){
+				destroyed = bullets[i]->ricochetRoof(); // rng chance to ricochet or get destroyed
+			}
 			else if (blocks->checkCollision(bullets[i])){
 				destroyed = true;
 			}
@@ -384,6 +389,7 @@ int main() {
 			else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
 				destroyed = true;
 				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
+				// delete kam;
 				// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 				kam->setX(SCREEN_WIDTH+125);
 				kam->setY(SCREEN_HEIGHT/2);
@@ -395,10 +401,11 @@ int main() {
 					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
 			}
 			if (destroyed) {
+				delete bullets[i];
 				bullets.erase(bullets.begin() + i);
 			}
 		}
-		
+
 		// Check collisions between enemy and player
 		if (en->checkCollision(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight())) {
 			player->hit(10);
@@ -423,7 +430,18 @@ int main() {
 		if (player->checkCollisionKami(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())) {
 			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
 			player->hit(10);
-			//kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			// delete kam;
+			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
+		}
+
+		if (en->checkCollision(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())){
+			blocks->addExplosion(kam->getX() + camX, kam->getY()+camY, kam->getWidth(), kam->getHeight(),0);
+			en->hit(10);
+			// delete kam;
+			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
 			kam->setArrivalTime(5000);
