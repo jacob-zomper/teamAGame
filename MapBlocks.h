@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "CaveSystem.h"
+#include "Kamikaze.h"
 #include <vector>
 
 class WallBlock
@@ -112,7 +113,7 @@ public:
     int BLOCK_WIDTH;
 
     int BLOCK_SPRITE; // Map to which sprite image this Turret will use.
-	
+
 	// 1 if bottom turret, 0 if top
     int bottom;
 
@@ -219,9 +220,10 @@ public:
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
+  bool checkCollision(Kamikaze *kam);
 	bool checkCollision(Bullet *b);
 	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
-	
+
 	std::vector<Stalagmite> getStalagmites();
 	std::vector<Stalagtite> getStalagtites();
 	std::vector<Turret> getTurrets();
