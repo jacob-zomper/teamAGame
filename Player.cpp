@@ -258,7 +258,7 @@ Bullet* Player::handleForwardFiring()
 {
 	time_since_fshot = SDL_GetTicks() - last_fshot;
 	if (time_since_fshot > SHOOT_FREQ) {
-		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -abs(PLAYER_WIDTH/2*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*2*sin(tiltAngle), abs(450*cos(tiltAngle)), tiltAngle >= 0 ? abs(450*sin(tiltAngle)) : -abs(450*sin(tiltAngle)));
+		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/2*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*2*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
 		last_fshot = SDL_GetTicks();
 		return b;
 	}
@@ -269,7 +269,7 @@ Bullet* Player::handleBackwardFiring()
 {
 	time_since_bshot = SDL_GetTicks() - last_bshot;
 	if (time_since_bshot > SHOOT_FREQ) {
-		Bullet* b = new Bullet(x_pos-10 +abs(PLAYER_WIDTH/2*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*2*sin(tiltAngle), -abs(450*cos(tiltAngle)), tiltAngle >= 0 ? -abs(450*sin(tiltAngle)) : abs(450*sin(tiltAngle)));
+		Bullet* b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/2*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*2*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
 		last_bshot = SDL_GetTicks();
 		return b;
 	}
