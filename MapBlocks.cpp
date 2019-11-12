@@ -332,6 +332,42 @@ std::vector<Bullet*> MapBlocks::handleFiring(std::vector<Bullet*> bullets, int p
 	return bullets;
 }
 
+bool MapBlocks::checkCollision(Kamikaze *kam){
+	int i;
+    for (i = 0; i < blocks_arr.size(); i++)
+    {
+        // If there's a collision, return true and delete the turret
+		if (checkCollide(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+        {
+					explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
+					blocks_arr.erase(blocks_arr.begin() + i);
+					return true;
+        }
+    }
+    for (i = 0; i < stalagm_arr.size(); i++)
+    {
+        // If there's a collision, damage the enemy and delete the stalagmite
+        if (checkCollide(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        {
+						explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
+						stalagm_arr.erase(stalagm_arr.begin() + i);
+						return true;
+        }
+		}
+
+		for (i = 0; i < stalagt_arr.size(); i++)
+		{
+        // If there's a collision, damage the enemy and delete the stalactite
+        if (checkCollide(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        {
+						explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
+						stalagt_arr.erase(stalagt_arr.begin() + i);
+						return true;
+        }
+    }
+		return false;
+}
+
 void MapBlocks::checkCollision(Player *p)
 {
 
