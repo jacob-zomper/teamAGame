@@ -432,7 +432,7 @@ void MapBlocks::checkCollision(Enemy *e)
 			stalagm_arr.erase(stalagm_arr.begin() + i);
         }
 	}
-	for (i = 0; i < stalagt_arr.size(); i++) 
+	for (i = 0; i < stalagt_arr.size(); i++)
 	{
         // If there's a collision, damage the enemy and delete the stalactite
         if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
