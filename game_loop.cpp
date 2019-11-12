@@ -23,7 +23,7 @@ constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
 constexpr int FLOOR_BOTTOM = 720-79;
-constexpr int ROOF_TOP = 72;
+constexpr int ROOF_TOP = 73;
 
 // Function declarations
 bool init();

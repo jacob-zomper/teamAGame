@@ -11,7 +11,7 @@ public:
 
 	static const int BULLET_SIZE = 5;
 	static const int FLOOR_BOTTOM = 720-79;
-    static const int ROOF_TOP = 72;
+    static const int ROOF_TOP = 73;
 
     Bullet(int x, int y, int vel);
 	Bullet(int x, int y, int xvel, int yvel);
