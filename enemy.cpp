@@ -6,7 +6,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdlib.h>
-#include <bits/stdc++.h> 
 #include "Enemy.h"
 
 
@@ -197,8 +196,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			}
 		}
 		// If the current movement direction is still in the least risky list, go in that direction
-		if (leastRisky.end() != std::find(leastRisky.begin(), leastRisky.end(), prev_direction)) {
-			return prev_direction;
+		for (int i = 0; i < leastRisky.size(); i++) {
+			if (leastRisky[i] == prev_direction) return prev_direction;
 		}
 		// Otherwise pick a new direction at random from the list of safe directions
 		int choice = rand() % leastRisky.size();
