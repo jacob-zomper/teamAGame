@@ -414,45 +414,32 @@ void MapBlocks::checkCollision(Enemy *e)
 	int i;
     for (i = 0; i < blocks_arr.size(); i++)
     {
-        // If there's a collision, cancel the enemy's move
+        // If there's a collision, damage the enemy and delete the turret
 		if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
-            e->undoXMove();
-            e->undoYMove();
-			// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
-            {
-                e->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - e->getWidth(), 0));
-                e->redoYMove();
-            }
+            e->hit(5);
+			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
+			blocks_arr.erase(blocks_arr.begin() + i);
         }
     }
     for (i = 0; i < stalagm_arr.size(); i++)
     {
-        // If there's a collision, cancel the player's move
+        // If there's a collision, damage the enemy and delete the stalagmite
         if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
-            e->undoXMove();
-            e->undoYMove();
-            // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
-            {
-                e->setPosX(std::max(stalagm_arr[i].STALAG_REL_X - e->getWidth(), 0));
-                e->redoYMove();
-            }
+            e->hit(5);
+			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
+			stalagm_arr.erase(stalagm_arr.begin() + i);
         }
 	}
-	for (i = 0; i < stalagt_arr.size(); i++) {
+	for (i = 0; i < stalagt_arr.size(); i++) 
+	{
+        // If there's a collision, damage the enemy and delete the stalactite
         if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
         {
-            e->undoXMove();
-            e->undoYMove();
-            // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
-            {
-                e->setPosX(std::max(stalagt_arr[i].STALAG_REL_X - e->getWidth(), 0));
-                e->redoYMove();
-            }
+            e->hit(5);
+			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
+			stalagt_arr.erase(stalagt_arr.begin() + i);
         }
     }
 }
