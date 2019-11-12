@@ -34,7 +34,7 @@ WallBlock::WallBlock(int num){
     FLOOR_ABS_Y = 720 - WallBlock::block_side;
     CEILING_REL_X = CEILING_ABS_X;
     FLOOR_REL_X = FLOOR_ABS_X;
-    CEILING_REL_Y = CEILING_ABS_Y; 
+    CEILING_REL_Y = CEILING_ABS_Y;
     FLOOR_REL_Y = FLOOR_ABS_Y;
 }
 HealthBlock::HealthBlock(){
@@ -72,7 +72,8 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 {
     STALAG_WIDTH = rand() % 16 + 60;
     STALAG_HEIGHT = rand() % 141 + 50;
-	
+    hitboxWidth = STALAG_WIDTH / 2;
+
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
     STALAG_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - STALAG_HEIGHT;//growing from bottom of cave
 	// Select a new x coordinate if the current one is in a cave or open air section
@@ -97,6 +98,7 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 {
     STALAG_WIDTH = rand() % 16 + 60;
     STALAG_HEIGHT = rand() % 141 + 50;
+    hitboxWidth = STALAG_WIDTH / 2;
 
     STALAG_ABS_X = rand() % LEVEL_WIDTH;
 
@@ -148,7 +150,7 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
     if(BLOCK_ABS_Y == LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT){
         bottom = 1;
     }
-    
+
     FB_sprite = { BLOCK_ABS_X,  BLOCK_ABS_Y, BLOCK_WIDTH, BLOCK_HEIGHT};
     FB_hitbox = FB_sprite;
 
@@ -219,7 +221,7 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 	stalagmiteSprite3 = loadImage("sprites/stalagm3.png", gRenderer);
 	stalagmiteSprite4 = loadImage("sprites/stalagm4.png", gRenderer);
     healthSprite=loadImage("sprites/health.png", gRenderer);
-	
+
     int i;
     for(i = 0; i<CEILING_N; i++){
         // Create blocks on the top of the screen if it isn't an open air section
@@ -332,7 +334,7 @@ std::vector<Bullet*> MapBlocks::handleFiring(std::vector<Bullet*> bullets, int p
 
 void MapBlocks::checkCollision(Player *p)
 {
-    
+
 	int i;
     for (i = blocks_arr.size() - 1; i >= 0; i--)
     {
@@ -354,23 +356,23 @@ void MapBlocks::checkCollision(Player *p)
             health_arr.erase(health_arr.begin() + i);
         }
     }
-    
+
 
     for (i = stalagm_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, damage the player and blow up the stalagmite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X + stalagm_arr[i].STALAG_WIDTH / 4, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].hitboxWidth, stalagm_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
 			stalagm_arr.erase(stalagm_arr.begin() + i);
         }
 	}
-	
+
 	for (i = stalagt_arr.size() - 1; i >= 0; i--)
 	{
 		// If there's a collision, damage the player and blow up the stalactite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X + stalagt_arr[i].STALAG_WIDTH / 4, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].hitboxWidth, stalagt_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
@@ -393,7 +395,7 @@ void MapBlocks::checkCollision(Player *p)
         }
 	}
 	for (i = 0; i < floor_arr.size(); i++) {
-		
+
         if((checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
             p->undoXMove();
@@ -414,45 +416,32 @@ void MapBlocks::checkCollision(Enemy *e)
 	int i;
     for (i = 0; i < blocks_arr.size(); i++)
     {
-        // If there's a collision, cancel the enemy's move
+        // If there's a collision, damage the enemy and delete the turret
 		if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
-            e->undoXMove();
-            e->undoYMove();
-			// If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
-            {
-                e->setPosX(std::max(blocks_arr[i].BLOCK_REL_X - e->getWidth(), 0));
-                e->redoYMove();
-            }
+            e->hit(5);
+			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
+			blocks_arr.erase(blocks_arr.begin() + i);
         }
     }
     for (i = 0; i < stalagm_arr.size(); i++)
     {
-        // If there's a collision, cancel the player's move
+        // If there's a collision, damage the enemy and delete the stalagmite
         if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
         {
-            e->undoXMove();
-            e->undoYMove();
-            // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
-            {
-                e->setPosX(std::max(stalagm_arr[i].STALAG_REL_X - e->getWidth(), 0));
-                e->redoYMove();
-            }
+            e->hit(5);
+			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
+			stalagm_arr.erase(stalagm_arr.begin() + i);
         }
 	}
-	for (i = 0; i < stalagt_arr.size(); i++) {
+	for (i = 0; i < stalagt_arr.size(); i++)
+	{
+        // If there's a collision, damage the enemy and delete the stalactite
         if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
         {
-            e->undoXMove();
-            e->undoYMove();
-            // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-            if (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
-            {
-                e->setPosX(std::max(stalagt_arr[i].STALAG_REL_X - e->getWidth(), 0));
-                e->redoYMove();
-            }
+            e->hit(5);
+			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
+			stalagt_arr.erase(stalagt_arr.begin() + i);
         }
     }
 }
@@ -563,7 +552,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
 	}
-	
+
 	for (i = 0; i < floor_arr.size(); i++)
 	{
         if(floor_arr[i].FLOOR_REL_X < SCREEN_WIDTH && floor_arr[i].FLOOR_REL_Y < SCREEN_HEIGHT)
@@ -610,7 +599,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     {
         // Only render the Stalag if will be screen
         if (stalagt_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_WIDTH && stalagt_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_HEIGHT && stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
-            
+
 			SDL_Rect fillRect = {stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT};
             if (stalagt_arr[i].stalagShapeNum == 1) {
 				SDL_RenderCopyEx(gRenderer, stalactiteSprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
@@ -626,7 +615,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 			}
         }
 
-        if(stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT >= SCREEN_HEIGHT + 35 - WallBlock::block_side && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT <= SCREEN_HEIGHT + 37 - WallBlock::block_side){ 
+        if(stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT >= SCREEN_HEIGHT + 35 - WallBlock::block_side && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT <= SCREEN_HEIGHT + 37 - WallBlock::block_side){
             int x = stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2;
             int y = stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2;
             explosion_arr.push_back(Explosion(x, y, 1, gRenderer));
@@ -647,4 +636,16 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 // Add an explosion at the given location
 void MapBlocks::addExplosion(int x, int y, int w, int h, int type) {
 	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
+}
+
+std::vector<Stalagmite> MapBlocks::getStalagmites() {
+	return stalagm_arr;
+}
+
+std::vector<Stalagtite> MapBlocks::getStalagtites() {
+	return stalagt_arr;
+}
+
+std::vector<Turret> MapBlocks::getTurrets() {
+	return blocks_arr;
 }

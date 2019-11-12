@@ -57,6 +57,8 @@ public:
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
 
+    int hitboxWidth;
+
     Stalagmite();
     Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
@@ -75,6 +77,8 @@ public:
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
+
+    int hitboxWidth;
 
     Stalagtite();
     Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -170,7 +174,7 @@ public:
     int BLOCKS_N = 50;
 
     static const int STALAG_STARTING_N=50;
-    int STALAG_N = 50;
+    int STALAG_N = 30;
 
     static const int HEALTH_STARTING_N=20;
     int HEALTH_N = 20;
@@ -217,6 +221,10 @@ public:
 	void checkCollision(Enemy *e);
 	bool checkCollision(Bullet *b);
 	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
+	
+	std::vector<Stalagmite> getStalagmites();
+	std::vector<Stalagtite> getStalagtites();
+	std::vector<Turret> getTurrets();
 
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer, bool isCaveEnabled);
 	void addExplosion(int x, int y, int w, int h, int type);
