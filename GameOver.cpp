@@ -32,7 +32,7 @@ int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, S
         else if (y < RESTART_BUTTON_Y){ inside_restart_button = false; }
         else if (y > RESTART_BUTTON_Y + RESTART_BUTTON_HEIGHT){ inside_restart_button = false; }
 
-        if (inside_restart_button && e.type == SDL_MOUSEBUTTONUP){ 
+        if (inside_restart_button && e.type == SDL_MOUSEBUTTONUP){
             restart(player, map_blocks, gRenderer);
             return 0;
         }
@@ -42,7 +42,7 @@ int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, S
         else if (y < CRED_BUTTON_Y){ inside_cred_button = false; }
         else if (y > CRED_BUTTON_Y + CRED_BUTTON_HEIGHT){ inside_cred_button = false; }
 
-        if (inside_cred_button && e.type == SDL_MOUSEBUTTONUP){ 
+        if (inside_cred_button && e.type == SDL_MOUSEBUTTONUP){
             displayCredits(gRenderer);
             return 1;
         }
@@ -67,7 +67,7 @@ void GameOver::render(SDL_Renderer *gRenderer)
     SDL_RenderCopyEx(gRenderer, restart_button_texture, nullptr, &fillRectRestartButton, 0.0, nullptr, SDL_FLIP_NONE);
 
     SDL_Rect fillRectCredButton = {CRED_BUTTON_X, CRED_BUTTON_Y, CRED_BUTTON_WIDTH, CRED_BUTTON_HEIGHT};
-    
+
     SDL_Texture *cred_button_texture = nullptr;
     SDL_Surface *cred_button_image_surface = IMG_Load("sprites/cred_button.png");
     cred_button_texture = SDL_CreateTextureFromSurface(gRenderer, cred_button_image_surface);
@@ -88,7 +88,7 @@ void GameOver::displayCredits(SDL_Renderer* gRenderer){
     std::vector<SDL_Texture*> gTex;
 	// SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-	
+
 	// Initialize PNG loading via SDL_image extension library
 	int imgFlags = IMG_INIT_PNG;
 	int retFlags = IMG_Init(imgFlags);
