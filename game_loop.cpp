@@ -147,6 +147,7 @@ void close() {
 
 	// Quit SDL subsystems
 	SDL_Quit();
+	exit(0);
 }
 
 // Function that prepares for enemy movement. Put in a separate method to avoid cluttering the main loop
