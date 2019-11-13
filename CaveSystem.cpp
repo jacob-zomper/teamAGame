@@ -47,7 +47,7 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
 
             curr_block->CAVE_BLOCK_REL_X = curr_block->CAVE_BLOCK_ABS_X;
             curr_block->CAVE_BLOCK_REL_Y = curr_block->CAVE_BLOCK_ABS_Y;
-
+            curr_block->isPointy = 0;
             cave_system[i][j] = curr_block;
         }
 
@@ -288,16 +288,36 @@ void CaveSystem::checkCollision(Player *p)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
             // If there's a collision, cancel the player's move
-            if (cave_system[i][j]->enabled == 1 && (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
+            if (cave_system[i][j]->enabled == 1 && (checkCollide(p->getPosX() + 12, p->getPosY() + 12, p->PLAYER_HURT_WIDTH, p->PLAYER_HURT_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
             {
-                p->undoXMove();
-                p->undoYMove();
-                // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-                if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
-                {
-                    p->setPosX(std::max(cave_system[i][j]->CAVE_BLOCK_REL_X - p->PLAYER_WIDTH, 0));
-                    p->redoYMove();
+                if(cave_system[i][j]->isPointy == 0){
+                    p->hit(p->getHealth());//Player dies instantly
                 }
+                else{
+                    p->hit(25);//Player is dealt 25 damage if they hit a pointy cave
+                }
+
+                // p->undoXMove();
+                // p->undoYMove();
+                // // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
+                // if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
+                // {
+                //     p->setPosX(std::max(cave_system[i][j]->CAVE_BLOCK_REL_X - p->PLAYER_WIDTH, 0));
+                //     p->redoYMove();
+                // }
+            }
+        }
+}
+
+void CaveSystem::checkCollision(Enemy *e){
+    int i, j;
+    for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
+        for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
+        {
+            // If there's a collision, cancel the player's move
+            if (cave_system[i][j]->enabled == 1 && (checkCollide(e->getX(), e->getY(), e->getWidth(), e->getHeight(), cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
+            {
+                e->hit(e->getHealth());//Enemy dies instantly
             }
         }
 }
@@ -329,9 +349,11 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
             {
                 SDL_Rect fillRect = {curr_block->CAVE_BLOCK_REL_X, curr_block->CAVE_BLOCK_REL_Y, CaveBlock::CAVE_BLOCK_WIDTH, CaveBlock::CAVE_BLOCK_HEIGHT};
                 if(i != 0 && CaveSystem::cave_system[i-1][j]->enabled == 0){
+                    curr_block->isPointy = 1;
                     SDL_RenderCopyEx(gRenderer, floorSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
                 }
                 else if(i != CaveSystem::CAVE_SYSTEM_HEIGHT - 1 && CaveSystem::cave_system[i+1][j]->enabled == 0){
+                    curr_block->isPointy = 1;
                     SDL_RenderCopyEx(gRenderer, ceilSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
                 }
                 else{
