@@ -222,8 +222,10 @@ public:
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
-  bool checkCollision(Kamikaze *kam);
-	bool checkCollision(Bullet *b);
+    bool checkCollision(Kamikaze *kam);
+	bool checkCollision(Missile* m);
+    bool checkCollision(Bullet *b);
+
 	std::vector<Missile*> handleFiring(std::vector<Missile*> missiles, int posX, int posY);
 
 	std::vector<Stalagmite> getStalagmites();

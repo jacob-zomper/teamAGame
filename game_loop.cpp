@@ -263,8 +263,15 @@ void check_missile_collisions()
 		// Check if the missile is out of the screen boundaries
 		if (missiles[i]->getY() > FLOOR_BOTTOM)
 		{
-			// Destroy if so
 			destroyed = missiles[i]->ricochet();
+		}
+		else if (missiles[i]->getY() < ROOF_TOP)
+		{
+			destroyed = missiles[i]->ricochet();
+		}
+		else if (blocks->checkCollision(missiles[i]))
+		{
+			destroyed = true;
 		}
 		else
 		{

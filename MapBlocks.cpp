@@ -487,6 +487,33 @@ void MapBlocks::checkCollision(Enemy *e)
     }
 }
 
+// Checks missile collisions with stalagmite and stalgtites
+bool MapBlocks::checkCollision(Missile* m)
+{
+    for (int i = 0; i < stalagm_arr.size(); i++)
+    {
+        if (checkCollide(m->getX(), m->getY(), m->getWidth(), m->getWidth(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        {
+            int x = stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2;
+            int y = stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2;
+            explosion_arr.push_back(Explosion(x, y, 1, gRenderer));
+            stalagm_arr.erase(stalagm_arr.begin() + i);
+            return true;
+        }
+    }
+    for (int i = 0; i < stalagt_arr.size(); i++)
+    {
+        if (checkCollide(m->getX(), m->getY(), m->getWidth(), m->getWidth(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        {
+            stalagt_arr[i].beenShot = 1;
+            stalagt_arr[i].last_move = SDL_GetTicks();
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // Returns true if the bullet hit something (and was therefore destroyed), and false otherwise
 bool MapBlocks::checkCollision(Bullet *b)
 {
