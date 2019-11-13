@@ -5,6 +5,7 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <stdlib.h>
 #include "Enemy.h"
 
 
@@ -37,7 +38,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		time_hit = SDL_GetTicks() - FLICKER_TIME;
 		last_shot = SDL_GetTicks() - FIRING_FREQ;
 		is_destroyed = false;
-		health = 10;
+		health = 20;
+		prev_direction = 0;
     }
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
@@ -55,42 +57,53 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			}
 
 			if ((SDL_GetTicks() - time_destroyed) >= SPAWN_FREQ && is_destroyed){
-				health = 10;
+				health = 20;
 				is_destroyed = false;
 			}
     }
 
-    void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY)
+    void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom, int kamiX, int kamiY, int cave_y)
     {
-        time_since_move = SDL_GetTicks() - last_move;
-		xVelo = 0;
-		yVelo = 0;
+		// If there is no cave, use the risk scores
+		if (cave_y == -1)
+		{
+			time_since_move = SDL_GetTicks() - last_move;
+			xVelo = 0;
+			yVelo = 0;
 
-        // tiltAngle = 0;
-		calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, kamiX, kamiY);
-		int direction = chooseDirection();
+			// tiltAngle = 0;
+			calculateRiskscores(playerX, playerY, bulletX, bulletY, bulletVelX, bulletVelY, kamiX, kamiY, stalagmX, stalagmH, stalagtX, stalagtH, turretX, turretH, turretBottom);
+			int direction = chooseDirection();
 
-		// Move right if that's the optimal direction
-        if(direction == 3 || direction == 4 || direction == 5 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) < SQUARE_WIDTH / 4))){
-			xVelo = maxXVelo;
-        }
-		// Move left if that's the optimal direction
-		if (direction == 1 || direction == 8 || direction == 7 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
-			xVelo = -maxXVelo;
-		}
-		// Move up if that's the optimal direction
-		if (direction == 1 || direction == 2 || direction == 3 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
-			yVelo = -maxYVelo;
-			// tiltAngle = 15;
-		}
-		// Move down if that's the optimal direction
-		if (direction == 5 || direction == 6 || direction == 7 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) < SQUARE_WIDTH / 4))) {
-			yVelo = maxYVelo;
-			// tiltAngle = -15;
-		}
+			// Move right if that's the optimal direction
+			if(direction == 3 || direction == 4 || direction == 5 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) < SQUARE_WIDTH / 4))){
+				xVelo = maxXVelo;
+			}
+			// Move left if that's the optimal direction
+			if (direction == 1 || direction == 8 || direction == 7 || (direction == 0 && ((xPos - width/2 - MIN_X % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
+				xVelo = -maxXVelo;
+			}
+			// Move up if that's the optimal direction
+			if (direction == 1 || direction == 2 || direction == 3 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) > 3 * SQUARE_WIDTH / 4))) {
+				yVelo = -maxYVelo;
+				// tiltAngle = 15;
+			}
+			// Move down if that's the optimal direction
+			if (direction == 5 || direction == 6 || direction == 7 || (direction == 0 && ((yPos - height/2 - MIN_Y % SQUARE_WIDTH) < SQUARE_WIDTH / 4))) {
+				yVelo = maxYVelo;
+				// tiltAngle = -15;
+			}
 
-		xPos += (double) (xVelo * time_since_move) / 1000;
-		yPos += (double) (yVelo * time_since_move) / 1000;
+			xPos += (double) (xVelo * time_since_move) / 1000;
+			yPos += (double) (yVelo * time_since_move) / 1000;
+			prev_direction = direction;
+		}
+		// Otherwise, just follow the cave
+		else
+		{
+			if (cave_y > yPos + height / 2 + 5) yPos += (double) (maxYVelo * time_since_move) / 1000;
+			else if (cave_y < yPos + height / 2 - 5) yPos -= (double) (maxYVelo * time_since_move) / 1000;
+		}
 		enemy_sprite = {(int)xPos,(int)yPos,width,height};
 		last_move = SDL_GetTicks();
     }
@@ -100,66 +113,98 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	1	2	3
 	8	0	4
 	7	6	5
+	This method just chooses the adjacent square with the lowest risk score.
+	Ties are broken randomly to make the enemy's movement more chaotic.
 	*/
 	int Enemy::chooseDirection() {
 		current_x_square = (xPos - width/2 - MIN_X) / SQUARE_WIDTH;
 		current_y_square = (yPos - height/2 - MIN_Y) / SQUARE_WIDTH;
 		double minRisk = riskScores[current_x_square][current_y_square];
-		int leastRisky = 0;
+		std::vector<int> leastRisky;
+		leastRisky.push_back(0);
 
 		if (current_y_square > 0) {
-			if (minRisk > riskScores[current_x_square][current_y_square-1]) {
-				leastRisky = 2;
-				minRisk = riskScores[current_x_square][current_y_square-1];
+			if (minRisk >= riskScores[current_x_square][current_y_square-1]) {
+				if (minRisk > riskScores[current_x_square][current_y_square-1]) {
+					leastRisky.clear();
+					minRisk = riskScores[current_x_square][current_y_square-1];
+				}
+				leastRisky.push_back(2);
 			}
 			if (current_x_square > 0) {
-				if (minRisk > riskScores[current_x_square-1][current_y_square-1]) {
-					leastRisky = 1;
-					minRisk = riskScores[current_x_square-1][current_y_square-1];
+				if (minRisk >= riskScores[current_x_square-1][current_y_square-1]) {
+					if (minRisk > riskScores[current_x_square-1][current_y_square-1]) {
+						leastRisky.clear();
+						minRisk = riskScores[current_x_square-1][current_y_square-1];
+					}
+					leastRisky.push_back(1);
 				}
 			}
 			if (current_x_square < NUM_HORIZONTAL_SQUARES - 1) {
-				if (minRisk > riskScores[current_x_square+1][current_y_square-1]) {
-					leastRisky = 3;
-					minRisk = riskScores[current_x_square+1][current_y_square-1];
+				if (minRisk >= riskScores[current_x_square+1][current_y_square-1]) {
+					if (minRisk > riskScores[current_x_square+1][current_y_square-1]) {
+						leastRisky.clear();
+						minRisk = riskScores[current_x_square+1][current_y_square-1];
+					}
+					leastRisky.push_back(3);
 				}
 			}
 		}
 		if (current_y_square < NUM_VERTICAL_SQUARES - 1) {
-			if (minRisk > riskScores[current_x_square][current_y_square+1]) {
-				leastRisky = 6;
-				minRisk = riskScores[current_x_square][current_y_square+1];
+			if (minRisk >= riskScores[current_x_square][current_y_square+1]) {
+				if (minRisk > riskScores[current_x_square][current_y_square+1]) {
+					leastRisky.clear();
+					minRisk = riskScores[current_x_square][current_y_square+1];
+				}
+				leastRisky.push_back(6);
 			}
 			if (current_x_square > 0) {
-				if (minRisk > riskScores[current_x_square-1][current_y_square+1]) {
-					leastRisky = 7;
-					minRisk = riskScores[current_x_square-1][current_y_square+1];
+				if (minRisk >= riskScores[current_x_square-1][current_y_square+1]) {
+					if (minRisk > riskScores[current_x_square-1][current_y_square+1]) {
+						leastRisky.clear();
+						minRisk = riskScores[current_x_square-1][current_y_square+1];
+					}
+					leastRisky.push_back(7);
 				}
 			}
 			if (current_x_square < NUM_HORIZONTAL_SQUARES - 1) {
-				if (minRisk > riskScores[current_x_square+1][current_y_square+1]) {
-					leastRisky = 5;
-					minRisk = riskScores[current_x_square+1][current_y_square+1];
+				if (minRisk >= riskScores[current_x_square+1][current_y_square+1]) {
+					if (minRisk > riskScores[current_x_square+1][current_y_square+1]) {
+						leastRisky.clear();
+						minRisk = riskScores[current_x_square+1][current_y_square+1];
+					}
+					leastRisky.push_back(5);
 				}
 			}
 		}
 		if (current_x_square > 0) {
-			if (minRisk > riskScores[current_x_square-1][current_y_square]) {
-				leastRisky = 8;
-				minRisk = riskScores[current_x_square-1][current_y_square];
+			if (minRisk >= riskScores[current_x_square-1][current_y_square]) {
+				if (minRisk > riskScores[current_x_square-1][current_y_square]) {
+					leastRisky.clear();
+					minRisk = riskScores[current_x_square-1][current_y_square];
+				}
+				leastRisky.push_back(8);
 			}
 		}
 		if (current_x_square > 0) {
-			if (minRisk > riskScores[current_x_square+1][current_y_square]) {
-				leastRisky = 4;
-				minRisk = riskScores[current_x_square+1][current_y_square];
+			if (minRisk >= riskScores[current_x_square+1][current_y_square]) {
+				if (minRisk > riskScores[current_x_square+1][current_y_square]) {
+					leastRisky.clear();
+					minRisk = riskScores[current_x_square+1][current_y_square];
+				}
+				leastRisky.push_back(4);
 			}
 		}
-		//std::cout << current_x_square << " " << current_y_square << " " << leastRisky << " " << minRisk << std::endl;
-		return leastRisky;
+		// If the current movement direction is still in the least risky list, go in that direction
+		for (int i = 0; i < leastRisky.size(); i++) {
+			if (leastRisky[i] == prev_direction) return prev_direction;
+		}
+		// Otherwise pick a new direction at random from the list of safe directions
+		int choice = rand() % leastRisky.size();
+		return leastRisky[choice];
 	}
 
-	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY) {
+	void Enemy::calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, int kamiX, int kamiY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom) {
 		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[i][j] = 0;
@@ -169,18 +214,64 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		int yBlock;
 		// Factor bullets into the risk score
 		for (int i = 0; i < bulletX.size(); i++) {
-			// std::cout << "Made it" << std::endl;
 			xBlock = (bulletX[i] - MIN_X) / SQUARE_WIDTH;
 			yBlock = (bulletY[i] - MIN_Y) / SQUARE_WIDTH;
-			if (bulletVelX[i] < 0) {
+			if (bulletVelX[i] * (xPos - bulletX[i]) > 0 || bulletVelY[i] * (yPos - bulletY[i]) > 0) {
 				if (yBlock >= 0 && yBlock < NUM_VERTICAL_SQUARES) {
 					for (int j = 0; j < NUM_HORIZONTAL_SQUARES; j++) {
-						riskScores[j][yBlock] += 200;
+						riskScores[j][yBlock] += 60;
 					}
 				}
 				if (xBlock >= 0 && xBlock < NUM_HORIZONTAL_SQUARES) {
 					for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
-						riskScores[xBlock][j] += 200;
+						riskScores[xBlock][j] += 60;
+					}
+				}
+			}
+		}
+		
+		// Factor stalactites, stalagmites, and turrets into the risk score
+		// Basically, any block where there is/soon will be a stalactite or turret is dangerous
+		int firstX;
+		int lastX;
+		int lastY;
+		int numHorizSquares = NUM_HORIZONTAL_SQUARES;
+		for (int i = 0; i < stalagmX.size(); i++) {
+			firstX = std::max(0, (stalagmX[i] - 50) / SQUARE_WIDTH);
+			lastX = std::min(numHorizSquares - 1, (stalagmX[i] + 150) / SQUARE_WIDTH);
+			lastY = (stalagmH[i] - MIN_Y) / SQUARE_WIDTH;
+			for (int j = firstX; j <= lastX; j++) {
+				for (int k = 0; k <= lastY; k++) {
+					riskScores[j][k] += 50;
+				}
+			}
+		}
+		for (int i = 0; i < stalagtX.size(); i++) {
+			firstX = std::max(0, (stalagtX[i] - 50) / SQUARE_WIDTH);
+			lastX = std::min(numHorizSquares - 1, (stalagtX[i] + 150) / SQUARE_WIDTH);
+			lastY = (720 - stalagtH[i] - MIN_Y) / SQUARE_WIDTH;
+			for (int j = firstX; j <= lastX; j++) {
+				for (int k = NUM_VERTICAL_SQUARES - 1; k >= lastY; k--) {
+					riskScores[j][k] += 50;
+				}
+			}
+		}
+		for (int i = 0; i < turretX.size(); i++) {
+			firstX = std::max(0, (turretX[i] - 50) / SQUARE_WIDTH);
+			lastX = std::min(numHorizSquares - 1, (turretX[i] + 150) / SQUARE_WIDTH);
+			if (turretBottom[i] == 0) {
+				lastY = (turretH[i] - MIN_Y) / SQUARE_WIDTH;
+				for (int j = firstX; j <= lastX; j++) {
+					for (int k = 0; k <= lastY; k++) {
+						riskScores[j][k] += 50;
+					}
+				}
+			}
+			else {
+				lastY = (720 - turretH[i] - MIN_Y) / SQUARE_WIDTH;
+				for (int j = firstX; j <= lastX; j++) {
+					for (int k = NUM_VERTICAL_SQUARES - 1; k >= lastY; k--) {
+						riskScores[j][k] += 50;
 					}
 				}
 			}
@@ -219,7 +310,6 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
 		// Factor proximity to the edge of the screen into the risk score
 		double center = ((MAX_Y - MIN_Y) / 2.0) / SQUARE_WIDTH - 0.5;
-		// std::cout << "center:" << center << std::endl;
 		for (int i = 0; i < NUM_HORIZONTAL_SQUARES; i++) {
 			for (int j = 0; j < NUM_VERTICAL_SQUARES; j++) {
 				riskScores[i][j] += (j - center) * (j - center) * SQUARE_WIDTH / 10.0;

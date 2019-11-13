@@ -51,7 +51,8 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
             cave_system[i][j] = curr_block;
         }
 
-
+    ceilSprite = nullptr;
+    floorSprite = nullptr;
     isEnabled = true;
     generateRandomCave();
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
@@ -74,7 +75,7 @@ CaveSystem::~CaveSystem()
 
 PathSequence* CaveSystem::getPathSequence()
 {
-    return &path;    
+    return &path;
 }
 
 void CaveSystem::generateRandomCave()
@@ -120,8 +121,18 @@ void CaveSystem::generateRandomCave()
             int padding = (3 * cos(i/7) + y_padding) + rand() % 2;
             for (j = (padding * -1); j < padding; j++)
             {
+               
                 if (cy + j >= 0 && cy + j < CaveSystem::CAVE_SYSTEM_HEIGHT)
-                    mat[cy + j][cx]->enabled = 0;
+                {
+                      mat[cy + j][cx]->enabled = 0;
+                      //printf("this is cy+j inside if: %d x: %d\n", (cy+j), cx);
+                }
+                // else
+                // {
+                //     printf("this is cy+j else if: %d x: %d\n", (cy+j), cx);
+                // }
+                
+                  
             }
         }
     };
@@ -293,6 +304,20 @@ void CaveSystem::checkCollision(Player *p)
 
 void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer)
 {
+    if(ceilSprite == nullptr){
+        SDL_Texture* newText = nullptr;
+        std::string fname = "sprites/stalagt1.png";
+	    SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	    newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	    SDL_FreeSurface(startSurf);
+        ceilSprite = newText;
+        newText = nullptr;
+        fname = "sprites/stalagm1.png";
+	    startSurf = IMG_Load(fname.c_str());
+	    newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	    SDL_FreeSurface(startSurf);
+        floorSprite = newText;
+    }
     int i, j;
     bool isStillShowing = false;
     for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
@@ -303,8 +328,16 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
             if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT && curr_block->enabled == 1)
             {
                 SDL_Rect fillRect = {curr_block->CAVE_BLOCK_REL_X, curr_block->CAVE_BLOCK_REL_Y, CaveBlock::CAVE_BLOCK_WIDTH, CaveBlock::CAVE_BLOCK_HEIGHT};
+                if(i != 0 && CaveSystem::cave_system[i-1][j]->enabled == 0){
+                    SDL_RenderCopyEx(gRenderer, floorSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+                }
+                else if(i != CaveSystem::CAVE_SYSTEM_HEIGHT - 1 && CaveSystem::cave_system[i+1][j]->enabled == 0){
+                    SDL_RenderCopyEx(gRenderer, ceilSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+                }
+                else{
                 SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
                 SDL_RenderFillRect(gRenderer, &fillRect);
+                }   
             }
 
             if (curr_block->CAVE_BLOCK_REL_X < SCREEN_WIDTH + 5 && curr_block->CAVE_BLOCK_REL_X >= 0 && curr_block->CAVE_BLOCK_REL_Y < SCREEN_HEIGHT)
@@ -317,4 +350,14 @@ void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRend
         this->~CaveSystem();
         // printf("CAVE SYSTEM DONE SHOWING!\n");
     }
+}
+
+int CaveSystem::getStartX()
+{
+	return CAVE_START_ABS_X;
+}
+
+int CaveSystem::getEndX()
+{
+	return CAVE_END_ABS_X;
 }

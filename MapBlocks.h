@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "CaveSystem.h"
+#include "Kamikaze.h"
 #include <vector>
 #include "missile.h"
 
@@ -58,10 +59,13 @@ public:
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
 
+    int hitboxWidth;
+
     Stalagmite();
     Stalagmite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 
     int stalagShapeNum;
+    int alreadyExploded;
 };
 
 class Stalagtite
@@ -75,6 +79,8 @@ public:
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
+
+    int hitboxWidth;
 
     Stalagtite();
     Stalagtite(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -108,7 +114,7 @@ public:
     int BLOCK_WIDTH;
 
     int BLOCK_SPRITE; // Map to which sprite image this Turret will use.
-	
+
 	// 1 if bottom turret, 0 if top
     int bottom;
 
@@ -171,7 +177,7 @@ public:
     int BLOCKS_N = 50;
 
     static const int STALAG_STARTING_N=50;
-    int STALAG_N = 50;
+    int STALAG_N = 30;
 
     static const int HEALTH_STARTING_N=20;
     int HEALTH_N = 20;
@@ -216,8 +222,13 @@ public:
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
+  bool checkCollision(Kamikaze *kam);
 	bool checkCollision(Bullet *b);
 	std::vector<Missile*> handleFiring(std::vector<Missile*> missiles, int posX, int posY);
+
+	std::vector<Stalagmite> getStalagmites();
+	std::vector<Stalagtite> getStalagtites();
+	std::vector<Turret> getTurrets();
 
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer, bool isCaveEnabled);
 	void addExplosion(int x, int y, int w, int h, int type);

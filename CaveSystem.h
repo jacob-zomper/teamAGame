@@ -63,7 +63,11 @@ public:
     void checkCollision(Player *p);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
     PathSequence* getPathSequence();
+	int getStartX();
+	int getEndX();
 
+    SDL_Texture* ceilSprite;
+    SDL_Texture* floorSprite;
 private:
     void generateRandomCave();
 };

@@ -23,7 +23,7 @@ class Enemy
         void renderEnemy(SDL_Renderer* gRenderer);
 
         //Moves the enemy
-        void move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY);
+        void move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom, int kamiX, int kamiY, int cave_y);
         bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
         bool checkCollision(int x, int y, int w, int h);
         void hit(int d);
@@ -48,7 +48,7 @@ class Enemy
         SDL_Rect* getHitbox();
         Bullet* handleFiring();
 		int chooseDirection();
-		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY);
+		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, int kamiX, int kamiY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom);
 
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
@@ -82,6 +82,7 @@ class Enemy
 		int current_y_square;
         const int width;
         const int height;
+		int prev_direction;
 
         //Velocity of the enemy
 		int maxXVelo;
