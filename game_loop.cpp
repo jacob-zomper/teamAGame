@@ -276,6 +276,14 @@ void check_missile_collisions()
 		}
 		else
 		{
+			for(int j = i + 1; j < missiles.size();j++){//loop to check for missiles colliding with each other
+				if(missiles[i]->checkCollision(missiles[j])){
+					destroyed = true;
+					blocks->addExplosion(missiles[j]->getX() + camX, missiles[j]->getY() + camY, missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
+					delete missiles[j];
+					missiles.erase(missiles.begin() + j);
+				}
+			}
 			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
 			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
 
