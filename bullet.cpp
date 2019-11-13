@@ -31,6 +31,10 @@ Bullet::Bullet(int x, int y, int xvel, int yvel) :xPos{(double)x}, yPos{(double)
     	srand(time(NULL));
 };
 
+Bullet::~Bullet(){
+	//gotta figure this one out
+}
+
 void Bullet::renderBullet(SDL_Renderer* gRenderer){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(gRenderer, &bullet_sprite);

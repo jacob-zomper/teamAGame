@@ -7,6 +7,7 @@
 #include "CaveSystem.h"
 #include "Kamikaze.h"
 #include <vector>
+#include "missile.h"
 
 class WallBlock
 {
@@ -99,7 +100,7 @@ public:
 	// Move and shooting times, needed for framerate-independent shooting
 	int time_since_move;
 	int last_move;
-	static const int SHOOT_FREQ = 1000;
+	static const int SHOOT_FREQ = 3000;
 
     // absolute coordinates of each Turret
     int BLOCK_ABS_X;
@@ -117,6 +118,7 @@ public:
 	// 1 if bottom turret, 0 if top
     int bottom;
 
+    SDL_Renderer* gRenderer;
 
     Turret();
     Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -131,7 +133,7 @@ public:
     //defines the hitbox of the turret
     SDL_Rect FB_hitbox;
 
-	Bullet * handleFiring(int posX, int posY);
+	Missile* handleFiring(int posX, int posY);
 };
 
 class Explosion
@@ -220,9 +222,11 @@ public:
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
-  bool checkCollision(Kamikaze *kam);
-	bool checkCollision(Bullet *b);
-	std::vector<Bullet*> handleFiring(std::vector<Bullet*> bullets, int posX, int posY);
+    bool checkCollision(Kamikaze *kam);
+	bool checkCollision(Missile* m);
+    bool checkCollision(Bullet *b);
+
+	std::vector<Missile*> handleFiring(std::vector<Missile*> missiles, int posX, int posY);
 
 	std::vector<Stalagmite> getStalagmites();
 	std::vector<Stalagtite> getStalagtites();

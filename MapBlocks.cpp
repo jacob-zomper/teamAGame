@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include "Player.h"
 #include "MapBlocks.h"
+#include "missile.h"
 #include "iostream"
 #include <vector>
 
@@ -124,7 +125,8 @@ Turret::Turret()
     Turret(1, 1, gRenderer, 5500, 2000, 0, 0);
 }
 
-Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength)
+Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength) :
+    gRenderer{ gRenderer }
 {
     BLOCK_ABS_X = rand() % LEVEL_WIDTH;
 	BLOCK_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT;
@@ -162,9 +164,12 @@ int Turret::getRelY() { return BLOCK_REL_Y; }
 int Turret::getAbsX() { return BLOCK_ABS_X; }
 int Turret::getAbsY() { return BLOCK_ABS_Y; }
 
-Bullet * Turret::handleFiring(int posX, int posY) {
+Missile * Turret::handleFiring(int posX, int posY) {
+    int damage = 500;
+    int blast_radius = 150;
+
 	time_since_move = SDL_GetTicks() - last_move;
-	Bullet * b = nullptr;
+	Missile * m = nullptr;
 	if (time_since_move >= SHOOT_FREQ) {
 		last_move = SDL_GetTicks();
 		int xDist = posX - BLOCK_REL_X;
@@ -172,13 +177,13 @@ Bullet * Turret::handleFiring(int posX, int posY) {
 		double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
 		double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
 		if (BLOCK_REL_Y >= posY){
-			b = new Bullet(BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
+			m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, gRenderer);
 		}
 		else {
-			b = new Bullet(BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400);
+			m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, gRenderer);
 		}
 	}
-	return b;
+	return m;
 }
 
 Explosion::Explosion()
@@ -320,16 +325,16 @@ void MapBlocks::moveBlocks(int camX, int camY)
 	}
 }
 
-std::vector<Bullet*> MapBlocks::handleFiring(std::vector<Bullet*> bullets, int posX, int posY) {
+std::vector<Missile*> MapBlocks::handleFiring(std::vector<Missile*> missiles, int posX, int posY) {
 	for (int i = 0; i < blocks_arr.size(); i++) {
 		if (blocks_arr[i].BLOCK_REL_X > 0 && blocks_arr[i].BLOCK_REL_Y > 0 && blocks_arr[i].BLOCK_REL_X <= 1280 && blocks_arr[i].BLOCK_REL_Y <= 720) {
-			Bullet * newBullet = blocks_arr[i].handleFiring(posX, posY);
-			if (newBullet != nullptr) {
-				bullets.push_back(newBullet);
+			Missile * newMissile = blocks_arr[i].handleFiring(posX, posY);
+			if (newMissile != nullptr) {
+				missiles.push_back(newMissile);
 			}
 		}
 	}
-	return bullets;
+	return missiles;
 }
 
 bool MapBlocks::checkCollision(Kamikaze *kam){
@@ -480,6 +485,33 @@ void MapBlocks::checkCollision(Enemy *e)
 			stalagt_arr.erase(stalagt_arr.begin() + i);
         }
     }
+}
+
+// Checks missile collisions with stalagmite and stalgtites
+bool MapBlocks::checkCollision(Missile* m)
+{
+    for (int i = 0; i < stalagm_arr.size(); i++)
+    {
+        if (checkCollide(m->getX(), m->getY(), m->getWidth(), m->getWidth(), stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT))
+        {
+            int x = stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2;
+            int y = stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2;
+            explosion_arr.push_back(Explosion(x, y, 1, gRenderer));
+            stalagm_arr.erase(stalagm_arr.begin() + i);
+            return true;
+        }
+    }
+    for (int i = 0; i < stalagt_arr.size(); i++)
+    {
+        if (checkCollide(m->getX(), m->getY(), m->getWidth(), m->getWidth(), stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT))
+        {
+            stalagt_arr[i].beenShot = 1;
+            stalagt_arr[i].last_move = SDL_GetTicks();
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // Returns true if the bullet hit something (and was therefore destroyed), and false otherwise
