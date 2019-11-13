@@ -283,8 +283,6 @@ void check_missile_collisions()
 					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
 					player->hit(damage);
 
-					std::cout << "Dealt " << damage << " damage to the player " << std::endl;
-
 					destroyed = true;
 				}
 
@@ -292,8 +290,6 @@ void check_missile_collisions()
 				{
 					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
 					en->hit(damage);
-
-					std::cout << "Dealt " << damage << " damage to the enemy" << std::endl;
 
 					destroyed = true;
 				}
