@@ -8,7 +8,13 @@ Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, 
 	damage{ damage }, blast_radius{ blast_radius }, xPos{ x }, yPos{ y },
 	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 4}
 {
-	sprite = loadImage("sprites/missile.png", gRenderer);
+	missType = rand()%5;//1 in 5 chance of missile being red
+	if(missType < 4){
+		sprite = loadImage("sprites/missile.png", gRenderer);
+	}
+	else{
+		sprite = loadImage("sprites/missile2.png", gRenderer);
+	}
 
 	velocity_magnitude = sqrt(pow(xVel, 2) + pow(yVel, 2));
 
@@ -75,7 +81,13 @@ double Missile::calculate_distance(double entity_x, double entity_y)
 double Missile::calculate_damage(double entity_x, double entity_y)
 {
 	double distance = calculate_distance(entity_x, entity_y);
-	return blast_radius / pow(distance, 2) * damage;
+	if(this->missType < 4){
+		return blast_radius / pow(distance, 2) * damage;
+	}
+	else{
+		return (blast_radius / pow(distance, 2) * damage) * 1.5;//red missiles do x1.5 damage
+	}
+	
 }
 
 bool Missile::ricochet()
