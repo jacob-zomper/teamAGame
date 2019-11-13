@@ -6,7 +6,7 @@
 
 Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer) :
 	damage{ damage }, blast_radius{ blast_radius }, xPos{ x }, yPos{ y },
-	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 5}
+	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 4}
 {
 	sprite = loadImage("sprites/missile.png", gRenderer);
 
@@ -38,7 +38,7 @@ SDL_Texture* Missile::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
 void Missile::renderMissile(SDL_Renderer* gRenderer)
 {
-	SDL_Rect missile_location = {(int) xPos, (int) yPos, MISSILE_SIZE, MISSILE_SIZE / 5};
+	SDL_Rect missile_location = {(int) xPos, (int) yPos, MISSILE_SIZE, MISSILE_SIZE / 4};
 	SDL_RenderCopyEx(gRenderer, sprite, nullptr, &missile_location, pitch * 180.0 / atan(1) * 4, nullptr, SDL_FLIP_NONE);
 }
 
