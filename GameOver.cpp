@@ -47,6 +47,7 @@ int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, S
             return 1;
         }
     }
+    return 0;
 }
 
 void GameOver::render(SDL_Renderer *gRenderer)
