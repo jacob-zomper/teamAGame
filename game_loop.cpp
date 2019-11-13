@@ -306,7 +306,8 @@ void check_missile_collisions()
 		// after rendering explosion
 		if (destroyed)
 		{
-			blocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+			blocks->addExplosion(missiles[i]->getX() + camX, missiles[i]->getY() + camY, missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+			delete missiles[i];
 			missiles.erase(missiles.begin() + i);
 		}
 	}
