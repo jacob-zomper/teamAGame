@@ -13,6 +13,7 @@
 #include "Enemy.h"
 #include "bullet.h"
 #include "GameOver.h"
+#include "StartScreen.h"
 #include "CaveSystem.h"
 #include "Text.h"
 #include "Kamikaze.h"
@@ -41,6 +42,7 @@ double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 Player * player;
 MapBlocks *blocks;
 GameOver *game_over;
+StartScreen *start_screen;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
 std::vector<Missile*> missiles;
@@ -281,7 +283,7 @@ void check_missile_collisions()
 					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
 					player->hit(damage);
 
-					std::cout << "Dealed " << damage << " damage to the player " << std::endl;
+					std::cout << "Dealt " << damage << " damage to the player " << std::endl;
 
 					destroyed = true;
 				}
@@ -291,7 +293,7 @@ void check_missile_collisions()
 					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
 					en->hit(damage);
 
-					std::cout << "Dealed " << damage << " damage to the enemy" << std::endl;
+					std::cout << "Dealt " << damage << " damage to the enemy" << std::endl;
 
 					destroyed = true;
 				}
@@ -332,7 +334,10 @@ int main() {
 
 	cave_system = new CaveSystem();
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength);
+	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
 	game_over = new GameOver();
+
+
 
 	//start enemy on left side behind player
 	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
@@ -348,6 +353,18 @@ int main() {
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
+
+	while(start_screen->notStarted){
+		while(SDL_PollEvent(&e)) {
+			if(e.type==SDL_QUIT){
+				start_screen->notStarted=false;
+				gameon=false;
+			}
+			start_screen->handleEvent(e);
+		}
+		start_screen->render(gRenderer);
+		SDL_RenderPresent(gRenderer);
+	}
 
 	while(gameon) {
 
