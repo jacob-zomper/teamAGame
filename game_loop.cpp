@@ -522,7 +522,10 @@ int main() {
 
 		if(health < 1){
 			game_over->isGameOver = true;
-			game_over->handleEvent(e, player, blocks,gRenderer);
+			int over = game_over->handleEvent(e, player, blocks,gRenderer);
+			if(over){
+				close();
+			}
 		}
 		if(game_over->isGameOver)
 		{
