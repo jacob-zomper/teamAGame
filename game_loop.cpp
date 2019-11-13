@@ -610,6 +610,7 @@ int main() {
 			game_over->isGameOver = true;
 			int over = game_over->handleEvent(e, player, blocks,gRenderer);
 			if(over){
+				gameon = false;
 				close();
 			}
 		}
