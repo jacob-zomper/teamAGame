@@ -295,10 +295,10 @@ void CaveSystem::checkCollision(Player *p)
                 }
                 else{
                     p->hit(25);//Player is dealt 25 damage if they hit a pointy cave
+                    p->undoXMove();
+                    p->undoYMove();
                 }
 
-                // p->undoXMove();
-                // p->undoYMove();
                 // // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
                 // if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
                 // {
