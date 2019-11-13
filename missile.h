@@ -9,7 +9,7 @@
 class Missile
 {
     public:
-        static const int MISSILE_SIZE = 25;
+        static const int MISSILE_SIZE = 75;
 
         Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer);
 
