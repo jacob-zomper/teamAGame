@@ -15,6 +15,7 @@ public:
 
     Bullet(int x, int y, int vel);
 	Bullet(int x, int y, int xvel, int yvel);
+    ~Bullet();
 
     void renderBullet(SDL_Renderer* gRenderer);
 

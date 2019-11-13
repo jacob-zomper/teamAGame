@@ -31,6 +31,23 @@ Bullet::Bullet(int x, int y, int xvel, int yvel) :xPos{(double)x}, yPos{(double)
     	srand(time(NULL));
 };
 
+Bullet::~Bullet(){
+	delete width;
+    delete height;
+    delete xPos;
+    delete yPos;
+    delete velocity_magnitude;
+    delete xVel;
+    delete yVel;
+	delete yVel0;
+	delete bullet_sprite;
+    delete hitbox;
+    delete time_since_move;
+    delete last_move;
+    delete pitch;
+    delete air_time;
+}
+
 void Bullet::renderBullet(SDL_Renderer* gRenderer){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(gRenderer, &bullet_sprite);
