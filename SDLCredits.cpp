@@ -157,9 +157,9 @@ int main() {
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(5000);
 
-     SDL_RenderCopy(gRenderer, gTex[9], NULL, NULL);
-	 SDL_RenderPresent(gRenderer);
-	 SDL_Delay(5000);
+    SDL_RenderCopy(gRenderer, gTex[9], NULL, NULL);
+	SDL_RenderPresent(gRenderer);
+	SDL_Delay(5000);
 
 	close();
 }
