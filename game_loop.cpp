@@ -13,6 +13,7 @@
 #include "Enemy.h"
 #include "bullet.h"
 #include "GameOver.h"
+#include "StartScreen.h"
 #include "CaveSystem.h"
 #include "Text.h"
 #include "Kamikaze.h"
@@ -41,8 +42,10 @@ double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 Player * player;
 MapBlocks *blocks;
 GameOver *game_over;
+StartScreen *start_screen;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
+std::vector<Missile*> missiles;
 Enemy* en;
 Kamikaze* kam;
 bool caveCounterHelp = false;
@@ -249,6 +252,66 @@ int readHighScore()
 	}
 }
 
+void check_missile_collisions()
+{
+	for (int i = 0; i < missiles.size(); i++)
+	{
+		missiles[i]->move();
+
+		bool destroyed = false;
+
+		// Check if the missile is out of the screen boundaries
+		if (missiles[i]->getY() > FLOOR_BOTTOM)
+		{
+			// Destroy if so
+			destroyed = missiles[i]->ricochet();
+		}
+		else
+		{
+			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
+			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
+
+			int missile_hitbox = missiles[i]->get_blast_radius() / 2;
+
+			// Explode the warhead if the missile hits the enemy or player
+			if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
+			{
+				// Deal damage to the player and/or enemy depending on their distance and blast radius
+
+				if (player_distance <= missiles[i]->get_blast_radius())
+				{
+					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
+					player->hit(damage);
+
+					std::cout << "Dealt " << damage << " damage to the player " << std::endl;
+
+					destroyed = true;
+				}
+
+				if (enemy_distance <= missiles[i]->get_blast_radius())
+				{
+					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
+					en->hit(damage);
+
+					std::cout << "Dealt " << damage << " damage to the enemy" << std::endl;
+
+					destroyed = true;
+				}
+
+				destroyed = true;
+			}
+		}
+
+		// Remove missiles from the game if they are destroyed
+		// after rendering explosion
+		if (destroyed)
+		{
+			blocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+			missiles.erase(missiles.begin() + i);
+		}
+	}
+}
+
 int main() {
 	if (!init()) {
 		std::cout <<  "Failed to initialize!" << std::endl;
@@ -271,7 +334,10 @@ int main() {
 
 	cave_system = new CaveSystem();
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength);
+	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
 	game_over = new GameOver();
+
+
 
 	//start enemy on left side behind player
 	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
@@ -287,6 +353,18 @@ int main() {
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
+
+	while(start_screen->notStarted){
+		while(SDL_PollEvent(&e)) {
+			if(e.type==SDL_QUIT){
+				start_screen->notStarted=false;
+				gameon=false;
+			}
+			start_screen->handleEvent(e);
+		}
+		start_screen->render(gRenderer);
+		SDL_RenderPresent(gRenderer);
+	}
 
 	while(gameon) {
 
@@ -347,7 +425,6 @@ int main() {
 			kam->setArrivalTime(5000);
 		}
 
-
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
@@ -357,7 +434,8 @@ int main() {
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
-		bullets = blocks->handleFiring(bullets, player->getPosX(), player->getPosY());
+		
+		missiles = blocks->handleFiring(missiles, player->getPosX(), player->getPosY());
 
 		kam->move(player, SCREEN_WIDTH);
 		//move the bullets
@@ -369,6 +447,14 @@ int main() {
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
 		blocks->checkCollision(en);
+
+		if (blocks->checkCollision(kam)){
+			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
+		}
+		
 		//kam->checkCollision(player, gRenderer);
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
@@ -405,6 +491,8 @@ int main() {
 				bullets.erase(bullets.begin() + i);
 			}
 		}
+
+		check_missile_collisions();
 
 		// Check collisions between enemy and player
 		if (en->checkCollision(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight())) {
@@ -450,7 +538,6 @@ int main() {
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
-
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
@@ -465,6 +552,12 @@ int main() {
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->renderBullet(gRenderer);
+		}
+
+		// Render the missiles
+		for (auto& missile : missiles)
+		{
+			missile->renderMissile(gRenderer);
 		}
 
 		framecount++;
@@ -514,7 +607,10 @@ int main() {
 
 		if(health < 1){
 			game_over->isGameOver = true;
-			game_over->handleEvent(e, player, blocks,gRenderer);
+			int over = game_over->handleEvent(e, player, blocks,gRenderer);
+			if(over){
+				close();
+			}
 		}
 		if(game_over->isGameOver)
 		{

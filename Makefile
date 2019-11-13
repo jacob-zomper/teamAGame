@@ -5,12 +5,13 @@ MAPBLOCKS_CLASS = -c MapBlocks.cpp -o MapBlocks.o
 BULLET_CLASS = -c bullet.cpp -o bullet.o
 ENEMY_CLASS = -c enemy.cpp -o enemy.o
 GAMEOVER_CLASS = -c GameOver.cpp -o GameOver.o
+STARTSCREEN_CLASS = -c StartScreen.cpp -o StartScreen.o
 CAVESYSTEM_CLASS = -c CaveSystem.cpp -o CaveSystem.o
 TEXT_CLASS = -c text.cpp -o text.o
 KAMIKAZE_CLASS = -c Kamikaze.cpp -o Kamikaze.o
 MISSILE_CLASS = -c missile.cpp -o missile.o
 
-INCLUDED_CLASSES = CaveSystem.cpp Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp GameOver.cpp text.cpp Kamikaze.cpp missile.cpp
+INCLUDED_CLASSES = CaveSystem.cpp Player.cpp MapBlocks.cpp bullet.cpp enemy.cpp StartScreen.cpp GameOver.cpp text.cpp Kamikaze.cpp missile.cpp
 BRANDON_LIB = -lSDL2 -lSDL2_image -lmingw32 -lSDL2main -lSDL2_ttf -lSDL2_mixer -IC:\mingw_dev_lib\include\SDL2 -LC:\mingw_dev_lib\lib
 JERRY_WIN = -lSDL2 -lSDL2_image -lSDL2_ttf -LC:\wingw_dev_lib\i686-w64-mingw32\bin -LC:\wingw_dev_lib\SDL2-2.0.10\x86_64-w64-mingw32\lib -IC:\wingw_dev_lib\SDL2-2.0.10\x86_64-w64-mingw32\include\SDL2
 
