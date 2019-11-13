@@ -53,6 +53,16 @@ void Missile::move()
 	last_move = SDL_GetTicks();
 }
 
+bool Missile::checkCollision(Missile *m){
+
+    if (this->getX() + this->getWidth() < m->getX() || this->getX() > m->getX() + m->getWidth())
+        return false;
+    if (this->getY() + this->getHeight() < m->getY() || this->getY() > m->getY() + m->getHeight())
+        return false;
+    return true;
+
+}
+
 // Calculates how far the entity is to this missile,
 // using the basic distance formula for two points in a X and Y plane
 double Missile::calculate_distance(double entity_x, double entity_y)
