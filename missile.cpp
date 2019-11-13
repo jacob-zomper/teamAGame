@@ -2,25 +2,44 @@
 #include <SDL.h>
 #include <iostream>
 #include <cmath>
+#include <SDL_image.h>
 
-Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel) :
+Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer) :
 	damage{ damage }, blast_radius{ blast_radius }, xPos{ x }, yPos{ y },
 	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 5}
-	{
-		missile_sprite = {(int)xPos, (int)yPos, width, height};
-		hitbox = missile_sprite;
+{
+	sprite = loadImage("sprites/missile.png", gRenderer);
 
-		velocity_magnitude = sqrt(pow(xVel, 2) + pow(yVel, 2));
+	velocity_magnitude = sqrt(pow(xVel, 2) + pow(yVel, 2));
 
-		pitch = 0;
-		air_time = 0;
-		last_move = SDL_GetTicks();
+	pitch = atan(yVel / xVel);
+	air_time = 0;
+	last_move = SDL_GetTicks();
+}
+
+SDL_Texture* Missile::loadImage(std::string fname, SDL_Renderer *gRenderer) {
+	SDL_Texture* newText = nullptr;
+
+	SDL_Surface* startSurf = IMG_Load(fname.c_str());
+	if (startSurf == nullptr) {
+		std::cout << "Unable to load image " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+		return nullptr;
 	}
+
+	newText = SDL_CreateTextureFromSurface(gRenderer, startSurf);
+	if (newText == nullptr) {
+		std::cout << "Unable to create texture from " << fname << "! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	SDL_FreeSurface(startSurf);
+
+	return newText;
+}
 
 void Missile::renderMissile(SDL_Renderer* gRenderer)
 {
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderFillRect(gRenderer, &missile_sprite);
+	SDL_Rect missile_location = {(int) xPos, (int) yPos, MISSILE_SIZE, MISSILE_SIZE / 5};
+	SDL_RenderCopyEx(gRenderer, sprite, nullptr, &missile_location, pitch * 180.0 / atan(1) * 4, nullptr, SDL_FLIP_NONE);
 }
 
 void Missile::move()
@@ -31,8 +50,6 @@ void Missile::move()
 	yPos += (double) time_since_move * yVel / 1000;
 	air_time += time_since_move;
 
-	missile_sprite = {(int) xPos, (int) yPos, width, height};
-	hitbox = missile_sprite;
 	last_move = SDL_GetTicks();
 }
 
@@ -49,6 +66,11 @@ double Missile::calculate_damage(double entity_x, double entity_y)
 {
 	double distance = calculate_distance(entity_x, entity_y);
 	return blast_radius / pow(distance, 2) * damage;
+}
+
+bool Missile::ricochet()
+{
+	return true;
 }
 
 // Accessor methods
@@ -83,7 +105,7 @@ int Missile::getYVel()
 	return yVel;
 }
 
-SDL_Rect* Missile::getHitbox()
+int Missile::get_blast_radius()
 {
-	return &hitbox;
+	return blast_radius;
 }
