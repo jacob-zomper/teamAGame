@@ -271,7 +271,7 @@ void check_missile_collisions()
 			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
 			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
 
-			int missile_hitbox = missiles[i]->get_blast_radius() / 2;
+			int missile_hitbox = missiles[i]->get_blast_radius() / 3;
 
 			// Explode the warhead if the missile hits the enemy or player
 			if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
@@ -282,16 +282,12 @@ void check_missile_collisions()
 				{
 					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
 					player->hit(damage);
-
-					destroyed = true;
 				}
 
 				if (enemy_distance <= missiles[i]->get_blast_radius())
 				{
 					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
 					en->hit(damage);
-
-					destroyed = true;
 				}
 
 				destroyed = true;
