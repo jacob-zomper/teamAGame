@@ -263,15 +263,22 @@ void check_missile_collisions()
 		// Check if the missile is out of the screen boundaries
 		if (missiles[i]->getY() > FLOOR_BOTTOM)
 		{
-			// Destroy if so
 			destroyed = missiles[i]->ricochet();
+		}
+		else if (missiles[i]->getY() < ROOF_TOP)
+		{
+			destroyed = missiles[i]->ricochet();
+		}
+		else if (blocks->checkCollision(missiles[i]))
+		{
+			destroyed = true;
 		}
 		else
 		{
 			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
 			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
 
-			int missile_hitbox = missiles[i]->get_blast_radius() / 2;
+			int missile_hitbox = missiles[i]->get_blast_radius() / 3;
 
 			// Explode the warhead if the missile hits the enemy or player
 			if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
@@ -282,20 +289,12 @@ void check_missile_collisions()
 				{
 					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
 					player->hit(damage);
-
-					std::cout << "Dealt " << damage << " damage to the player " << std::endl;
-
-					destroyed = true;
 				}
 
 				if (enemy_distance <= missiles[i]->get_blast_radius())
 				{
 					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
 					en->hit(damage);
-
-					std::cout << "Dealt " << damage << " damage to the enemy" << std::endl;
-
-					destroyed = true;
 				}
 
 				destroyed = true;
