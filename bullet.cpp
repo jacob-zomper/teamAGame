@@ -32,20 +32,7 @@ Bullet::Bullet(int x, int y, int xvel, int yvel) :xPos{(double)x}, yPos{(double)
 };
 
 Bullet::~Bullet(){
-	delete width;
-    delete height;
-    delete xPos;
-    delete yPos;
-    delete velocity_magnitude;
-    delete xVel;
-    delete yVel;
-	delete yVel0;
-	delete bullet_sprite;
-    delete hitbox;
-    delete time_since_move;
-    delete last_move;
-    delete pitch;
-    delete air_time;
+	//gotta figure this one out
 }
 
 void Bullet::renderBullet(SDL_Renderer* gRenderer){
