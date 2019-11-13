@@ -50,6 +50,7 @@ class Missile
 
         // Size of missile
         const int width, height;
+        int missType;
 
         // Position coordinates
         double xPos, yPos;
