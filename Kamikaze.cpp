@@ -24,7 +24,7 @@ SDL_Texture* Kamikaze::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-Kamikaze::Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer* gRenderer) :xPos{(double) x}, yPos{(double) y}, width{w}, height{h}{
+Kamikaze::Kamikaze(int x, int y, int w, int h, int delay, int diff, SDL_Renderer* gRenderer) :xPos{(double) x}, yPos{(double) y}, width{w}, height{h}{
   kam_sprite = {(int) xPos, (int) yPos, width, height};
   kam_hitbox = kam_sprite;
   arrival_time = SDL_GetTicks() + delay;

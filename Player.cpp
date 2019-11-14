@@ -23,7 +23,7 @@ SDL_Texture* Player::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
+Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
 {
     x_pos = xPos;
     y_pos = yPos;
@@ -47,6 +47,7 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
 	bshot_maxed = false;
 	time_hit = SDL_GetTicks() - FLICKER_TIME;
 	health = 100;
+    difficulty = diff;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -248,7 +249,13 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 // Damages the player if they've been hit
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
-	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
+	if(this->difficulty == 2){
+        damage /= 1.5;
+    }
+    else if(this->difficulty == 1){
+        damage /= 2;
+    }
+    if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
 		return;
 	}
 	

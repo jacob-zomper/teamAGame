@@ -338,10 +338,6 @@ int main() {
 
 	srand(time(NULL));
 
-
-	//Start the player on the left side of the screen
-	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-
 	//random open air area
 	int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
     int openAirLength = (rand() % 200) + 100;
@@ -376,7 +372,7 @@ int main() {
 		start_screen->render(gRenderer);
 		SDL_RenderPresent(gRenderer);
 	}
-	
+
 	int difficulty = 0;
 	while(difficulty == 0){
 		while(SDL_PollEvent(&e)) {
@@ -390,9 +386,12 @@ int main() {
 		SDL_RenderPresent(gRenderer);
 	}
 
+	//Start the player on the left side of the screen
+	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, difficulty, gRenderer);
+
 	//start enemy on left side behind player
-	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
+	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, difficulty, gRenderer);
+	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, difficulty, gRenderer);
 
 	while(gameon) {
 
