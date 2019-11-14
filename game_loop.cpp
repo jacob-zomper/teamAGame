@@ -441,7 +441,7 @@ int main() {
 			}
 			if(game_over->isGameOver)
 			{
-				game_over->handleEvent(e, player, blocks,gRenderer, difficulty);
+				game_over->handleEvent(e, player, blocks,gRenderer);
 			}
 		}
 		// If the kamikaze is offscreen, create a new one
@@ -689,7 +689,7 @@ int main() {
 
 		if(health < 1){
 			game_over->isGameOver = true;
-			int over = game_over->handleEvent(e, player, blocks,gRenderer, difficulty);
+			int over = game_over->handleEvent(e, player, blocks,gRenderer);
 			if(over){
 				gameon = false;
 				close();
