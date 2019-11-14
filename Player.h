@@ -102,15 +102,9 @@ public:
 	int getWidth();
 	int getHeight();
 	int getHealth();
-<<<<<<< HEAD
-  int getHot();
-  void makeCool();
-
-=======
 	int getFrontHeat();
 	int getBackHeat();
 
->>>>>>> aa8dd6472dcac892b3644e7afe10ae4165d34177
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
 	void undoYMove();

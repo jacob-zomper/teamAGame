@@ -439,7 +439,7 @@ int main() {
 
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
-		player->makeCool();
+		//player->makeCool();
 
 		//move enemy
 		moveEnemy(en, kam);

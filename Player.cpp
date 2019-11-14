@@ -306,14 +306,6 @@ Bullet* Player::handleBackwardFiring()
 	return nullptr;
 }
 
-void Player::makeCool() {
-	time_since_cool = SDL_GetTicks() - last_cool;
-	if (time_since_cool > COOL_FREQ && barrel_heat > 0){
-		barrel_heat -= 1;
-		last_cool = SDL_GetTicks();
-	}
-}
-
 
 //Position and velocity accessors
 int Player::getPosX() { return x_pos; };
