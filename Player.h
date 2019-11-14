@@ -21,8 +21,10 @@ public:
 
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
-    static const int COOL_FREQ = 100;
-	static const int SHOOT_FREQ = 30;
+	static const int MAX_SHOOT_HEAT = 100000;
+	static const int SHOOT_COST = 7000;
+	static const int RECOVERY_RATE = 10;
+	static const int COOLDOWN_TIME = 2000;
 
 	// Animation frequency, the frequency with which the player flickers when hit, and the amount of time the player flickers after being hit
 	static const int ANIMATION_FREQ = 100;
@@ -32,10 +34,12 @@ public:
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
 	int last_move;
-	int time_since_fshot;
-	int last_fshot;
-	int time_since_bshot;
-	int last_bshot;
+	int fshot_heat;
+	int bshot_heat;
+	int fshot_max_time;
+	int bshot_max_time;
+	bool fshot_maxed;
+	bool bshot_maxed;
 
 	// Last time the player was hit, and their current health (out of 100)
 	int time_hit;
@@ -98,9 +102,15 @@ public:
 	int getWidth();
 	int getHeight();
 	int getHealth();
+<<<<<<< HEAD
   int getHot();
   void makeCool();
 
+=======
+	int getFrontHeat();
+	int getBackHeat();
+
+>>>>>>> aa8dd6472dcac892b3644e7afe10ae4165d34177
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
 	void undoYMove();

@@ -53,7 +53,8 @@ bool prev_kam = false;
 
 // Music stuff
 Mix_Music *trash_beat = NULL;
-Mix_Music* song = NULL;
+Mix_Music* main_track = NULL;
+Mix_Music* start_track = NULL;
 int current_track = -1;
 
 
@@ -330,7 +331,8 @@ int main() {
 	}
 
 	trash_beat = loadMusic("sounds/lebron_trash_beat.wav");
-	song = loadMusic("sounds/track_2.wav");
+	main_track = loadMusic("sounds/track_2.wav");
+	start_track = loadMusic("sounds/game_track.wav");
 
 	srand(time(NULL));
 
@@ -347,12 +349,6 @@ int main() {
 	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
 	game_over = new GameOver();
 
-
-
-	//start enemy on left side behind player
-	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
-	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
-
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
 	std::string score; // for onscreen score
@@ -364,6 +360,8 @@ int main() {
 	SDL_Event e;
 	bool gameon = true;
 
+	Mix_PlayMusic(start_track, -1);
+	current_track = 2;
 	while(start_screen->notStarted){
 		while(SDL_PollEvent(&e)) {
 			if(e.type==SDL_QUIT){
@@ -376,11 +374,15 @@ int main() {
 		SDL_RenderPresent(gRenderer);
 	}
 
+	//start enemy on left side behind player
+	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
+
 	while(gameon) {
 
 		if (current_track != 0 && !game_over->isGameOver) {
 			current_track = 0;
-			Mix_PlayMusic(song, -1);
+			Mix_PlayMusic(main_track, -1);
 		}
 		// Scroll to the side, unless the end of the level has been reached
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
@@ -607,20 +609,26 @@ int main() {
 		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
 
 		std::string health_string = "Health ";
+		std::string back_gun = "Back Gun";
+		std::string front_gun = "Front Gun";
 		Text healthText(gRenderer, "sprites/comic.ttf", 20, health_string, {255, 255, 255, 255});
 		healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
+		Text backText(gRenderer, "sprites/comic.ttf", 20, back_gun, {255, 255, 255, 255});
+		backText.render(gRenderer, 670, SCREEN_HEIGHT - 52);
+		Text frontText(gRenderer, "sprites/comic.ttf", 20, front_gun, {255, 255, 255, 255});
+		frontText.render(gRenderer, 960, SCREEN_HEIGHT - 52);
 
 		std::string heat_string = "Overheat ";
 		Text heatText(gRenderer, "sprites/comic.ttf", 20, heat_string, {255, 255, 255, 255});
 		heatText.render(gRenderer, 450, SCREEN_HEIGHT - 52);
 
-		int overheat = player->getHot();
-		SDL_Rect out_hot = {540, SCREEN_HEIGHT - 45, 102, 15};
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-		SDL_RenderDrawRect(gRenderer, &out_hot);
-		SDL_Rect burner = {541, SCREEN_HEIGHT - 44, overheat, 13};
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-		SDL_RenderFillRect(gRenderer, &burner);
+		// int overheat = player->getHot();
+		// SDL_Rect out_hot = {540, SCREEN_HEIGHT - 45, 102, 15};
+		// SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+		// SDL_RenderDrawRect(gRenderer, &out_hot);
+		// SDL_Rect burner = {541, SCREEN_HEIGHT - 44, overheat, 13};
+		// SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		// SDL_RenderFillRect(gRenderer, &burner);
 
 
 		int health = player->getHealth();
@@ -641,6 +649,21 @@ int main() {
 		}
 		SDL_Rect health_rect = {200, SCREEN_HEIGHT - 55, 2 * health, 30};
 		SDL_RenderFillRect(gRenderer, &health_rect);
+
+		// Draw the bars for forward heat and backwards heat
+		int fHeat = player->getFrontHeat();
+		int bHeat = player->getBackHeat();
+		outline = {749, SCREEN_HEIGHT - 56, 152, 32};
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+		SDL_RenderDrawRect(gRenderer, &outline);
+		outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
+		SDL_RenderDrawRect(gRenderer, &outline);
+
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		SDL_Rect heat_rect = {750, SCREEN_HEIGHT - 55, bHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
+		SDL_RenderFillRect(gRenderer, &heat_rect);
+		heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
+		SDL_RenderFillRect(gRenderer, &heat_rect);
 
 		if(health < 1){
 			game_over->isGameOver = true;
