@@ -608,8 +608,14 @@ int main() {
 		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
 
 		std::string health_string = "Health ";
+		std::string back_gun = "Back Gun";
+		std::string front_gun = "Front Gun";
 		Text healthText(gRenderer, "sprites/comic.ttf", 20, health_string, {255, 255, 255, 255});
 		healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
+		Text backText(gRenderer, "sprites/comic.ttf", 20, back_gun, {255, 255, 255, 255});
+		backText.render(gRenderer, 670, SCREEN_HEIGHT - 52);
+		Text frontText(gRenderer, "sprites/comic.ttf", 20, front_gun, {255, 255, 255, 255});
+		frontText.render(gRenderer, 960, SCREEN_HEIGHT - 52);
 
 		int health = player->getHealth();
 		SDL_Rect outline = {199, SCREEN_HEIGHT - 56, 202, 32};
@@ -629,6 +635,21 @@ int main() {
 		}
 		SDL_Rect health_rect = {200, SCREEN_HEIGHT - 55, 2 * health, 30};
 		SDL_RenderFillRect(gRenderer, &health_rect);
+		
+		// Draw the bars for forward heat and backwards heat
+		int fHeat = player->getFrontHeat();
+		int bHeat = player->getBackHeat();
+		outline = {749, SCREEN_HEIGHT - 56, 152, 32};
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+		SDL_RenderDrawRect(gRenderer, &outline);
+		outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
+		SDL_RenderDrawRect(gRenderer, &outline);
+		
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		SDL_Rect heat_rect = {750, SCREEN_HEIGHT - 55, bHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
+		SDL_RenderFillRect(gRenderer, &heat_rect);
+		heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
+		SDL_RenderFillRect(gRenderer, &heat_rect);
 
 		if(health < 1){
 			game_over->isGameOver = true;
