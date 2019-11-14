@@ -30,7 +30,7 @@ void printMatrix(CaveBlock *mat[CaveSystem::CAVE_SYSTEM_HEIGHT][CaveSystem::CAVE
     std::cout<<std::endl;
 }
 
-CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
+CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH, int difficulty)
 {
     int i, j;
     int offsetX = camX;
@@ -54,6 +54,7 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH)
     ceilSprite = nullptr;
     floorSprite = nullptr;
     isEnabled = true;
+    diff = difficulty;
     generateRandomCave();
     // printMatrix(cave_system, CAVE_SYSTEM_HEIGHT, CAVE_SYSTEM_WIDTH);
 }
@@ -290,11 +291,27 @@ void CaveSystem::checkCollision(Player *p)
             // If there's a collision, cancel the player's move
             if (cave_system[i][j]->enabled == 1 && (checkCollide(p->getPosX() + 12, p->getPosY() + 12, p->PLAYER_HURT_WIDTH, p->PLAYER_HURT_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
             {
-                if(cave_system[i][j]->isPointy == 0){
-                    p->hit(p->getHealth());//Player dies instantly
+                if(cave_system[i][j]->isPointy == 0){//Player dies instantly
+                    if(diff == 3){
+                        p->hit(p->getHealth());
+                    }
+                    else if(diff == 2){
+                        p->hit(p->getHealth() * 1.5);
+                    }
+                    else{
+                        p->hit(p->getHealth() * 2);
+                    }
                 }
-                else{
-                    p->hit(25);//Player is dealt 25 damage if they hit a pointy cave
+                else{//Player is dealt 25 damage if they hit a pointy cave
+                    if(diff == 3){
+                        p->hit(25);
+                    }
+                    else if(diff == 2){
+                        p->hit(25 * 1.5);
+                    }
+                    else{
+                        p->hit(25 * 2);
+                    }
                     p->undoXMove();
                     p->undoYMove();
                 }

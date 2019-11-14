@@ -555,7 +555,7 @@ int main() {
 		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
 		{
 			// std::cout << "Creating Cave System" << std::endl;
-			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
+			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH, difficulty);
 		}
 
 		if(cave_system->isEnabled)
