@@ -49,6 +49,7 @@ std::vector<Missile*> missiles;
 Enemy* en;
 Kamikaze* kam;
 bool caveCounterHelp = false;
+bool prev_kam = false;
 
 // Music stuff
 Mix_Music *trash_beat = NULL;
@@ -445,10 +446,22 @@ int main() {
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
-		
+
 		missiles = blocks->handleFiring(missiles, player->getPosX(), player->getPosY());
 
-		kam->move(player, SCREEN_WIDTH);
+		if (!cave_system->isEnabled){
+			kam->move(player, SCREEN_WIDTH);
+			prev_kam = false;
+		}else{
+			if (!prev_kam){
+				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
+				prev_kam = true;
+			}
+			kam->setX(SCREEN_WIDTH+125);
+			kam->setY(SCREEN_HEIGHT/2);
+			kam->setArrivalTime(5000);
+		}
+
 		//move the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
@@ -465,7 +478,7 @@ int main() {
 			kam->setY(SCREEN_HEIGHT/2);
 			kam->setArrivalTime(5000);
 		}
-		
+
 		//kam->checkCollision(player, gRenderer);
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
