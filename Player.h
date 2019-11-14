@@ -21,13 +21,14 @@ public:
 
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
-	static const int SHOOT_FREQ = 300;
-	
+    static const int COOL_FREQ = 100;
+	static const int SHOOT_FREQ = 30;
+
 	// Animation frequency, the frequency with which the player flickers when hit, and the amount of time the player flickers after being hit
 	static const int ANIMATION_FREQ = 100;
 	static const int FLICKER_FREQ = 50;
 	static const int FLICKER_TIME = 500;
-	
+
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
 	int last_move;
@@ -35,23 +36,26 @@ public:
 	int last_fshot;
 	int time_since_bshot;
 	int last_bshot;
-	
+
 	// Last time the player was hit, and their current health (out of 100)
 	int time_hit;
 	int health;
-	
+  int barrel_heat;
+  int time_since_cool;
+  int last_cool;
+
 	double bg_X;
     double tiltAngle;
     bool xp_decel;
     bool xn_decel;
     bool yp_decel;
     bool yn_decel;
-	
+
 	// Sprites for the player
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
 	SDL_Texture* gBackground;
-	
+
 	// Used to load sprites
 	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
@@ -66,22 +70,22 @@ public:
 
     //Shows the player on the screen relative to the camera
     void render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT);
-    
+
 	// Damages the player when they've been hit
 	void hit(int damage);
 
 	//heals player
 	void heal(int amount);
-	
+
 	// Handle collisions
 	bool checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH);
 	bool checkCollisionBullet(int bullX, int bullY, int bullW, int bullH);
 	bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
-	
+
 	// Creates bullets when the player wants to fire forwards or backwards
 	Bullet* handleForwardFiring();
 	Bullet* handleBackwardFiring();
-	
+
 	//Accessors
     int getPosX();
     int getPosY();
@@ -94,7 +98,9 @@ public:
 	int getWidth();
 	int getHeight();
 	int getHealth();
-	
+  int getHot();
+  void makeCool();
+
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
 	void undoYMove();

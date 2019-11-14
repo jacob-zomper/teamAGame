@@ -437,6 +437,7 @@ int main() {
 
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
+		player->makeCool();
 
 		//move enemy
 		moveEnemy(en, kam);
@@ -608,6 +609,19 @@ int main() {
 		std::string health_string = "Health ";
 		Text healthText(gRenderer, "sprites/comic.ttf", 20, health_string, {255, 255, 255, 255});
 		healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
+
+		std::string heat_string = "Overheat ";
+		Text heatText(gRenderer, "sprites/comic.ttf", 20, heat_string, {255, 255, 255, 255});
+		heatText.render(gRenderer, 450, SCREEN_HEIGHT - 52);
+
+		int overheat = player->getHot();
+		SDL_Rect out_hot = {540, SCREEN_HEIGHT - 45, 102, 15};
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+		SDL_RenderDrawRect(gRenderer, &out_hot);
+		SDL_Rect burner = {541, SCREEN_HEIGHT - 44, overheat, 13};
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		SDL_RenderFillRect(gRenderer, &burner);
+
 
 		int health = player->getHealth();
 		SDL_Rect outline = {199, SCREEN_HEIGHT - 56, 202, 32};

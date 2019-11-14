@@ -45,6 +45,7 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
 	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
 	time_hit = SDL_GetTicks() - FLICKER_TIME;
 	health = 100;
+	barrel_heat = 0;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -159,12 +160,12 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         camY += (double) (y_vel * time_since_move) / 1000;
     }
     */
-    // Stop the player if they hit the top of the level  
+    // Stop the player if they hit the top of the level
     else if (y_pos < 0)
     {
         y_pos = 0;
     }
-    
+
 	/*
     // If they are near the bottom of the screen, scroll down
     else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
@@ -177,7 +178,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     {
         y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
     }
-    
+
 
     if (camY < 0)
     {
@@ -198,12 +199,12 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
     SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
     bgRect.x += SCREEN_WIDTH;
     SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-	
+
 	// Don't render the player if they're flickering after being hit
 	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
 		return;
 	}
-    
+
     SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
 	// Alternates through the two sprites every ANIMATION_FREQ ticks
     if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
@@ -220,7 +221,7 @@ void Player::hit(int damage) {
 	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
 		return;
 	}
-	
+
 	time_hit = SDL_GetTicks();
 	health -= damage;
 	if (health < 0) {
@@ -257,9 +258,10 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 Bullet* Player::handleForwardFiring()
 {
 	time_since_fshot = SDL_GetTicks() - last_fshot;
-	if (time_since_fshot > SHOOT_FREQ) {
+	if (time_since_fshot > SHOOT_FREQ && barrel_heat < 100) {
 		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
 		last_fshot = SDL_GetTicks();
+		barrel_heat += 10;
 		return b;
 	}
 	return nullptr;
@@ -268,13 +270,23 @@ Bullet* Player::handleForwardFiring()
 Bullet* Player::handleBackwardFiring()
 {
 	time_since_bshot = SDL_GetTicks() - last_bshot;
-	if (time_since_bshot > SHOOT_FREQ) {
+	if (time_since_bshot > SHOOT_FREQ && barrel_heat < 100) {
 		Bullet* b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
 		last_bshot = SDL_GetTicks();
+		barrel_heat += 10;
 		return b;
 	}
 	return nullptr;
 }
+
+void Player::makeCool() {
+	time_since_cool = SDL_GetTicks() - last_cool;
+	if (time_since_cool > COOL_FREQ && barrel_heat > 0){
+		barrel_heat -= 1;
+		last_cool = SDL_GetTicks();
+	}
+}
+
 
 //Position and velocity accessors
 int Player::getPosX() { return x_pos; };
@@ -288,6 +300,7 @@ void Player::setPosY(int y) { y_pos = y; }
 int Player::getWidth() { return PLAYER_WIDTH; }
 int Player::getHeight() { return PLAYER_HEIGHT; }
 int Player::getHealth() { return health; };
+int Player::getHot() { return barrel_heat; }
 
 // Methods that can be used to undo the user's moves when dealing with collisions
 void Player::undoXMove() {x_pos -= (double) (x_vel * time_since_move) / 1000;}
