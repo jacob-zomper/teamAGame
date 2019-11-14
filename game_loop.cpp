@@ -343,7 +343,6 @@ int main() {
     int openAirLength = (rand() % 200) + 100;
 
 	cave_system = new CaveSystem();
-	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength);
 	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
 	diff_sel_screen = new DifficultySelectionScreen(loadImage("sprites/DiffScreen.png"), loadImage("sprites/easy_button.png"), loadImage("sprites/med_button.png"), loadImage("sprites/hard_button.png"));
 	game_over = new GameOver();
@@ -385,6 +384,8 @@ int main() {
 		diff_sel_screen->render(gRenderer);
 		SDL_RenderPresent(gRenderer);
 	}
+
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, difficulty);
 
 	//Start the player on the left side of the screen
 	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, difficulty, gRenderer);
@@ -440,7 +441,7 @@ int main() {
 			}
 			if(game_over->isGameOver)
 			{
-				game_over->handleEvent(e, player, blocks,gRenderer);
+				game_over->handleEvent(e, player, blocks,gRenderer, difficulty);
 			}
 		}
 		// If the kamikaze is offscreen, create a new one
@@ -688,7 +689,7 @@ int main() {
 
 		if(health < 1){
 			game_over->isGameOver = true;
-			int over = game_over->handleEvent(e, player, blocks,gRenderer);
+			int over = game_over->handleEvent(e, player, blocks,gRenderer, difficulty);
 			if(over){
 				gameon = false;
 				close();

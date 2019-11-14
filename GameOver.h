@@ -23,10 +23,10 @@ public:
     static const int CRED_BUTTON_Y = (int)(720/1.5) + 50;
 
     void stopGame(Player*, MapBlocks*);
-    int handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer);
+    int handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer, int diff);
     void render(SDL_Renderer *gRenderer);
 private:
-    void restart(Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer);
+    void restart(Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer, int diff);
     void displayCredits(SDL_Renderer* gRenderer);
     int LEVEL_WIDTH = 100000;
     int LEVEL_HEIGHT = 2000;

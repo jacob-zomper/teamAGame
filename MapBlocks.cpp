@@ -207,10 +207,10 @@ Explosion::Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer)
 MapBlocks::MapBlocks()
 {
     gRenderer= nullptr;
-    MapBlocks(1, 1, gRenderer = nullptr, 5500, 2000, 0,0);
+    MapBlocks(1, 1, gRenderer = nullptr, 5500, 2000, 0,0, 1);
 }
 
-MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength)
+MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength, int diff)
 {
 	gRenderer = gr;
 	explosionSprite = loadImage("sprites/Explosion.png", gRenderer);
@@ -226,6 +226,19 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 	stalagmiteSprite3 = loadImage("sprites/stalagm3.png", gRenderer);
 	stalagmiteSprite4 = loadImage("sprites/stalagm4.png", gRenderer);
     healthSprite=loadImage("sprites/health.png", gRenderer);
+
+    if(diff == 3){
+        BLOCKS_N = 50;
+        HEALTH_N = 20;
+    }
+    else if (diff == 2){
+        BLOCKS_N = 40;
+        HEALTH_N = 30;
+    }
+    else{
+        BLOCKS_N = 20;
+        HEALTH_N = 40;
+    }
 
     int i;
     for(i = 0; i<CEILING_N; i++){
