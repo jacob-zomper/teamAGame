@@ -14,7 +14,7 @@ void GameOver::stopGame(Player *player, MapBlocks *map_blocks)
     map_blocks->BLOCKS_N = 0;
 }
 
-int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer)
+int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer, int diff)
 {
 
     //If mouse event happened
@@ -33,7 +33,7 @@ int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, S
         else if (y > RESTART_BUTTON_Y + RESTART_BUTTON_HEIGHT){ inside_restart_button = false; }
 
         if (inside_restart_button && e.type == SDL_MOUSEBUTTONUP){
-            restart(player, map_blocks, gRenderer);
+            restart(player, map_blocks, gRenderer, diff);
             return 0;
         }
 
@@ -76,10 +76,10 @@ void GameOver::render(SDL_Renderer *gRenderer)
     SDL_RenderCopyEx(gRenderer, cred_button_texture, nullptr, &fillRectCredButton, 0.0, nullptr, SDL_FLIP_NONE);
 }
 
-void GameOver::restart(Player *player, MapBlocks *map_blocks, SDL_Renderer* gRenderer)
+void GameOver::restart(Player *player, MapBlocks *map_blocks, SDL_Renderer* gRenderer, int diff)
 {
     map_blocks->BLOCKS_N = map_blocks->BLOCKS_STARTING_N;
-    map_blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT,gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, 0,0);
+    map_blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT,gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, 0,0, diff);
     isGameOver = false;
     player->hit(-1*(100-player->getHealth())); // reset hp to 100
 }
