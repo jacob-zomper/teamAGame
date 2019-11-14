@@ -41,8 +41,10 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     xn_decel = false;
     yp_decel = false;
     yn_decel = false;
-	last_fshot = SDL_GetTicks() - SHOOT_FREQ;
-	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
+	fshot_heat = 0;
+	bshot_heat = 0;
+	fshot_maxed = false;
+	bshot_maxed = false;
 	time_hit = SDL_GetTicks() - FLICKER_TIME;
 	health = 100;
 }
@@ -136,6 +138,25 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         x_vel = -MAX_PLAYER_VEL;
 
 	time_since_move = SDL_GetTicks() - last_move;
+	
+	// Update heat of the front and back gun
+	if (fshot_maxed && SDL_GetTicks() - fshot_max_time > COOLDOWN_TIME) {
+		fshot_heat = 0;
+		fshot_maxed = false;
+	}
+	if (!fshot_maxed) {
+		fshot_heat -= time_since_move * RECOVERY_RATE;
+		if (fshot_heat < 0) fshot_heat = 0;
+	}
+	if (bshot_maxed && SDL_GetTicks() - bshot_max_time > COOLDOWN_TIME) {
+		bshot_heat = 0;
+		bshot_maxed = false;
+	}
+	if (!bshot_maxed) {
+		bshot_heat -= time_since_move * RECOVERY_RATE;
+		if (bshot_heat < 0) bshot_heat = 0;
+	}
+	
     x_pos += (double) (x_vel * time_since_move) / 1000;
     y_pos += (double) (y_vel * time_since_move) / 1000;
     bg_X += (double) (time_since_move) / 10;
@@ -256,10 +277,14 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
-	time_since_fshot = SDL_GetTicks() - last_fshot;
-	if (time_since_fshot > SHOOT_FREQ) {
+	if (!fshot_maxed) {
 		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
-		last_fshot = SDL_GetTicks();
+		fshot_heat += SHOOT_COST;
+		if (fshot_heat > MAX_SHOOT_HEAT) {
+			fshot_maxed = true;
+			fshot_heat = MAX_SHOOT_HEAT;
+			fshot_max_time = SDL_GetTicks();
+		}
 		return b;
 	}
 	return nullptr;
@@ -267,10 +292,14 @@ Bullet* Player::handleForwardFiring()
 
 Bullet* Player::handleBackwardFiring()
 {
-	time_since_bshot = SDL_GetTicks() - last_bshot;
-	if (time_since_bshot > SHOOT_FREQ) {
+	if (!bshot_maxed) {
 		Bullet* b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
-		last_bshot = SDL_GetTicks();
+		bshot_heat += SHOOT_COST;
+		if (bshot_heat > MAX_SHOOT_HEAT) {
+			bshot_maxed = true;
+			bshot_heat = MAX_SHOOT_HEAT;
+			bshot_max_time = SDL_GetTicks();
+		}
 		return b;
 	}
 	return nullptr;
@@ -288,6 +317,8 @@ void Player::setPosY(int y) { y_pos = y; }
 int Player::getWidth() { return PLAYER_WIDTH; }
 int Player::getHeight() { return PLAYER_HEIGHT; }
 int Player::getHealth() { return health; };
+int Player::getFrontHeat() { return fshot_heat; }
+int Player::getBackHeat() { return bshot_heat; }
 
 // Methods that can be used to undo the user's moves when dealing with collisions
 void Player::undoXMove() {x_pos -= (double) (x_vel * time_since_move) / 1000;}
