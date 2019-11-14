@@ -449,7 +449,16 @@ int main() {
 			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
-			kam->setArrivalTime(5000);
+			if(difficulty == 3){
+				kam->setArrivalTime(5000);
+			}
+			else if(difficulty == 2){
+				kam->setArrivalTime(7000);
+			}
+			else{
+				kam->setArrivalTime(10000);
+			}
+			
 		}
 
 		// Move player
