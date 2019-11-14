@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "GameOver.h"
 #include "StartScreen.h"
+#include "DifficultySelectionScreen.h"
 #include "CaveSystem.h"
 #include "Text.h"
 #include "Kamikaze.h"
@@ -43,6 +44,7 @@ Player * player;
 MapBlocks *blocks;
 GameOver *game_over;
 StartScreen *start_screen;
+DifficultySelectionScreen *diff_sel_screen;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
 std::vector<Missile*> missiles;
@@ -347,6 +349,7 @@ int main() {
 	cave_system = new CaveSystem();
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength);
 	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
+	diff_sel_screen = new DifficultySelectionScreen(loadImage("sprites/DiffScreen.png"), loadImage("sprites/easy_button.png"), loadImage("sprites/med_button.png"), loadImage("sprites/hard_button.png"));
 	game_over = new GameOver();
 
 	Bullet* newBullet;
@@ -374,6 +377,19 @@ int main() {
 		SDL_RenderPresent(gRenderer);
 	}
 	
+	int difficulty = 0;
+	while(difficulty == 0){
+		while(SDL_PollEvent(&e)) {
+			if(e.type==SDL_QUIT){
+				difficulty=4;
+				gameon=false;
+			}
+			difficulty = diff_sel_screen->handleEvent(e);
+		}
+		diff_sel_screen->render(gRenderer);
+		SDL_RenderPresent(gRenderer);
+	}
+
 	//start enemy on left side behind player
 	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
 	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
