@@ -13,7 +13,7 @@ class Kamikaze
     SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     //Constructor initializing the variables
-    Kamikaze(int x, int y, int w, int h, int delay, int diff, SDL_Renderer *gRenderer);
+    Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer *gRenderer);
 
     //Shows Kamikaze on screen
     void renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
