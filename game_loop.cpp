@@ -645,9 +645,20 @@ int main() {
 		outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
 		SDL_RenderDrawRect(gRenderer, &outline);
 		
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		if(player->bshot_maxed){
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		}
+		else{
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+		}
 		SDL_Rect heat_rect = {750, SCREEN_HEIGHT - 55, bHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
 		SDL_RenderFillRect(gRenderer, &heat_rect);
+		if(player->fshot_maxed){
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		}
+		else{
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+		}
 		heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
 		SDL_RenderFillRect(gRenderer, &heat_rect);
 

@@ -141,16 +141,26 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 	
 	// Update heat of the front and back gun
 	if (fshot_maxed && SDL_GetTicks() - fshot_max_time > COOLDOWN_TIME) {
-		fshot_heat = 0;
-		fshot_maxed = false;
+		if(fshot_heat <= 0){
+            fshot_heat = 0;
+            fshot_maxed = false;
+        }
+        else{
+            fshot_heat -= (SHOOT_COST / 10);
+        }     	
 	}
 	if (!fshot_maxed) {
 		fshot_heat -= time_since_move * RECOVERY_RATE;
 		if (fshot_heat < 0) fshot_heat = 0;
 	}
 	if (bshot_maxed && SDL_GetTicks() - bshot_max_time > COOLDOWN_TIME) {
-		bshot_heat = 0;
-		bshot_maxed = false;
+		if(bshot_heat <= 0){
+            bshot_heat = 0;
+            bshot_maxed = false;
+        }
+        else{
+            bshot_heat -= (SHOOT_COST / 10);
+        }  
 	}
 	if (!bshot_maxed) {
 		bshot_heat -= time_since_move * RECOVERY_RATE;
