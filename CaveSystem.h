@@ -57,7 +57,7 @@ public:
     CaveBlock *cave_system[CAVE_SYSTEM_HEIGHT][CAVE_SYSTEM_WIDTH];
 
     CaveSystem();
-    CaveSystem(int camX, int camY, int SCREEN_WIDTH);
+    CaveSystem(int camX, int camY, int SCREEN_WIDTH, int difficulty);
     ~CaveSystem();
 
     void render(SDL_Renderer *gRenderer);
@@ -71,6 +71,7 @@ public:
 
     SDL_Texture* ceilSprite;
     SDL_Texture* floorSprite;
+    int diff;
 private:
     void generateRandomCave();
 };
