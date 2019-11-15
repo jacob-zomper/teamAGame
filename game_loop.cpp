@@ -345,7 +345,7 @@ int main() {
 	cave_system = new CaveSystem();
 	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
 	diff_sel_screen = new DifficultySelectionScreen(loadImage("sprites/DiffScreen.png"), loadImage("sprites/easy_button.png"), loadImage("sprites/med_button.png"), loadImage("sprites/hard_button.png"));
-	game_over = new GameOver();
+	game_over = new GameOver(loadImage("sprites/cred_button.png"), loadImage("sprites/restart_button.png"));
 
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
