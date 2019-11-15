@@ -17,7 +17,7 @@ class Enemy
 		SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
         //Initializes the variables, Constructor
-        Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer);
+        Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer);
 
         //Shows the enemy
         void renderEnemy(SDL_Renderer* gRenderer);

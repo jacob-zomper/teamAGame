@@ -56,12 +56,13 @@ public:
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
 	SDL_Texture* gBackground;
+	int difficulty;
 	
 	// Used to load sprites
 	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     //Initializes the variables
-    Player(int xPos, int yPos, SDL_Renderer *gRenderer);
+    Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer);
 
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
