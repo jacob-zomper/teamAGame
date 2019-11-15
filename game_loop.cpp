@@ -288,6 +288,15 @@ void check_missile_collisions()
 					missiles.erase(missiles.begin() + j);
 				}
 			}
+
+			for(int j = 0; j < bullets.size();j++){
+				if(missiles[i]->checkCollision(bullets[j])){
+					destroyed = true;
+					bullets[j]->~Bullet();
+					delete bullets[j];
+					bullets.erase(bullets.begin() + j);
+				}
+			}
 			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
 			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
 
