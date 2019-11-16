@@ -6,7 +6,10 @@
 #include "CaveSystem.h"
 #include "DifficultySelectionScreen.h"
 
-GameOver::GameOver(){};
+GameOver::GameOver(SDL_Texture *cred, SDL_Texture *rest){
+    btn_restart = rest;
+    btn_credits = cred;
+};
 
 void GameOver::stopGame(Player *player, MapBlocks *map_blocks)
 {
@@ -63,17 +66,15 @@ void GameOver::render(SDL_Renderer *gRenderer)
     // SDL_RenderFillRect(gRenderer, &fillRectButton);
 
     SDL_Texture *restart_button_texture = nullptr;
-    SDL_Surface *restart_button_image_surface = IMG_Load("sprites/restart_button.png");
-    restart_button_texture = SDL_CreateTextureFromSurface(gRenderer, restart_button_image_surface);
-    SDL_FreeSurface(restart_button_image_surface);
+    
+    restart_button_texture = btn_restart;
     SDL_RenderCopyEx(gRenderer, restart_button_texture, nullptr, &fillRectRestartButton, 0.0, nullptr, SDL_FLIP_NONE);
 
     SDL_Rect fillRectCredButton = {CRED_BUTTON_X, CRED_BUTTON_Y, CRED_BUTTON_WIDTH, CRED_BUTTON_HEIGHT};
 
     SDL_Texture *cred_button_texture = nullptr;
-    SDL_Surface *cred_button_image_surface = IMG_Load("sprites/cred_button.png");
-    cred_button_texture = SDL_CreateTextureFromSurface(gRenderer, cred_button_image_surface);
-    SDL_FreeSurface(cred_button_image_surface);
+   
+    cred_button_texture = btn_credits;
     SDL_RenderCopyEx(gRenderer, cred_button_texture, nullptr, &fillRectCredButton, 0.0, nullptr, SDL_FLIP_NONE);
 }
 
