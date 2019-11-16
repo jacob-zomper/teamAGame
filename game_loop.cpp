@@ -653,18 +653,7 @@ int main() {
 		backText.render(gRenderer, 670, SCREEN_HEIGHT - 52);
 		Text frontText(gRenderer, front_gun, {255, 255, 255, 255}, font_16);
 		frontText.render(gRenderer, 960, SCREEN_HEIGHT - 52);
-
-		std::string heat_string = "Overheat ";
-		Text heatText(gRenderer, "sprites/comic.ttf", 20, heat_string, {255, 255, 255, 255});
-		heatText.render(gRenderer, 450, SCREEN_HEIGHT - 52);
-
-		// int overheat = player->getHot();
-		// SDL_Rect out_hot = {540, SCREEN_HEIGHT - 45, 102, 15};
-		// SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-		// SDL_RenderDrawRect(gRenderer, &out_hot);
-		// SDL_Rect burner = {541, SCREEN_HEIGHT - 44, overheat, 13};
-		// SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-		// SDL_RenderFillRect(gRenderer, &burner);
+		
 
 
 		int health = player->getHealth();
@@ -694,10 +683,6 @@ int main() {
 		SDL_RenderDrawRect(gRenderer, &outline);
 		outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
 		SDL_RenderDrawRect(gRenderer, &outline);
-<<<<<<< HEAD
-
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-=======
 
 		if(player->bshot_maxed){
 			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
@@ -705,7 +690,6 @@ int main() {
 		else{
 			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
 		}
->>>>>>> 9e318bb26eaf0bd245b9266b9b3060da4c0f6062
 		SDL_Rect heat_rect = {750, SCREEN_HEIGHT - 55, bHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
 		SDL_RenderFillRect(gRenderer, &heat_rect);
 		if(player->fshot_maxed){
