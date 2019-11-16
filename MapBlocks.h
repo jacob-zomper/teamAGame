@@ -121,7 +121,7 @@ public:
     SDL_Renderer* gRenderer;
 
     Turret();
-    Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+    Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength, SDL_Texture* missileSprite1, SDL_Texture* missileSprite2);
 
 	int getRelX();
 	int getRelY();
@@ -132,6 +132,8 @@ public:
     SDL_Rect FB_sprite;
     //defines the hitbox of the turret
     SDL_Rect FB_hitbox;
+    SDL_Texture* missileSprite1;
+    SDL_Texture* missileSprite2;
 
 	Missile* handleFiring(int posX, int posY);
 };
@@ -202,6 +204,8 @@ public:
 	SDL_Texture* stalagmiteSprite3;
 	SDL_Texture* stalagmiteSprite4;
     SDL_Texture* healthSprite;
+    SDL_Texture* mSprite1;
+    SDL_Texture* mSprite2;
 
 
 
