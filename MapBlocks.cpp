@@ -122,10 +122,12 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
 Turret::Turret()
 {
     SDL_Renderer *gRenderer= nullptr;
-    Turret(1, 1, gRenderer, 5500, 2000, 0, 0);
+    SDL_Texture *tex1 = nullptr;
+    SDL_Texture *tex2 = nullptr;
+    Turret(1, 1, gRenderer, 5500, 2000, 0, 0, tex1, tex2);
 }
 
-Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength) :
+Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength, SDL_Texture* mSprite1, SDL_Texture* mSprite2) :
     gRenderer{ gRenderer }
 {
     BLOCK_ABS_X = rand() % LEVEL_WIDTH;
@@ -146,6 +148,8 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
     //Standard Enemy plane size
     BLOCK_WIDTH = 50;
     BLOCK_HEIGHT = 50;
+    missileSprite1 = mSprite1;
+    missileSprite2 = mSprite2;
 
     // Select the ceiling or floor turret sprite
 	bottom = 0;
@@ -177,10 +181,23 @@ Missile * Turret::handleFiring(int posX, int posY) {
 		double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
 		double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
 		if (BLOCK_REL_Y >= posY){
-			m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, gRenderer);
+            int missType = rand()%5;//1 in 5 chance of missile being red
+            if(missType < 4){
+		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
+	        }
+	        else{
+                m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite2, gRenderer);
+	        }
 		}
 		else {
-			m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, gRenderer);
+            int missType = rand()%5;//1 in 5 chance of missile being red
+	        SDL_Texture* missSprite; 
+            if(missType < 4){
+		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
+	        }
+	        else{
+		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite2, gRenderer);
+	        }
 		}
 	}
 	return m;
@@ -207,10 +224,10 @@ Explosion::Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer)
 MapBlocks::MapBlocks()
 {
     gRenderer= nullptr;
-    MapBlocks(1, 1, gRenderer = nullptr, 5500, 2000, 0,0);
+    MapBlocks(1, 1, gRenderer = nullptr, 5500, 2000, 0,0, 1);
 }
 
-MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength)
+MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength, int diff)
 {
 	gRenderer = gr;
 	explosionSprite = loadImage("sprites/Explosion.png", gRenderer);
@@ -226,6 +243,21 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 	stalagmiteSprite3 = loadImage("sprites/stalagm3.png", gRenderer);
 	stalagmiteSprite4 = loadImage("sprites/stalagm4.png", gRenderer);
     healthSprite=loadImage("sprites/health.png", gRenderer);
+    mSprite1=loadImage("sprites/missile.png", gRenderer);
+    mSprite2=loadImage("sprites/missile2.png", gRenderer);
+
+    if(diff == 3){
+        BLOCKS_N = 50;
+        HEALTH_N = 20;
+    }
+    else if (diff == 2){
+        BLOCKS_N = 40;
+        HEALTH_N = 30;
+    }
+    else{
+        BLOCKS_N = 20;
+        HEALTH_N = 40;
+    }
 
     int i;
     for(i = 0; i<CEILING_N; i++){
@@ -239,7 +271,7 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 
     for (i = 0; i < BLOCKS_N; i++)
     {
-        blocks_arr.push_back(Turret(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength)); // Initiating each Turret
+        blocks_arr.push_back(Turret(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength, mSprite1, mSprite2)); // Initiating each Turret
     }
 
     for (i=0; i < HEALTH_N; i++)

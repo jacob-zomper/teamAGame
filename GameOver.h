@@ -15,7 +15,10 @@ public:
     static const int RESTART_BUTTON_HEIGHT = 50;
     static const int RESTART_BUTTON_X = (int)(1280/2) - 100;
     static const int RESTART_BUTTON_Y = (int)(720/1.5) - 25;
-    GameOver();
+    GameOver(SDL_Texture *cred, SDL_Texture *rest);
+
+    SDL_Texture* btn_restart;
+    SDL_Texture* btn_credits;
 
     static const int CRED_BUTTON_WIDTH = 200;
     static const int CRED_BUTTON_HEIGHT = 50;

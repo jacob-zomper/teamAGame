@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "GameOver.h"
 #include "StartScreen.h"
+#include "DifficultySelectionScreen.h"
 #include "CaveSystem.h"
 #include "Text.h"
 #include "Kamikaze.h"
@@ -43,6 +44,7 @@ Player * player;
 MapBlocks *blocks;
 GameOver *game_over;
 StartScreen *start_screen;
+DifficultySelectionScreen *diff_sel_screen;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
 std::vector<Missile*> missiles;
@@ -286,6 +288,15 @@ void check_missile_collisions()
 					missiles.erase(missiles.begin() + j);
 				}
 			}
+
+			for(int j = 0; j < bullets.size();j++){
+				if(missiles[i]->checkCollision(bullets[j])){
+					destroyed = true;
+					bullets[j]->~Bullet();
+					delete bullets[j];
+					bullets.erase(bullets.begin() + j);
+				}
+			}
 			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
 			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
 
@@ -336,18 +347,14 @@ int main() {
 
 	srand(time(NULL));
 
-
-	//Start the player on the left side of the screen
-	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, gRenderer);
-
 	//random open air area
 	int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
     int openAirLength = (rand() % 200) + 100;
 
 	cave_system = new CaveSystem();
-	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength);
 	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
-	game_over = new GameOver();
+	diff_sel_screen = new DifficultySelectionScreen(loadImage("sprites/DiffScreen.png"), loadImage("sprites/easy_button.png"), loadImage("sprites/med_button.png"), loadImage("sprites/hard_button.png"));
+	game_over = new GameOver(loadImage("sprites/cred_button.png"), loadImage("sprites/restart_button.png"));
 
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
@@ -374,8 +381,28 @@ int main() {
 		SDL_RenderPresent(gRenderer);
 	}
 
+	int difficulty = 0;
+	while(difficulty == 0){
+		while(SDL_PollEvent(&e)) {
+			if(e.type==SDL_QUIT){
+				difficulty=4;
+				gameon=false;
+			}
+			difficulty = diff_sel_screen->handleEvent(e);
+		}
+		diff_sel_screen->render(gRenderer);
+		SDL_RenderPresent(gRenderer);
+	}
+
+	static TTF_Font *font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
+	static TTF_Font *font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
+	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, difficulty);
+
+	//Start the player on the left side of the screen
+	player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, difficulty, gRenderer);
+
 	//start enemy on left side behind player
-	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, gRenderer);
+	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, difficulty, gRenderer);
 	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
 
 	while(gameon) {
@@ -434,7 +461,16 @@ int main() {
 			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
-			kam->setArrivalTime(5000);
+			if(difficulty == 3){
+				kam->setArrivalTime(5000);
+			}
+			else if(difficulty == 2){
+				kam->setArrivalTime(7000);
+			}
+			else{
+				kam->setArrivalTime(10000);
+			}
+
 		}
 
 		// Move player
@@ -531,7 +567,7 @@ int main() {
 		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
 		{
 			// std::cout << "Creating Cave System" << std::endl;
-			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH);
+			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH, difficulty);
 		}
 
 		if(cave_system->isEnabled)
@@ -595,27 +631,27 @@ int main() {
 			fps_last_time = fps_cur_time;
 			framecount = 0;
 		}
-		Text fps_text(gRenderer, "sprites/comic.ttf", 16, fps, {255,255,255,255});
+		Text fps_text(gRenderer, fps, {255, 255, 255, 255}, font_16);
 		fps_text.render(gRenderer,20,20);
 
 		score = "Score: ";
 		score.append(std::to_string(getScore()));
-		Text score_text(gRenderer, "sprites/comic.ttf", 16, score, {255, 255, 255, 255});
+		Text score_text(gRenderer, score, {255, 255, 255, 255}, font_16);
 		score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
 
 		high_score_string = "High Score: ";
 		high_score_string.append(std::to_string(high_score));
-		Text high_score_text(gRenderer, "sprites/comic.ttf", 16, high_score_string, {255, 255, 255, 255});
+		Text high_score_text(gRenderer, high_score_string, {255, 255, 255, 255}, font_16);
 		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
 
 		std::string health_string = "Health ";
 		std::string back_gun = "Back Gun";
 		std::string front_gun = "Front Gun";
-		Text healthText(gRenderer, "sprites/comic.ttf", 20, health_string, {255, 255, 255, 255});
+		Text healthText(gRenderer, health_string, {255, 255, 255, 255}, font_16);
 		healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
-		Text backText(gRenderer, "sprites/comic.ttf", 20, back_gun, {255, 255, 255, 255});
+		Text backText(gRenderer, back_gun, {255, 255, 255, 255}, font_16);
 		backText.render(gRenderer, 670, SCREEN_HEIGHT - 52);
-		Text frontText(gRenderer, "sprites/comic.ttf", 20, front_gun, {255, 255, 255, 255});
+		Text frontText(gRenderer, front_gun, {255, 255, 255, 255}, font_16);
 		frontText.render(gRenderer, 960, SCREEN_HEIGHT - 52);
 
 		std::string heat_string = "Overheat ";
@@ -658,10 +694,26 @@ int main() {
 		SDL_RenderDrawRect(gRenderer, &outline);
 		outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
 		SDL_RenderDrawRect(gRenderer, &outline);
+<<<<<<< HEAD
 
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+=======
+
+		if(player->bshot_maxed){
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		}
+		else{
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+		}
+>>>>>>> 9e318bb26eaf0bd245b9266b9b3060da4c0f6062
 		SDL_Rect heat_rect = {750, SCREEN_HEIGHT - 55, bHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
 		SDL_RenderFillRect(gRenderer, &heat_rect);
+		if(player->fshot_maxed){
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		}
+		else{
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+		}
 		heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
 		SDL_RenderFillRect(gRenderer, &heat_rect);
 

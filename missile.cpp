@@ -4,17 +4,11 @@
 #include <cmath>
 #include <SDL_image.h>
 
-Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Renderer* gRenderer) :
+Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, double yvel, SDL_Texture* s, SDL_Renderer* gRenderer) :
 	damage{ damage }, blast_radius{ blast_radius }, xPos{ x }, yPos{ y },
 	xVel { xvel }, yVel{ yvel }, width{ MISSILE_SIZE }, height{ MISSILE_SIZE / 4}
 {
-	missType = rand()%5;//1 in 5 chance of missile being red
-	if(missType < 4){
-		sprite = loadImage("sprites/missile.png", gRenderer);
-	}
-	else{
-		sprite = loadImage("sprites/missile2.png", gRenderer);
-	}
+	sprite = s;
 
 	velocity_magnitude = sqrt(pow(xVel, 2) + pow(yVel, 2));
 
@@ -64,6 +58,16 @@ bool Missile::checkCollision(Missile *m){
     if (this->getX() + this->getWidth() < m->getX() || this->getX() > m->getX() + m->getWidth())
         return false;
     if (this->getY() + this->getHeight() < m->getY() || this->getY() > m->getY() + m->getHeight())
+        return false;
+    return true;
+
+}
+
+bool Missile::checkCollision(Bullet *b){
+
+    if (this->getX() + this->getWidth() < b->getX() || this->getX() > b->getX() + b->getWidth())
+        return false;
+    if (this->getY() + this->getHeight() < b->getY() || this->getY() > b->getY() + b->getHeight())
         return false;
     return true;
 

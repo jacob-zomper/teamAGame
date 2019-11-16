@@ -23,7 +23,7 @@ SDL_Texture* Player::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
+Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
 {
     x_pos = xPos;
     y_pos = yPos;
@@ -47,7 +47,7 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
 	bshot_maxed = false;
 	time_hit = SDL_GetTicks() - FLICKER_TIME;
 	health = 100;
-	barrel_heat = 0;
+    difficulty = diff;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -142,16 +142,26 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 
 	// Update heat of the front and back gun
 	if (fshot_maxed && SDL_GetTicks() - fshot_max_time > COOLDOWN_TIME) {
-		fshot_heat = 0;
-		fshot_maxed = false;
+		if(fshot_heat <= 0){
+            fshot_heat = 0;
+            fshot_maxed = false;
+        }
+        else{
+            fshot_heat -= (SHOOT_COST / 10);
+        }
 	}
 	if (!fshot_maxed) {
 		fshot_heat -= time_since_move * RECOVERY_RATE;
 		if (fshot_heat < 0) fshot_heat = 0;
 	}
 	if (bshot_maxed && SDL_GetTicks() - bshot_max_time > COOLDOWN_TIME) {
-		bshot_heat = 0;
-		bshot_maxed = false;
+		if(bshot_heat <= 0){
+            bshot_heat = 0;
+            bshot_maxed = false;
+        }
+        else{
+            bshot_heat -= (SHOOT_COST / 10);
+        }
 	}
 	if (!bshot_maxed) {
 		bshot_heat -= time_since_move * RECOVERY_RATE;
@@ -239,7 +249,13 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 // Damages the player if they've been hit
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
-	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
+	if(this->difficulty == 2){
+        damage /= 1.5;
+    }
+    else if(this->difficulty == 1){
+        damage /= 2;
+    }
+    if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
 		return;
 	}
 
