@@ -50,6 +50,13 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     difficulty = diff;
 }
 
+Player::~Player()
+{
+	SDL_DestroyTexture(sprite1);
+	SDL_DestroyTexture(sprite2);
+	SDL_DestroyTexture(gBackground);
+}
+
 //Takes key presses and adjusts the player's velocity
 void Player::handleEvent(SDL_Event &e)
 {
@@ -336,6 +343,7 @@ int Player::getHeight() { return PLAYER_HEIGHT; }
 int Player::getHealth() { return health; };
 int Player::getFrontHeat() { return fshot_heat; }
 int Player::getBackHeat() { return bshot_heat; }
+void Player::setHealthMax() { health = 100; }
 
 // Methods that can be used to undo the user's moves when dealing with collisions
 void Player::undoXMove() {x_pos -= (double) (x_vel * time_since_move) / 1000;}

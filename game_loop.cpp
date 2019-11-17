@@ -178,6 +178,13 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 		bulletVelX.push_back(bullets[i]->getXVel());
 		bulletVelY.push_back(bullets[i]->getYVel());
 	}
+	// For now, just have the AI treat missiles as bullets
+	for (int i = 0; i < missiles.size(); i++) {
+		bulletX.push_back(missiles[i]->getX());
+		bulletY.push_back(missiles[i]->getY());
+		bulletVelX.push_back(missiles[i]->getXVel());
+		bulletVelY.push_back(missiles[i]->getYVel());
+	}
 	std::vector<Stalagmite> stalagmites = blocks->getStalagmites();
 	std::vector<Stalagtite> stalagtites = blocks->getStalagtites();
 	std::vector<Turret> turrets = blocks->getTurrets();
@@ -452,7 +459,23 @@ int main() {
 			}
 			if(game_over->isGameOver)
 			{
-				game_over->handleEvent(e, player, blocks,gRenderer);
+				int over = game_over->handleEvent(e, gRenderer);
+				if(over){
+					gameon = false;
+					close();
+				}
+				// If the game is restarted, reset some things
+				if (!game_over->isGameOver) {
+					delete en;
+					en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, game_over->diff, gRenderer);
+					delete player;
+					player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, game_over->diff, gRenderer);
+					delete blocks;
+					//random open air area
+					int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
+					int openAirLength = (rand() % 200) + 100;
+					blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, game_over->diff);
+				}
 			}
 		}
 		// If the kamikaze is offscreen, create a new one
@@ -700,11 +723,6 @@ int main() {
 
 		if(health < 1){
 			game_over->isGameOver = true;
-			int over = game_over->handleEvent(e, player, blocks,gRenderer);
-			if(over){
-				gameon = false;
-				close();
-			}
 		}
 		if(game_over->isGameOver)
 		{

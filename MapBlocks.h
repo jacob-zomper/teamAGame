@@ -175,13 +175,10 @@ class MapBlocks
 {
 
 public:
-    static const int BLOCKS_STARTING_N = 50;
     int BLOCKS_N;
 
-    static const int STALAG_STARTING_N=50;
     int STALAG_N = 30;
 
-    static const int HEALTH_STARTING_N=20;
     int HEALTH_N;
 
     static const int BLOCK_HEIGHT = 100;
@@ -219,6 +216,7 @@ public:
 
 
     MapBlocks();
+	~MapBlocks();
 
     MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength, int diff);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
