@@ -47,6 +47,7 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
 	time_hit = SDL_GetTicks() - FLICKER_TIME;
 	health = 100;
     difficulty = diff;
+    infiniteShooting= false;
 }
 
 Player::~Player()
@@ -270,6 +271,18 @@ void Player::heal(int amount) {
     if (health > 100) {
         health = 100;
     }
+}
+
+void Player::setInfiniteVal(bool val){
+    infiniteShooting=val;
+    time_since_invincible=SDL_GetTicks();
+}
+
+void Player::resetHeatVals(){
+    bshot_heat = 0;
+    fshot_heat=0;
+    bshot_maxed = false;
+    fshot_maxed = false;
 }
 
 // Checks if the player collided with a kamikaze, returning true if so

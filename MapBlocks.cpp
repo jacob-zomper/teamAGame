@@ -496,7 +496,8 @@ void MapBlocks::checkCollision(Player *p)
         if (infFire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT))
         {
             //turn off player overheats
-            //potentially handle autofiring
+            p->setInfiniteVal(true);
+            p->resetHeatVals();
             infFire_arr.erase(infFire_arr.begin()+i);
         }
     }

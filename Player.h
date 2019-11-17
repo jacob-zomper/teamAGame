@@ -25,6 +25,7 @@ public:
 	static const int SHOOT_COST = 7000;
 	static const int RECOVERY_RATE = 10;
 	static const int COOLDOWN_TIME = 2000;
+	bool infiniteShooting;
 	
 	// Animation frequency, the frequency with which the player flickers when hit, and the amount of time the player flickers after being hit
 	static const int ANIMATION_FREQ = 100;
@@ -40,6 +41,7 @@ public:
 	int bshot_max_time;
 	bool fshot_maxed;
 	bool bshot_maxed;
+	int time_since_invincible;
 	
 	// Last time the player was hit, and their current health (out of 100)
 	int time_hit;
@@ -103,6 +105,8 @@ public:
 	int getFrontHeat();
 	int getBackHeat();
 	void setHealthMax();
+	void setInfiniteVal(bool);
+	void resetHeatVals();
 	
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
