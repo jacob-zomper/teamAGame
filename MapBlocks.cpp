@@ -289,6 +289,25 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     }
 }
 
+MapBlocks::~MapBlocks()
+{
+	SDL_DestroyTexture(explosionSprite);
+	SDL_DestroyTexture(dustCloudSprite);
+	SDL_DestroyTexture(topTurretSprite);
+	SDL_DestroyTexture(bottomTurretSprite);
+	SDL_DestroyTexture(stalactiteSprite1);
+	SDL_DestroyTexture(stalactiteSprite2);
+	SDL_DestroyTexture(stalactiteSprite3);
+	SDL_DestroyTexture(stalactiteSprite4);
+	SDL_DestroyTexture(stalagmiteSprite1);
+	SDL_DestroyTexture(stalagmiteSprite2);
+	SDL_DestroyTexture(stalagmiteSprite3);
+	SDL_DestroyTexture(stalagmiteSprite4);
+	SDL_DestroyTexture(healthSprite);
+	SDL_DestroyTexture(mSprite1);
+	SDL_DestroyTexture(mSprite2);
+}
+
 bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
 {
     if (x + pWidth < xTwo || x > xTwo + pTwoWidth)

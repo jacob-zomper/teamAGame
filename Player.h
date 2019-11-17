@@ -63,6 +63,7 @@ public:
 
     //Initializes the variables
     Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer);
+	~Player();
 
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
@@ -102,6 +103,7 @@ public:
 	int getHealth();
 	int getFrontHeat();
 	int getBackHeat();
+	void setHealthMax();
 	
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
