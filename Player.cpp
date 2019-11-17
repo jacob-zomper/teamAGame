@@ -33,7 +33,6 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     y_accel = 0;
 	sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
 	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
-	gBackground = loadImage("sprites/cave.png", gRenderer);
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
@@ -54,7 +53,6 @@ Player::~Player()
 {
 	SDL_DestroyTexture(sprite1);
 	SDL_DestroyTexture(sprite2);
-	SDL_DestroyTexture(gBackground);
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -232,12 +230,6 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
 //Shows the player on the screen relative to the camera
 void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT)
 {
-	// Background loading (not sure why this is in the Player class )
-	SDL_Rect bgRect = {-((int)bg_X % SCREEN_WIDTH), 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-    SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-    bgRect.x += SCREEN_WIDTH;
-    SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-	
 	// Don't render the player if they're flickering after being hit
 	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
 		return;

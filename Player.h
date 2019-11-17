@@ -55,7 +55,6 @@ public:
 	// Sprites for the player
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
-	SDL_Texture* gBackground;
 	int difficulty;
 	
 	// Used to load sprites

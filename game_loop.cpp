@@ -24,6 +24,7 @@ constexpr int SCREEN_HEIGHT = 720;
 constexpr int LEVEL_WIDTH = 100000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
+constexpr int BG_SCROLL_SPEED = 200;
 constexpr int FLOOR_BOTTOM = 720-79;
 constexpr int ROOF_TOP = 73;
 
@@ -36,9 +37,10 @@ void close();
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 
-// X and y positions of the camera
+// X and y positions of the camera, and background loading position
 double camX = 0;
 double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
+double bg_x = 0;
 
 Player * player;
 MapBlocks *blocks;
@@ -53,12 +55,18 @@ Kamikaze* kam;
 bool caveCounterHelp = false;
 bool prev_kam = false;
 
+// Background image
+SDL_Texture* gBackground;
+
 // Music stuff
 Mix_Music *trash_beat = NULL;
 Mix_Music* main_track = NULL;
 Mix_Music* start_track = NULL;
 int current_track = -1;
 
+// Variables to indicate that the player has been destroyed
+bool playerDestroyed = false;
+int time_destroyed;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
@@ -142,8 +150,11 @@ Mix_Music* loadMusic(std::string fname) {
 void close() {
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
+	SDL_DestroyTexture(gBackground);
 
 	Mix_FreeMusic(trash_beat);
+	Mix_FreeMusic(main_track);
+	Mix_FreeMusic(start_track);
 
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -351,6 +362,7 @@ int main() {
 	trash_beat = loadMusic("sounds/lebron_trash_beat.wav");
 	main_track = loadMusic("sounds/track_2.wav");
 	start_track = loadMusic("sounds/game_track.wav");
+	gBackground = loadImage("sprites/cave.png");
 
 	srand(time(NULL));
 
@@ -414,13 +426,14 @@ int main() {
 
 	while(gameon) {
 
-		if (current_track != 0 && !game_over->isGameOver) {
+		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver) {
 			current_track = 0;
 			Mix_PlayMusic(main_track, -1);
 		}
 		// Scroll to the side, unless the end of the level has been reached
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
+		bg_x += (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
 			camX = LEVEL_WIDTH - SCREEN_WIDTH;
 		}
@@ -475,6 +488,9 @@ int main() {
 					int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
 					int openAirLength = (rand() % 200) + 100;
 					blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, game_over->diff);
+					playerDestroyed = false;
+					camX = 0;
+					camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 				}
 			}
 		}
@@ -621,9 +637,15 @@ int main() {
 
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
-
+		
+		// Finally removed background drawing from the Player class
+		SDL_Rect bgRect = {-((int)bg_x % SCREEN_WIDTH), 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+		bgRect.x += SCREEN_WIDTH;
+		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+		
 		// Draw the player
-		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+		if (!playerDestroyed) player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
 		en->renderEnemy(gRenderer);
 
@@ -721,7 +743,13 @@ int main() {
 		heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
 		SDL_RenderFillRect(gRenderer, &heat_rect);
 
-		if(health < 1){
+		if(health < 1 && !playerDestroyed){
+			playerDestroyed = true;
+			time_destroyed = SDL_GetTicks();
+			blocks->addExplosion(player->getPosX() + camX, player->getPosY() + camY, player->getWidth(), player->getHeight(),0);
+			Mix_HaltMusic();
+		}
+		if (playerDestroyed && SDL_GetTicks() > time_destroyed + 1000) {
 			game_over->isGameOver = true;
 		}
 		if(game_over->isGameOver)
@@ -732,12 +760,8 @@ int main() {
 			}
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
-			camX = 0;
-            camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 		}
-
-
-
+		
 		SDL_RenderPresent(gRenderer);
 	}
 
