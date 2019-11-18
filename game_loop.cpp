@@ -460,8 +460,10 @@ int main() {
 				game_over->isGameOver = true;
 			}
 			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+				std::cout << "holy shit i'm firing"<< std::endl;
 				newBullet = player->handleForwardFiring();
 				if (newBullet != nullptr) {
+					std::cout << "fire success. pushing bullet."<< std::endl;
 					bullets.push_back(newBullet);
 				}
 			}
