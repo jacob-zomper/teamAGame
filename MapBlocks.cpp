@@ -372,6 +372,7 @@ MapBlocks::~MapBlocks()
 	SDL_DestroyTexture(healthSprite);
 	SDL_DestroyTexture(mSprite1);
 	SDL_DestroyTexture(mSprite2);
+    SDL_DestroyTexture(infFireSprite);
     SDL_DestroyTexture(invinceSprite);
 }
 
