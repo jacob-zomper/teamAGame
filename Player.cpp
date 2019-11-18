@@ -318,7 +318,7 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
-	if (!fshot_maxed) {
+	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
 		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
         if(!infiniteShooting){   
     		fshot_heat += SHOOT_COST;
@@ -328,6 +328,7 @@ Bullet* Player::handleForwardFiring()
     			fshot_max_time = SDL_GetTicks();
     		}
         }
+        time_since_f_shot = SDL_GetTicks();
 		return b;
 	}
 	return nullptr;
@@ -335,7 +336,7 @@ Bullet* Player::handleForwardFiring()
 
 Bullet* Player::handleBackwardFiring()
 {
-	if (!bshot_maxed) {
+	if (!bshot_maxed && (SDL_GetTicks() - time_since_b_shot) >=100) {
 		Bullet* b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
 		if(!infiniteShooting){
                     bshot_heat += SHOOT_COST;
@@ -345,7 +346,7 @@ Bullet* Player::handleBackwardFiring()
                 bshot_max_time = SDL_GetTicks();
             }
         }
-
+        time_since_b_shot = SDL_GetTicks();
 		return b;
 	}
 	return nullptr;
