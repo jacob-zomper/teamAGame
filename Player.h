@@ -34,6 +34,8 @@ public:
 	
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
+	int time_since_f_shot;
+	int time_since_b_shot;
 	int last_move;
 	int fshot_heat;
 	int bshot_heat;

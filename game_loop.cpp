@@ -459,13 +459,13 @@ int main() {
 			{
 				game_over->isGameOver = true;
 			}
-			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
 				newBullet = player->handleForwardFiring();
 				if (newBullet != nullptr) {
 					bullets.push_back(newBullet);
 				}
 			}
-			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_b) {
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_b) {
 				newBullet = player->handleBackwardFiring();
 				if (newBullet != nullptr) {
 					bullets.push_back(newBullet);
