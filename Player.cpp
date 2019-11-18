@@ -45,6 +45,8 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
 	fshot_maxed = false;
 	bshot_maxed = false;
 	time_hit = SDL_GetTicks() - FLICKER_TIME;
+    time_since_f_shot=SDL_GetTicks();
+    time_since_b_shot=SDL_GetTicks();
 	health = 100;
     difficulty = diff;
     infiniteShooting= false;
@@ -318,7 +320,10 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
+    std::cout << "entered firing handler" << std::endl;
+    std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
+        std::cout << "Firing new bullet"<< std::endl;
 		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
         if(!infiniteShooting){   
     		fshot_heat += SHOOT_COST;
