@@ -61,7 +61,7 @@ CaveSystem::CaveSystem(int camX, int camY, int SCREEN_WIDTH, int difficulty)
 
 CaveSystem::~CaveSystem()
 {
-    std::cout << "Deallocating Cave System" << std::endl;
+    //std::cout << "Deallocating Cave System" << std::endl;
     for(int i=0;i<CAVE_SYSTEM_HEIGHT;i++)
     {
         for(int j=0;j<CAVE_SYSTEM_WIDTH; j++)
