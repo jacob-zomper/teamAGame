@@ -249,18 +249,21 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 
 int getScore(){ return (int) (camX / 100); }
 
-void saveHighScore()
+void saveHighScore(int difficulty)
 {
+	std::string highscore_filename = "highscore_";
+	highscore_filename.append(std::to_string(difficulty));
 	std::ofstream highscore_file;
-	highscore_file.open("highscore", std::ofstream::out | std::ofstream::trunc);
+	highscore_file.open(highscore_filename, std::ofstream::out | std::ofstream::trunc);
 	highscore_file << std::to_string(getScore());
 	highscore_file.close();
-
 }
 
-int readHighScore()
+int readHighScore(int difficutly)
 {
-	std::ifstream highscore_file("highscore");
+	std::string highscore_filename = "highscore_";
+	highscore_filename.append(std::to_string(difficutly));
+	std::ifstream highscore_file(highscore_filename);
 	if (highscore_file.is_open())
 	{
 		std::string highscore_file_line;
@@ -378,7 +381,6 @@ int main() {
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
 	std::string score; // for onscreen score
-	int high_score = readHighScore(); // For onscreen high score
 	std::string high_score_string;
 
 
@@ -413,6 +415,8 @@ int main() {
 		SDL_RenderPresent(gRenderer);
 	}
 
+	int high_score = readHighScore(difficulty); // For onscreen high score
+
 	static TTF_Font *font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
 	static TTF_Font *font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, difficulty);
@@ -442,10 +446,10 @@ int main() {
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 
-				int current_highscore = readHighScore();
+				int current_highscore = readHighScore(difficulty);
 				if (current_highscore < getScore() || current_highscore == 0)
 				{
-					saveHighScore();
+					saveHighScore(difficulty);
 				}
 
 				gameon = false;
