@@ -64,6 +64,23 @@ public:
     InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
 
+class InvincBlock
+{
+public:
+    int INVINCE_ABS_Y;
+    int INVINCE_ABS_X;
+
+    int INVINCE_REL_Y;
+    int INVINCE_REL_X;
+
+    int INVINCE_HEIGHT;
+    int INVINCE_WIDTH;
+
+    bool enabled;
+
+    InvincBlock();
+    InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
 
 
 class Stalagmite
@@ -202,6 +219,8 @@ public:
 
     int INF_FIRE_N;
 
+    int INVINCE_N;
+
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
 
@@ -225,6 +244,7 @@ public:
     SDL_Texture* mSprite1;
     SDL_Texture* mSprite2;
     SDL_Texture* infFireSprite;
+    SDL_Texture* invinceSprite;
 
 
 
@@ -236,7 +256,7 @@ public:
     std::vector<WallBlock> floor_arr;
     std::vector<HealthBlock> health_arr;
     std::vector<InfFireBlock> infFire_arr;
-
+    std::vector<InvincBlock> invince_arr;
 
     MapBlocks();
 	~MapBlocks();

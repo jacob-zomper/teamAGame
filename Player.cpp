@@ -50,6 +50,7 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
 	health = 100;
     difficulty = diff;
     infiniteShooting= false;
+    invincePower = false;
 }
 
 Player::~Player()
@@ -147,8 +148,11 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         x_vel = -MAX_PLAYER_VEL;
 
 	time_since_move = SDL_GetTicks() - last_move;
-	if(infiniteShooting && SDL_GetTicks()-time_since_invincible>INFINITE_TIME){
+	if(infiniteShooting && SDL_GetTicks()-time_since_inf>INFINITE_TIME){
         infiniteShooting=false;
+    }
+    if(invincePower && SDL_GetTicks()-time_since_invincible>INVINCE_TIME){
+        invincePower=false;
     }
 	// Update heat of the front and back gun
 	if (fshot_maxed && SDL_GetTicks() - fshot_max_time > COOLDOWN_TIME) {
@@ -253,21 +257,22 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 // Damages the player if they've been hit
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
-	if(this->difficulty == 2){
-        damage /= 1.5;
+	if(!invincePower){
+        if(this->difficulty == 2){
+            damage /= 1.5;
+        }
+        else if(this->difficulty == 1){
+            damage /= 2;
+        }
+        if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
+		    return;
+	    }
+	    time_hit = SDL_GetTicks();
+	    health -= damage;
+	    if (health < 0) {
+	    	health = 0;
+    	}
     }
-    else if(this->difficulty == 1){
-        damage /= 2;
-    }
-    if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
-		return;
-	}
-	
-	time_hit = SDL_GetTicks();
-	health -= damage;
-	if (health < 0) {
-		health = 0;
-	}
 }
 
 void Player::heal(int amount) {
@@ -279,6 +284,11 @@ void Player::heal(int amount) {
 
 void Player::setInfiniteVal(bool val){
     infiniteShooting=val;
+    time_since_inf=SDL_GetTicks();
+}
+
+void Player::setInvinceVal(bool val){
+    invincePower=val;
     time_since_invincible=SDL_GetTicks();
 }
 
