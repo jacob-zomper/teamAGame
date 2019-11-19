@@ -579,11 +579,15 @@ int main() {
 				kam->setX(SCREEN_WIDTH+125);
 				kam->setY(SCREEN_HEIGHT/2);
 				kam->setArrivalTime(5000);
-			}else if (en->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
+			}
+			else if (en->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
 				destroyed = true;
 				en->hit(5);
 				if (en->getHealth() == 0)
 					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
+			}
+			else if (cave_system->isEnabled && cave_system->checkCollision(bullets[i])) {
+				destroyed = true;
 			}
 			if (destroyed) {
 				bullets[i]->~Bullet();

@@ -64,6 +64,7 @@ public:
     void moveCaveBlocks(int camX, int camY);
     void checkCollision(Player *p);
     void checkCollision(Enemy *e);
+	bool checkCollision(Bullet *b);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
     PathSequence* getPathSequence();
 	int getStartX();
