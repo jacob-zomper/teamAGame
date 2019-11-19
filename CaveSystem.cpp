@@ -291,7 +291,7 @@ void CaveSystem::checkCollision(Player *p)
             // If there's a collision, cancel the player's move
             if (cave_system[i][j]->enabled == 1 && (checkCollide(p->getPosX() + 12, p->getPosY() + 12, p->PLAYER_HURT_WIDTH, p->PLAYER_HURT_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
             {
-                if(cave_system[i][j]->isPointy == 0){//Player dies instantly
+                if(cave_system[i][j]->isPointy == 0){//Player dies instantly if they hit the wall
                     if(diff == 3){
                         p->hit(p->getHealth());
                     }
@@ -312,8 +312,17 @@ void CaveSystem::checkCollision(Player *p)
                     else{
                         p->hit(25 * 2);
                     }
-                    p->undoXMove();
                     p->undoYMove();
+					// If there's still a collision, push the player away from the block they hit so that they don't get sucked into the cave walls
+					if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
+					{
+						if (cave_system[i-1][j]->enabled == 1) {
+							p->setPosY(p->getPosY() + 5);
+						}
+						else {
+							p->setPosY(p->getPosY() - 5);
+						}
+					}
                 }
 
                 // // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
