@@ -47,10 +47,10 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		else{
 			health = 10;
 		}
-		
+
 		prev_direction = 0;
     }
-	
+
 	Enemy::~Enemy() {
 		SDL_DestroyTexture(sprite1);
 		SDL_DestroyTexture(sprite2);
@@ -243,7 +243,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 				}
 			}
 		}
-		
+
 		// Factor stalactites, stalagmites, and turrets into the risk score
 		// Basically, any block where there is/soon will be a stalactite or turret is dangerous
 		int firstX;
@@ -426,14 +426,14 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
     Bullet* Enemy::handleFiring()
     {
-		if (!is_destroyed){
-			time_since_shoot = SDL_GetTicks() - last_shot;
-			if (time_since_shoot > FIRING_FREQ) {
-				Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
-				last_shot = SDL_GetTicks();
-				return b;
-			}
-		}
+		// if (!is_destroyed){
+		// 	time_since_shoot = SDL_GetTicks() - last_shot;
+		// 	if (time_since_shoot > FIRING_FREQ) {
+		// 		Bullet* b = new Bullet(xPos+width+5,yPos+height/2,450);
+		// 		last_shot = SDL_GetTicks();
+		// 		return b;
+		// 	}
+		// }
     	return nullptr;
     }
 

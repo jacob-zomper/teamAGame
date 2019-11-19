@@ -200,32 +200,32 @@ Missile * Turret::handleFiring(int posX, int posY) {
 
 	time_since_move = SDL_GetTicks() - last_move;
 	Missile * m = nullptr;
-	if (time_since_move >= SHOOT_FREQ) {
-		last_move = SDL_GetTicks();
-		int xDist = posX - BLOCK_REL_X;
-		int yDist = posY - BLOCK_REL_Y;
-		double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
-		double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
-		if (BLOCK_REL_Y >= posY){
-            int missType = rand()%5;//1 in 5 chance of missile being red
-            if(missType < 4){
-		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
-	        }
-	        else{
-                m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite2, gRenderer);
-	        }
-		}
-		else {
-            int missType = rand()%5;//1 in 5 chance of missile being red
-	        SDL_Texture* missSprite; 
-            if(missType < 4){
-		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
-	        }
-	        else{
-		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite2, gRenderer);
-	        }
-		}
-	}
+	// if (time_since_move >= SHOOT_FREQ) {
+	// 	last_move = SDL_GetTicks();
+	// 	int xDist = posX - BLOCK_REL_X;
+	// 	int yDist = posY - BLOCK_REL_Y;
+	// 	double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
+	// 	double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
+	// 	if (BLOCK_REL_Y >= posY){
+  //           int missType = rand()%5;//1 in 5 chance of missile being red
+  //           if(missType < 4){
+	// 	        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
+	//         }
+	//         else{
+  //               m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y - 20, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite2, gRenderer);
+	//         }
+	// 	}
+	// 	else {
+  //           int missType = rand()%5;//1 in 5 chance of missile being red
+	//         SDL_Texture* missSprite;
+  //           if(missType < 4){
+	// 	        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
+	//         }
+	//         else{
+	// 	        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite2, gRenderer);
+	//         }
+	// 	}
+	// }
 	return m;
 }
 
