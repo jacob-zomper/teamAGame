@@ -180,9 +180,6 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 	std::vector<int> turretX;
 	std::vector<int> turretBottom;
 	std::vector<int> turretH;
-	// std::vector<int> kamiX;
-	// std::vector<int> kamiY;
-	// std::vector<FlyingBlock> kamikazes = blocks->getKamikazes();
 	for (int i = 0; i < bullets.size(); i++) {
 		bulletX.push_back(bullets[i]->getX());
 		bulletY.push_back(bullets[i]->getY());
@@ -218,12 +215,7 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 			turretH.push_back(turrets[i].BLOCK_HEIGHT + WallBlock::block_side);
 		}
 	}
-	// for (int i = 0; i < kamikazes.size(); i++) {
-	// 	if (kamikazes[i].getRelX() > 0 && kamikazes[i].getRelX() < SCREEN_WIDTH && kamikazes[i].getRelY() > 0 && kamikazes[i].getRelY() < SCREEN_HEIGHT) {
-	// 		kamiX.push_back(kamikazes[i].getRelX() + kamikazes[i].BLOCK_WIDTH/2);
-	// 		kamiY.push_back(kamikazes[i].getRelY() + kamikazes[i].BLOCK_HEIGHT/2);
-	// 	}
-	// }
+
 	int kamiX = kam->getX();
 	int kamiY = kam->getY();
 	PathSequence * path = cave_system->getPathSequence();
@@ -249,18 +241,21 @@ void moveEnemy(Enemy * en, Kamikaze* kam) {
 
 int getScore(){ return (int) (camX / 100); }
 
-void saveHighScore()
+void saveHighScore(int difficulty)
 {
+	std::string highscore_filename = "highscore_";
+	highscore_filename.append(std::to_string(difficulty));
 	std::ofstream highscore_file;
-	highscore_file.open("highscore", std::ofstream::out | std::ofstream::trunc);
+	highscore_file.open(highscore_filename, std::ofstream::out | std::ofstream::trunc);
 	highscore_file << std::to_string(getScore());
 	highscore_file.close();
-
 }
 
-int readHighScore()
+int readHighScore(int difficutly)
 {
-	std::ifstream highscore_file("highscore");
+	std::string highscore_filename = "highscore_";
+	highscore_filename.append(std::to_string(difficutly));
+	std::ifstream highscore_file(highscore_filename);
 	if (highscore_file.is_open())
 	{
 		std::string highscore_file_line;
@@ -378,14 +373,13 @@ int main() {
 	Bullet* newBullet;
 	std::string fps;//for onscreen fps
 	std::string score; // for onscreen score
-	int high_score = readHighScore(); // For onscreen high score
 	std::string high_score_string;
 
 
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 	SDL_Event e;
 	bool gameon = true;
-	
+
 	Mix_PlayMusic(start_track, -1);
 	current_track = 2;
 	while(start_screen->notStarted){
@@ -412,6 +406,8 @@ int main() {
 		diff_sel_screen->render(gRenderer);
 		SDL_RenderPresent(gRenderer);
 	}
+
+	int high_score = readHighScore(difficulty); // For onscreen high score
 
 	static TTF_Font *font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
 	static TTF_Font *font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
@@ -442,10 +438,10 @@ int main() {
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 
-				int current_highscore = readHighScore();
+				int current_highscore = readHighScore(difficulty);
 				if (current_highscore < getScore() || current_highscore == 0)
 				{
-					saveHighScore();
+					saveHighScore(difficulty);
 				}
 
 				gameon = false;
@@ -455,13 +451,13 @@ int main() {
 			{
 				game_over->isGameOver = true;
 			}
-			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_SPACE) {
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
 				newBullet = player->handleForwardFiring();
 				if (newBullet != nullptr) {
 					bullets.push_back(newBullet);
 				}
 			}
-			else if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && e.key.keysym.sym == SDLK_b) {
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_b) {
 				newBullet = player->handleBackwardFiring();
 				if (newBullet != nullptr) {
 					bullets.push_back(newBullet);
@@ -496,20 +492,16 @@ int main() {
 		}
 		// If the kamikaze is offscreen, create a new one
 		if (kam->getX() < -kam->getWidth()) {
-			// delete kam;
-			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
-			if(difficulty == 3){
-				kam->setArrivalTime(5000);
+			if (difficulty == 3)
+				kam->setArrivalTime(100);
+			else if (difficulty == 2){
+				kam->setArrivalTime(300);
+			}else{
+				kam->setArrivalTime(500);
 			}
-			else if(difficulty == 2){
-				kam->setArrivalTime(7000);
-			}
-			else{
-				kam->setArrivalTime(10000);
-			}
-			
+
 		}
 
 		// Move player
@@ -525,7 +517,14 @@ int main() {
 		missiles = blocks->handleFiring(missiles, player->getPosX(), player->getPosY());
 
 		if (!cave_system->isEnabled){
-			kam->move(player, SCREEN_WIDTH);
+			if(!prev_kam)
+				kam->move(player, SCREEN_WIDTH);
+			else{
+				prev_kam = false;
+				kam->setX(SCREEN_WIDTH+125);
+				kam->setY(SCREEN_HEIGHT/2);
+				kam->setArrivalTime(50);
+			}
 			prev_kam = false;
 		}else{
 			if (!prev_kam){
@@ -533,8 +532,6 @@ int main() {
 				prev_kam = true;
 			}
 			kam->setX(SCREEN_WIDTH+125);
-			kam->setY(SCREEN_HEIGHT/2);
-			kam->setArrivalTime(5000);
 		}
 
 		//move the bullets
@@ -551,7 +548,7 @@ int main() {
 			blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
-			kam->setArrivalTime(5000);
+			kam->setArrivalTime(1000);
 		}
 
 		//kam->checkCollision(player, gRenderer);
@@ -571,16 +568,15 @@ int main() {
 				destroyed = true;
 				player->hit(5);
 			}
-			else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+			else if (kam->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight()) && kam->blast()) {
 				destroyed = true;
 				blocks->addExplosion(kam->getX() + camX, kam->getY() + camY, kam->getWidth(), kam->getHeight(),0);
 				// delete kam;
 				// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 				kam->setX(SCREEN_WIDTH+125);
 				kam->setY(SCREEN_HEIGHT/2);
-				kam->setArrivalTime(5000);
-			}
-			else if (en->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
+				kam->setArrivalTime(1000);
+			}else if (en->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())){
 				destroyed = true;
 				en->hit(5);
 				if (en->getHealth() == 0)
@@ -626,7 +622,7 @@ int main() {
 			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
-			kam->setArrivalTime(5000);
+			kam->setArrivalTime(1000);
 		}
 
 		if (en->checkCollision(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())){
@@ -636,18 +632,18 @@ int main() {
 			// kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 5000, gRenderer);
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
-			kam->setArrivalTime(5000);
+			kam->setArrivalTime(1000);
 		}
 
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
-		
+
 		// Finally removed background drawing from the Player class
 		SDL_Rect bgRect = {-((int)bg_x % SCREEN_WIDTH), 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-		
+
 		// Draw the player
 		if (!playerDestroyed) player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		// Draw the enemy
@@ -702,25 +698,32 @@ int main() {
 		Text frontText(gRenderer, front_gun, {255, 255, 255, 255}, font_16);
 		frontText.render(gRenderer, 960, SCREEN_HEIGHT - 52);
 
+
+
 		int health = player->getHealth();
 		SDL_Rect outline = {199, SCREEN_HEIGHT - 56, 202, 32};
 		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 		SDL_RenderDrawRect(gRenderer, &outline);
-		if (health > 75) {
-			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+		if(player->invincePower){
+			SDL_SetRenderDrawColor(gRenderer, 0xD4, 0xAF, 0x37, 0xFF);
 		}
-		else if (health >= 50) {
-			SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
-		}
-		else if (health >= 20) {
-			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
-		}
-		else {
-			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		else{
+			if (health > 75) {
+				SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+			}
+			else if (health >= 50) {
+				SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
+			}
+			else if (health >= 20) {
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
+			}
+			else {
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+			}
 		}
 		SDL_Rect health_rect = {200, SCREEN_HEIGHT - 55, 2 * health, 30};
 		SDL_RenderFillRect(gRenderer, &health_rect);
-		
+
 		// Draw the bars for forward heat and backwards heat
 		int fHeat = player->getFrontHeat();
 		int bHeat = player->getBackHeat();
@@ -729,7 +732,7 @@ int main() {
 		SDL_RenderDrawRect(gRenderer, &outline);
 		outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
 		SDL_RenderDrawRect(gRenderer, &outline);
-		
+
 		if(player->bshot_maxed){
 			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
 		}
@@ -765,7 +768,7 @@ int main() {
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 		}
-		
+
 		SDL_RenderPresent(gRenderer);
 	}
 

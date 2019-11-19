@@ -46,6 +46,59 @@ public:
     HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
 
+class InfFireBlock
+{
+public:
+    int INF_FIRE_ABS_Y;
+    int INF_FIRE_ABS_X;
+
+    int INF_FIRE_REL_Y;
+    int INF_FIRE_REL_X;
+
+    int INF_FIRE_HEIGHT;
+    int INF_FIRE_WIDTH;
+
+    bool enabled;
+
+    InfFireBlock();
+    InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+class AutoFireBlock
+{
+public:
+    int AUTOFIRE_ABS_Y;
+    int AUTOFIRE_ABS_X;
+
+    int AUTOFIRE_REL_Y;
+    int AUTOFIRE_REL_X;
+
+    int AUTOFIRE_HEIGHT;
+    int AUTOFIRE_WIDTH;
+
+    bool enabled;
+
+    AutoFireBlock();
+    AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
+class InvincBlock
+{
+public:
+    int INVINCE_ABS_Y;
+    int INVINCE_ABS_X;
+
+    int INVINCE_REL_Y;
+    int INVINCE_REL_X;
+
+    int INVINCE_HEIGHT;
+    int INVINCE_WIDTH;
+
+    bool enabled;
+
+    InvincBlock();
+    InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
 
 class Stalagmite
 {
@@ -181,6 +234,12 @@ public:
 
     int HEALTH_N;
 
+    int INF_FIRE_N;
+
+    int INVINCE_N;
+
+    int AUTOFIRE_N;
+
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
 
@@ -203,6 +262,10 @@ public:
     SDL_Texture* healthSprite;
     SDL_Texture* mSprite1;
     SDL_Texture* mSprite2;
+    SDL_Texture* infFireSprite;
+    SDL_Texture* invinceSprite;
+    SDL_Texture* autofireSprite;
+
 
 
 
@@ -213,7 +276,9 @@ public:
     std::vector<WallBlock> ceiling_arr;
     std::vector<WallBlock> floor_arr;
     std::vector<HealthBlock> health_arr;
-
+    std::vector<InfFireBlock> infFire_arr;
+    std::vector<InvincBlock> invince_arr;
+    std::vector<AutoFireBlock> autofire_arr;
 
     MapBlocks();
 	~MapBlocks();
