@@ -334,7 +334,7 @@ Bullet* Player::handleForwardFiring()
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
         std::cout << "Firing new bullet"<< std::endl;
 		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
-        if(!infiniteShooting || !autoFire){
+        if(!infiniteShooting){
     		fshot_heat += SHOOT_COST;
     		if (fshot_heat > MAX_SHOOT_HEAT) {
     			fshot_maxed = true;
@@ -352,8 +352,8 @@ Bullet* Player::handleBackwardFiring()
 {
 	if (!bshot_maxed && (SDL_GetTicks() - time_since_b_shot) >=100) {
 		Bullet* b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
-		if(!infiniteShooting || !autoFire){
-                    bshot_heat += SHOOT_COST;
+		if(!infiniteShooting){
+            bshot_heat += SHOOT_COST;
             if (bshot_heat > MAX_SHOOT_HEAT) {
                 bshot_maxed = true;
                 bshot_heat = MAX_SHOOT_HEAT;
