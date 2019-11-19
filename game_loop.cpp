@@ -291,6 +291,10 @@ void check_missile_collisions()
 		{
 			destroyed = true;
 		}
+		else if (cave_system->isEnabled && cave_system->checkCollision(missiles[i]))
+		{
+			destroyed = true;
+		}
 		else
 		{
 			for(int j = i + 1; j < missiles.size();j++){//loop to check for missiles colliding with each other
@@ -555,13 +559,14 @@ int main() {
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
 			bool destroyed = false;
-			if(bullets[i]->getY() > FLOOR_BOTTOM){
+			int bulletHit = blocks->checkCollision(bullets[i]);
+			if(bulletHit == 2) {
 				destroyed = bullets[i]->ricochetFloor(); // rng chance to ricochet or get destroyed
 			}
-			else if(bullets[i]->getY() < ROOF_TOP){
+			else if(bulletHit == 1) {
 				destroyed = bullets[i]->ricochetRoof(); // rng chance to ricochet or get destroyed
 			}
-			else if (blocks->checkCollision(bullets[i])){
+			else if (bulletHit == 3) {
 				destroyed = true;
 			}
 			else if (player->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
@@ -581,6 +586,9 @@ int main() {
 				en->hit(5);
 				if (en->getHealth() == 0)
 					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
+			}
+			else if (cave_system->isEnabled && cave_system->checkCollision(bullets[i])) {
+				destroyed = true;
 			}
 			if (destroyed) {
 				bullets[i]->~Bullet();
