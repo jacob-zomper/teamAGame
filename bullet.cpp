@@ -1,10 +1,6 @@
 #include "bullet.h"
 #include "time.h"
 
-
-// Math constants
-const int radian_to_degree = 180.0 / M_PI;
-
 // Increase value to have bullets drop slower
 // Decrease to have bullets drop faster
 const int adjuster = 10;
@@ -35,6 +31,10 @@ Bullet::Bullet(int x, int y, int xvel, int yvel) :xPos{(double)x}, yPos{(double)
     	srand(time(NULL));
 };
 
+Bullet::~Bullet(){
+	//gotta figure this one out
+}
+
 void Bullet::renderBullet(SDL_Renderer* gRenderer){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(gRenderer, &bullet_sprite);
@@ -45,6 +45,16 @@ bool Bullet::ricochetFloor(){
 		return true; // destroyed
 	}
 	yPos = FLOOR_BOTTOM - 3;
+	yVel /= -1.5;
+	
+	return false; // ricocheted
+}
+
+bool Bullet::ricochetRoof(){
+	if(((rand() % 100) + (yVel/20)) > 80){ // about 20-40% chance of destruction, higher Velocity = less likely to ricochet
+		return true; // destroyed
+	}
+	yPos = ROOF_TOP + 3;
 	yVel /= -1.5;
 	
 	return false; // ricocheted

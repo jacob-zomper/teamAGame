@@ -17,19 +17,23 @@ class Enemy
 		SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
         //Initializes the variables, Constructor
-        Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer);
+        Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer);
 
         //Shows the enemy
         void renderEnemy(SDL_Renderer* gRenderer);
 
         //Moves the enemy
-        void move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY);
+        void move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom, int kamiX, int kamiY, int cave_y);
+        bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
+        bool checkCollision(int x, int y, int w, int h);
+        void hit(int d);
 
         //Position, dimensions, and velocity accessors
         int getX();
         int getY();
 		int getWidth();
 		int getHeight();
+        int getHealth();
         void setyVelo(int y);
         void setxVelo(int x);
 		void setPosX(int x);
@@ -44,16 +48,20 @@ class Enemy
         SDL_Rect* getHitbox();
         Bullet* handleFiring();
 		int chooseDirection();
-		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, int kamiX, int kamiY);
+		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, int kamiX, int kamiY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom);
 
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
+
     private:
 
 		// Animation and shooting frequencies of the enemy
 		static const int ANIMATION_FREQ = 100;
 		static const int FIRING_FREQ = 1000;
+    static const int FLICKER_FREQ = 50;
+    static const int FLICKER_TIME = 500;
+    static const int SPAWN_FREQ = 3000;
 
 		// Limits on where the enemy can go
 		static const int MIN_X = 0;
@@ -74,6 +82,7 @@ class Enemy
 		int current_y_square;
         const int width;
         const int height;
+		int prev_direction;
 
         //Velocity of the enemy
 		int maxXVelo;
@@ -94,6 +103,12 @@ class Enemy
 		// Shooting times, used for handling framerate-independent firing rate
 		int time_since_shoot;
 		int last_shot;
+
+    //health variables for the enemy
+    int time_hit;
+    int time_destroyed;
+    int health;
+    bool is_destroyed;
 };
 
 #endif

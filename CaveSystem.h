@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include "Player.h"
+#include "Enemy.h"
 
 class CaveBlock
 {
@@ -19,6 +20,7 @@ public:
     int CAVE_BLOCK_REL_Y;
 
     int enabled; // Is the cave block going to be visible? 1 = yes, 0 = no
+    int isPointy; //Pointy blocks only deal quarty damage to player and enemy
 
     static const int CAVE_BLOCK_HEIGHT = 20;
     static const int CAVE_BLOCK_WIDTH = 20;
@@ -26,6 +28,17 @@ public:
 	static const int CAVE_SYSTEM_PIXEL_WIDTH = 4000;
     CaveBlock();
     std::string toString();
+};
+
+
+class PathSequence
+{
+public:
+    int x[CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH / CaveBlock::CAVE_BLOCK_WIDTH];
+    int y[CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH / CaveBlock::CAVE_BLOCK_WIDTH];
+    int length;
+
+    PathSequence();
 };
 
 
@@ -40,28 +53,28 @@ public:
     static int CAVE_END_ABS_X; 
 
     bool isEnabled = false;
+    PathSequence path;
     CaveBlock *cave_system[CAVE_SYSTEM_HEIGHT][CAVE_SYSTEM_WIDTH];
 
     CaveSystem();
-    CaveSystem(int camX, int camY, int SCREEN_WIDTH);
+    CaveSystem(int camX, int camY, int SCREEN_WIDTH, int difficulty);
+    ~CaveSystem();
 
     void render(SDL_Renderer *gRenderer);
     void moveCaveBlocks(int camX, int camY);
     void checkCollision(Player *p);
+    void checkCollision(Enemy *e);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
+    PathSequence* getPathSequence();
+	int getStartX();
+	int getEndX();
 
+    SDL_Texture* ceilSprite;
+    SDL_Texture* floorSprite;
+    int diff;
 private:
     void generateRandomCave();
 };
 
-class PathSequence
-{
-public:
-    int x[CaveSystem::CAVE_SYSTEM_WIDTH];
-    int y[CaveSystem::CAVE_SYSTEM_WIDTH];
-    int length;
-
-    PathSequence();
-};
 
 #endif

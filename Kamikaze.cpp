@@ -34,14 +34,16 @@ Kamikaze::Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer* gRendere
   tiltAngle = 0;
 }
 
+
 void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
-  if(xPos < SCREEN_WIDTH){
-    if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1)
-      SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-    else
-      SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-    kam_hitbox=kam_sprite;
-  }
+
+    if(xPos < SCREEN_WIDTH){
+      if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1)
+        SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+      else
+        SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+      kam_hitbox=kam_sprite;
+    }
 }
 
 void Kamikaze::move(Player* p, int SCREEN_WIDTH){
@@ -119,4 +121,8 @@ int Kamikaze::getHeight() {
 
 SDL_Rect* Kamikaze::getHitbox(){
   return &kam_hitbox;
+}
+
+void Kamikaze::setArrivalTime(int delay){
+  arrival_time = SDL_GetTicks()+delay;
 }

@@ -23,7 +23,7 @@ SDL_Texture* Player::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
+Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
 {
     x_pos = xPos;
     y_pos = yPos;
@@ -41,10 +41,13 @@ Player::Player(int xPos, int yPos, SDL_Renderer *gRenderer)
     xn_decel = false;
     yp_decel = false;
     yn_decel = false;
-	last_fshot = SDL_GetTicks() - SHOOT_FREQ;
-	last_bshot = SDL_GetTicks() - SHOOT_FREQ;
+	fshot_heat = 0;
+	bshot_heat = 0;
+	fshot_maxed = false;
+	bshot_maxed = false;
 	time_hit = SDL_GetTicks() - FLICKER_TIME;
 	health = 100;
+    difficulty = diff;
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -121,7 +124,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     float accelerate_by = 0.003*time_since_move;
     float deccelerate_factor = 4.0;
     acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
-    tiltAngle = 180 * sin(y_accel / 12);
+    if(!yp_decel && !yn_decel && y_vel > 0) tiltAngle = 180 * sin(y_accel / 12) > 0 ? 180 * sin(y_accel / 12) : 0;
+    else if(!yp_decel && !yn_decel && y_vel < 0) tiltAngle = -180 * sin(y_accel / 12) < 0 ? -180 * sin(y_accel / 12) : 0;
+    else tiltAngle = 180 * sin(y_accel / 12);
     acceleration(xp_decel, xn_decel, x_accel, accelerate_by, deccelerate_factor, x_vel);
 
     if (y_vel > MAX_PLAYER_VEL)
@@ -134,6 +139,35 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         x_vel = -MAX_PLAYER_VEL;
 
 	time_since_move = SDL_GetTicks() - last_move;
+	
+	// Update heat of the front and back gun
+	if (fshot_maxed && SDL_GetTicks() - fshot_max_time > COOLDOWN_TIME) {
+		if(fshot_heat <= 0){
+            fshot_heat = 0;
+            fshot_maxed = false;
+        }
+        else{
+            fshot_heat -= (SHOOT_COST / 10);
+        }     	
+	}
+	if (!fshot_maxed) {
+		fshot_heat -= time_since_move * RECOVERY_RATE;
+		if (fshot_heat < 0) fshot_heat = 0;
+	}
+	if (bshot_maxed && SDL_GetTicks() - bshot_max_time > COOLDOWN_TIME) {
+		if(bshot_heat <= 0){
+            bshot_heat = 0;
+            bshot_maxed = false;
+        }
+        else{
+            bshot_heat -= (SHOOT_COST / 10);
+        }  
+	}
+	if (!bshot_maxed) {
+		bshot_heat -= time_since_move * RECOVERY_RATE;
+		if (bshot_heat < 0) bshot_heat = 0;
+	}
+	
     x_pos += (double) (x_vel * time_since_move) / 1000;
     y_pos += (double) (y_vel * time_since_move) / 1000;
     bg_X += (double) (time_since_move) / 10;
@@ -163,12 +197,13 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         y_pos = 0;
     }
     
+	/*
     // If they are near the bottom of the screen, scroll down
     else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
     {
         y_pos = (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT;
         camY += (double) (y_vel * time_since_move) / 1000;
-    }
+    }*/
     // Stop the player if they hit the bottom
     else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
     {
@@ -214,7 +249,13 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 // Damages the player if they've been hit
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
-	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
+	if(this->difficulty == 2){
+        damage /= 1.5;
+    }
+    else if(this->difficulty == 1){
+        damage /= 2;
+    }
+    if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
 		return;
 	}
 	
@@ -225,14 +266,21 @@ void Player::hit(int damage) {
 	}
 }
 
+void Player::heal(int amount) {
+    health += amount;
+    if (health > 100) {
+        health = 100;
+    }
+}
+
 // Checks if the player collided with a kamikaze, returning true if so
 bool Player::checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH) {
-	return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT);
+	return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
 }
 
 // Checks if the player collided with a bullet, returning true if so
 bool Player::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
-	return checkCollide(bullX, bullY, bullW, bullH, x_pos, y_pos, PLAYER_WIDTH, PLAYER_HEIGHT);
+	return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
 }
 
 bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -246,10 +294,14 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
-	time_since_fshot = SDL_GetTicks() - last_fshot;
-	if (time_since_fshot > SHOOT_FREQ) {
-		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5,y_pos+PLAYER_HEIGHT/2,450);
-		last_fshot = SDL_GetTicks();
+	if (!fshot_maxed) {
+		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
+		fshot_heat += SHOOT_COST;
+		if (fshot_heat > MAX_SHOOT_HEAT) {
+			fshot_maxed = true;
+			fshot_heat = MAX_SHOOT_HEAT;
+			fshot_max_time = SDL_GetTicks();
+		}
 		return b;
 	}
 	return nullptr;
@@ -257,10 +309,14 @@ Bullet* Player::handleForwardFiring()
 
 Bullet* Player::handleBackwardFiring()
 {
-	time_since_bshot = SDL_GetTicks() - last_bshot;
-	if (time_since_bshot > SHOOT_FREQ) {
-		Bullet* b = new Bullet(x_pos - 10,y_pos+PLAYER_HEIGHT/2,-450);
-		last_bshot = SDL_GetTicks();
+	if (!bshot_maxed) {
+		Bullet* b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
+		bshot_heat += SHOOT_COST;
+		if (bshot_heat > MAX_SHOOT_HEAT) {
+			bshot_maxed = true;
+			bshot_heat = MAX_SHOOT_HEAT;
+			bshot_max_time = SDL_GetTicks();
+		}
 		return b;
 	}
 	return nullptr;
@@ -275,7 +331,11 @@ int Player::getVelX() { return x_vel; };
 int Player::getVelY() { return y_vel; };
 void Player::setPosX(int x) { x_pos = x; }
 void Player::setPosY(int y) { y_pos = y; }
+int Player::getWidth() { return PLAYER_WIDTH; }
+int Player::getHeight() { return PLAYER_HEIGHT; }
 int Player::getHealth() { return health; };
+int Player::getFrontHeat() { return fshot_heat; }
+int Player::getBackHeat() { return bshot_heat; }
 
 // Methods that can be used to undo the user's moves when dealing with collisions
 void Player::undoXMove() {x_pos -= (double) (x_vel * time_since_move) / 1000;}

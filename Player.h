@@ -15,9 +15,16 @@ public:
     static const int PLAYER_WIDTH = 125;
     static const int PLAYER_HEIGHT = 53;
 
+    //The dimensions of the player's hurtbox
+    static const int PLAYER_HURT_WIDTH = 100;
+    static const int PLAYER_HURT_HEIGHT = 28;
+
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
-	static const int SHOOT_FREQ = 300;
+	static const int MAX_SHOOT_HEAT = 100000;
+	static const int SHOOT_COST = 7000;
+	static const int RECOVERY_RATE = 10;
+	static const int COOLDOWN_TIME = 2000;
 	
 	// Animation frequency, the frequency with which the player flickers when hit, and the amount of time the player flickers after being hit
 	static const int ANIMATION_FREQ = 100;
@@ -27,10 +34,12 @@ public:
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
 	int last_move;
-	int time_since_fshot;
-	int last_fshot;
-	int time_since_bshot;
-	int last_bshot;
+	int fshot_heat;
+	int bshot_heat;
+	int fshot_max_time;
+	int bshot_max_time;
+	bool fshot_maxed;
+	bool bshot_maxed;
 	
 	// Last time the player was hit, and their current health (out of 100)
 	int time_hit;
@@ -47,12 +56,13 @@ public:
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
 	SDL_Texture* gBackground;
+	int difficulty;
 	
 	// Used to load sprites
 	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     //Initializes the variables
-    Player(int xPos, int yPos, SDL_Renderer *gRenderer);
+    Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer);
 
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
@@ -65,6 +75,9 @@ public:
     
 	// Damages the player when they've been hit
 	void hit(int damage);
+
+	//heals player
+	void heal(int amount);
 	
 	// Handle collisions
 	bool checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH);
@@ -84,7 +97,11 @@ public:
     int getVelY();
     void setPosX(int x);
     void setPosY(int y);
+	int getWidth();
+	int getHeight();
 	int getHealth();
+	int getFrontHeat();
+	int getBackHeat();
 	
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
