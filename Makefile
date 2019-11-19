@@ -75,7 +75,7 @@ jake: SDLCredits.cpp game_loop.cpp
 
 cleanjake:
 	rm game_loop
-	rm highscore
+	rm highscore*
 
 clean:
 	rm *.o
