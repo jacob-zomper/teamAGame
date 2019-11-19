@@ -52,6 +52,7 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     infiniteShooting= false;
     invincePower = false;
     autoFire=false;
+    small = false;
 }
 
 Player::~Player()
@@ -158,6 +159,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     if(autoFire && SDL_GetTicks()-time_since_auto>AUTOFIRE_TIME){
         autoFire=false;
     }
+    if(small && SDL_GetTicks()-time_since_small>SMALL_TIME){
+        small=false;
+    }
 	// Update heat of the front and back gun
 	if (fshot_maxed && SDL_GetTicks() - fshot_max_time > COOLDOWN_TIME) {
 		if(fshot_heat <= 0){
@@ -191,41 +195,45 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     bg_X += (double) (time_since_move) / 10;
 
     // Move the player horizontally
-    if (x_pos < 0)
-    {
-        x_pos = 0;
+    if(small == false){
+        if (x_pos < 0)
+        {
+            x_pos = 0;
+        }
+        else if (x_pos > SCREEN_WIDTH - PLAYER_WIDTH)
+        {
+           x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
+        }
+        // Stop the player if they hit the top of the level
+        else if (y_pos < 0)
+        {
+          y_pos = 0;
+        }
+        // Stop the player if they hit the bottom
+        else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
+        {
+            y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
+        }
     }
-    else if (x_pos > SCREEN_WIDTH - PLAYER_WIDTH)
-    {
-        x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
-    }
-
-    // Move the player vertically.
-    // If they are near the top of the screen, scroll up
-    /*
-    if (y_pos < SCREEN_HEIGHT / 10 && camY > 0)
-    {
-        y_pos = SCREEN_HEIGHT / 10;
-        camY += (double) (y_vel * time_since_move) / 1000;
-    }
-    */
-    // Stop the player if they hit the top of the level
-    else if (y_pos < 0)
-    {
-        y_pos = 0;
-    }
-
-	/*
-    // If they are near the bottom of the screen, scroll down
-    else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
-    {
-        y_pos = (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT;
-        camY += (double) (y_vel * time_since_move) / 1000;
-    }*/
-    // Stop the player if they hit the bottom
-    else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
-    {
-        y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
+    else{
+        if (x_pos < 0)
+        {
+            x_pos = 0;
+        }
+        else if (x_pos > SCREEN_WIDTH - S_PLAYER_WIDTH)
+        {
+           x_pos = SCREEN_WIDTH - S_PLAYER_WIDTH;
+        }
+        // Stop the player if they hit the top of the level
+        else if (y_pos < 0)
+        {
+          y_pos = 0;
+        }
+        // Stop the player if they hit the bottom
+        else if (y_pos > SCREEN_HEIGHT - S_PLAYER_HEIGHT)
+        {
+            y_pos = SCREEN_HEIGHT - S_PLAYER_HEIGHT;
+        }
     }
 
 
@@ -247,15 +255,27 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
 		return;
 	}
-
-    SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
-	// Alternates through the two sprites every ANIMATION_FREQ ticks
-    if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
-		SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
-	}
-	else {
-		SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
-	}
+    if(small == false){
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
+	    // Alternates through the two sprites every ANIMATION_FREQ ticks
+        if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
+	    }
+	    else {
+	    	SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
+	    }
+    }
+    else{
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, S_PLAYER_WIDTH, S_PLAYER_HEIGHT};
+	    // Alternates through the two sprites every ANIMATION_FREQ ticks
+        if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
+	    }
+	    else {
+	    	SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
+	    }
+    }
+    
 }
 
 // Damages the player if they've been hit
@@ -301,6 +321,11 @@ void Player::setAutoFire(bool val){
     time_since_auto=SDL_GetTicks();
 }
 
+void Player::setSmall(bool val){
+    small=val;
+    time_since_small=SDL_GetTicks();
+}
+
 void Player::resetHeatVals(){
     bshot_heat = 0;
     fshot_heat=0;
@@ -310,12 +335,22 @@ void Player::resetHeatVals(){
 
 // Checks if the player collided with a kamikaze, returning true if so
 bool Player::checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH) {
-	return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+    if(small == false){
+        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos - 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+    }
+    else{
+        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 8, y_pos - 8, S_PLAYER_HURT_WIDTH, S_PLAYER_HURT_HEIGHT);
+    }
 }
 
 // Checks if the player collided with a bullet, returning true if so
 bool Player::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
-	return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+    if(small == false){
+        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+    }
+    else{
+        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 9, y_pos + 9, S_PLAYER_HURT_WIDTH, S_PLAYER_HURT_HEIGHT);
+    }	
 }
 
 bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -333,7 +368,13 @@ Bullet* Player::handleForwardFiring()
     std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
         std::cout << "Firing new bullet"<< std::endl;
-		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
+        Bullet* b;
+        if(small == false){
+            b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
+        }
+        else{
+            b = new Bullet(x_pos+S_PLAYER_WIDTH+5 -fabs(S_PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+S_PLAYER_HEIGHT/2+S_PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
+        }
         if(!infiniteShooting){
     		fshot_heat += SHOOT_COST;
     		if (fshot_heat > MAX_SHOOT_HEAT) {
@@ -351,7 +392,13 @@ Bullet* Player::handleForwardFiring()
 Bullet* Player::handleBackwardFiring()
 {
 	if (!bshot_maxed && (SDL_GetTicks() - time_since_b_shot) >=100) {
-		Bullet* b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
+        Bullet* b;
+		if(small == false){
+            b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
+        }
+        else{
+            b = new Bullet(x_pos-10 +fabs(S_PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+S_PLAYER_HEIGHT/2-S_PLAYER_HEIGHT*sin(tiltAngle), -fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? -fabs(450*sin(tiltAngle)) : fabs(450*sin(tiltAngle)));
+        }
 		if(!infiniteShooting){
             bshot_heat += SHOOT_COST;
             if (bshot_heat > MAX_SHOOT_HEAT) {
@@ -376,13 +423,49 @@ int Player::getVelX() { return x_vel; };
 int Player::getVelY() { return y_vel; };
 void Player::setPosX(int x) { x_pos = x; }
 void Player::setPosY(int y) { y_pos = y; }
-int Player::getWidth() { return PLAYER_WIDTH; }
-int Player::getHeight() { return PLAYER_HEIGHT; }
+
+int Player::getWidth() { 
+    if(small == false){
+        return PLAYER_WIDTH; 
+    }
+    else{
+        return S_PLAYER_WIDTH;
+    }
+}
+
+int Player::getHeight() { 
+    if(small == false){
+        return PLAYER_HEIGHT; 
+    }
+    else{
+        return S_PLAYER_HEIGHT; 
+    }
+}
+
+int Player::getHurtWidth() { 
+    if(small == false){
+        return PLAYER_HURT_WIDTH; 
+    }
+    else{
+        return S_PLAYER_HURT_WIDTH;
+    }
+}
+
+int Player::getHurtHeight() { 
+    if(small == false){
+        return PLAYER_HURT_HEIGHT; 
+    }
+    else{
+        return S_PLAYER_HURT_HEIGHT; 
+    }
+}
+
 int Player::getHealth() { return health; };
 int Player::getFrontHeat() { return fshot_heat; }
 int Player::getBackHeat() { return bshot_heat; }
 void Player::setHealthMax() { health = 100; }
 bool Player::getAutoFire(){ return autoFire;}
+bool Player::getSmall(){ return small;}
 
 // Methods that can be used to undo the user's moves when dealing with collisions
 void Player::undoXMove() {x_pos -= (double) (x_vel * time_since_move) / 1000;}

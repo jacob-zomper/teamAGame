@@ -99,6 +99,24 @@ public:
     InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
 
+class SmallBlock
+{
+public:
+    int SMALL_ABS_Y;
+    int SMALL_ABS_X;
+
+    int SMALL_REL_Y;
+    int SMALL_REL_X;
+
+    int SMALL_HEIGHT;
+    int SMALL_WIDTH;
+
+    bool enabled;
+
+    SmallBlock();
+    SmallBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
 
 class Stalagmite
 {
@@ -240,6 +258,8 @@ public:
 
     int AUTOFIRE_N;
 
+    int SMALL_N;
+
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
 
@@ -265,6 +285,7 @@ public:
     SDL_Texture* infFireSprite;
     SDL_Texture* invinceSprite;
     SDL_Texture* autofireSprite;
+    SDL_Texture* smallSprite;
 
 
     std::vector<Turret> blocks_arr;
@@ -277,6 +298,7 @@ public:
     std::vector<InfFireBlock> infFire_arr;
     std::vector<InvincBlock> invince_arr;
     std::vector<AutoFireBlock> autofire_arr;
+    std::vector<SmallBlock> small_arr;
 
     MapBlocks();
 	~MapBlocks();
