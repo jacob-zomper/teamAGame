@@ -289,7 +289,7 @@ void CaveSystem::checkCollision(Player *p)
         for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
         {
             // If there's a collision, cancel the player's move
-            if (cave_system[i][j]->enabled == 1 && (checkCollide(p->getPosX() + 12, p->getPosY() + 12, p->PLAYER_HURT_WIDTH, p->PLAYER_HURT_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
+            if (cave_system[i][j]->enabled == 1 && (checkCollide(p->getPosX() + 12, p->getPosY() + 12, p->getHurtWidth(), p->getHurtHeight(), cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
             {
                 if(cave_system[i][j]->isPointy == 0){//Player dies instantly if they hit the wall
                     if(diff == 3){
@@ -314,7 +314,7 @@ void CaveSystem::checkCollision(Player *p)
                     }
                     p->undoYMove();
 					// If there's still a collision, push the player away from the block they hit so that they don't get sucked into the cave walls
-					if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
+					if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
 					{
 						if (cave_system[i-1][j]->enabled == 1) {
 							p->setPosY(p->getPosY() + 5);
@@ -326,9 +326,9 @@ void CaveSystem::checkCollision(Player *p)
                 }
 
                 // // If there's still a collision, it's due to the scrolling and they need to be moved left accordingly
-                // if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
+                // if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT))
                 // {
-                //     p->setPosX(std::max(cave_system[i][j]->CAVE_BLOCK_REL_X - p->PLAYER_WIDTH, 0));
+                //     p->setPosX(std::max(cave_system[i][j]->CAVE_BLOCK_REL_X - p->getWidth(), 0));
                 //     p->redoYMove();
                 // }
             }

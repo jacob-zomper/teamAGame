@@ -167,8 +167,8 @@ void close() {
 
 // Function that prepares for enemy movement. Put in a separate method to avoid cluttering the main loop
 void moveEnemy(Enemy * en, Kamikaze* kam) {
-	int playerX = player->getPosX() + player->PLAYER_WIDTH/2;
-	int playerY = player->getPosY() + player->PLAYER_HEIGHT/2;
+	int playerX = player->getPosX() + player->getWidth()/2;
+	int playerY = player->getPosY() + player->getHeight()/2;
 	std::vector<int> bulletX;
 	std::vector<int> bulletY;
 	std::vector<int> bulletVelX;
