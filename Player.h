@@ -19,6 +19,14 @@ public:
     static const int PLAYER_HURT_WIDTH = 100;
     static const int PLAYER_HURT_HEIGHT = 28;
 
+	//smaller width,height, hurtwidth, and hurt height for powerup
+	static const int S_PLAYER_WIDTH = 125/1.5;
+    static const int S_PLAYER_HEIGHT = 53/1.5;
+
+    //The dimensions of the player's hurtbox
+    static const int S_PLAYER_HURT_WIDTH = 100/1.5;
+    static const int S_PLAYER_HURT_HEIGHT = 28/1.5;
+
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
 	static const int MAX_SHOOT_HEAT = 100000;
@@ -28,6 +36,7 @@ public:
 	static const int INFINITE_TIME = 4000;
 	static const int INVINCE_TIME = 5000;
 	static const int AUTOFIRE_TIME = 4000;
+	static const int SMALL_TIME = 6000;
 
 	// Animation frequency, the frequency with which the player flickers when hit, and the amount of time the player flickers after being hit
 	static const int ANIMATION_FREQ = 100;
@@ -48,9 +57,11 @@ public:
 	int time_since_inf;
 	int time_since_invincible;
 	int time_since_auto;
+	int time_since_small;
 	bool infiniteShooting;
 	bool invincePower;
 	bool autoFire;
+	bool small;
 
 	// Last time the player was hit, and their current health (out of 100)
 	int time_hit;
@@ -113,6 +124,8 @@ public:
     void setPosY(int y);
 	int getWidth();
 	int getHeight();
+	int getHurtWidth();
+	int getHurtHeight();
 	int getHealth();
 	int getFrontHeat();
 	int getBackHeat();
@@ -120,8 +133,10 @@ public:
 	void setInfiniteVal(bool);
 	void setInvinceVal (bool);
 	void setAutoFire(bool);
+	void setSmall(bool);
 	void resetHeatVals();
 	bool getAutoFire();
+	bool getSmall();
 
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
