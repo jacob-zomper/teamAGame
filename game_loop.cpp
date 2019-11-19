@@ -270,11 +270,11 @@ int readHighScore(int difficutly)
 	}
 }
 
-void check_missile_collisions()
+void check_missile_collisions(double x_scroll)
 {
 	for (int i = 0; i < missiles.size(); i++)
 	{
-		missiles[i]->move();
+		missiles[i]->move(x_scroll);
 
 		bool destroyed = false;
 
@@ -597,7 +597,7 @@ int main() {
 			}
 		}
 
-		check_missile_collisions();
+		check_missile_collisions((double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000);
 
 		// Check collisions between enemy and player
 		if (en->checkCollision(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight())) {
