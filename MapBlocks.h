@@ -267,8 +267,6 @@ public:
     SDL_Texture* autofireSprite;
 
 
-
-
     std::vector<Turret> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
     std::vector<Stalagtite> stalagt_arr;

@@ -494,6 +494,16 @@ int main() {
 				}
 			}
 		}
+		if(player->getAutoFire()){
+			newBullet = player->handleForwardFiring();
+			if (newBullet != nullptr) {
+				bullets.push_back(newBullet);
+			}
+			newBullet = player->handleBackwardFiring();
+			if (newBullet != nullptr) {
+				bullets.push_back(newBullet);
+			}
+		}
 		// If the kamikaze is offscreen, create a new one
 		if (kam->getX() < -kam->getWidth()) {
 			kam->setX(SCREEN_WIDTH+125);
