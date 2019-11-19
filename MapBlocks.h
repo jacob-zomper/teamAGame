@@ -289,7 +289,7 @@ public:
 	void checkCollision(Enemy *e);
     bool checkCollision(Kamikaze *kam);
 	bool checkCollision(Missile* m);
-    bool checkCollision(Bullet *b);
+    int checkCollision(Bullet *b);
 
 	std::vector<Missile*> handleFiring(std::vector<Missile*> missiles, int posX, int posY);
 
