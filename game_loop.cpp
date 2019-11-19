@@ -270,11 +270,11 @@ int readHighScore(int difficutly)
 	}
 }
 
-void check_missile_collisions()
+void check_missile_collisions(double x_scroll)
 {
 	for (int i = 0; i < missiles.size(); i++)
 	{
-		missiles[i]->move();
+		missiles[i]->move(x_scroll);
 
 		bool destroyed = false;
 
@@ -494,6 +494,16 @@ int main() {
 				}
 			}
 		}
+		if(player->getAutoFire()){
+			newBullet = player->handleForwardFiring();
+			if (newBullet != nullptr) {
+				bullets.push_back(newBullet);
+			}
+			newBullet = player->handleBackwardFiring();
+			if (newBullet != nullptr) {
+				bullets.push_back(newBullet);
+			}
+		}
 		// If the kamikaze is offscreen, create a new one
 		if (kam->getX() < -kam->getWidth()) {
 			kam->setX(SCREEN_WIDTH+125);
@@ -559,13 +569,14 @@ int main() {
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
 			bool destroyed = false;
-			if(bullets[i]->getY() > FLOOR_BOTTOM){
+			int bulletHit = blocks->checkCollision(bullets[i]);
+			if(bulletHit == 2) {
 				destroyed = bullets[i]->ricochetFloor(); // rng chance to ricochet or get destroyed
 			}
-			else if(bullets[i]->getY() < ROOF_TOP){
+			else if(bulletHit == 1) {
 				destroyed = bullets[i]->ricochetRoof(); // rng chance to ricochet or get destroyed
 			}
-			else if (blocks->checkCollision(bullets[i])){
+			else if (bulletHit == 3) {
 				destroyed = true;
 			}
 			else if (player->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
@@ -596,7 +607,7 @@ int main() {
 			}
 		}
 
-		check_missile_collisions();
+		check_missile_collisions((double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000);
 
 		// Check collisions between enemy and player
 		if (en->checkCollision(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight())) {
