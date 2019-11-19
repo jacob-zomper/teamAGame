@@ -291,6 +291,10 @@ void check_missile_collisions()
 		{
 			destroyed = true;
 		}
+		else if (cave_system->isEnabled && cave_system->checkCollision(missiles[i]))
+		{
+			destroyed = true;
+		}
 		else
 		{
 			for(int j = i + 1; j < missiles.size();j++){//loop to check for missiles colliding with each other

@@ -355,6 +355,22 @@ bool CaveSystem::checkCollision(Bullet *b){
 	return false;
 }
 
+bool CaveSystem::checkCollision(Missile *m){
+    int i, j;
+    for (i = 0; i < CAVE_SYSTEM_HEIGHT; i++)
+	{
+        for (j = 0; j < CAVE_SYSTEM_WIDTH; j++)
+        {
+            // If there's a collision, cancel the player's move
+            if (cave_system[i][j]->enabled == 1 && (checkCollide(m->getX(), m->getY(), m->getWidth(), m->getHeight(), cave_system[i][j]->CAVE_BLOCK_REL_X, cave_system[i][j]->CAVE_BLOCK_REL_Y, cave_system[i][j]->CAVE_BLOCK_WIDTH, cave_system[i][j]->CAVE_BLOCK_HEIGHT)))
+            {
+                return true;
+            }
+        }
+	}
+	return false;
+}
+
 void CaveSystem::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer)
 {
     if(ceilSprite == nullptr){
