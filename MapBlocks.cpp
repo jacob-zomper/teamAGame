@@ -715,8 +715,8 @@ bool MapBlocks::checkCollision(Missile* m)
     return false;
 }
 
-// Returns true if the bullet hit something (and was therefore destroyed), and false otherwise
-bool MapBlocks::checkCollision(Bullet *b)
+// Returns 0 if the bullet hit nothing, 1 if it hit the ceiling, 2 if it hit the floor, 3 if it hit something else
+int MapBlocks::checkCollision(Bullet *b)
 {
     for (int i = blocks_arr.size() - 1; i >= 0; i--)
     {
@@ -725,7 +725,7 @@ bool MapBlocks::checkCollision(Bullet *b)
         {
 			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
             blocks_arr.erase(blocks_arr.begin() + i);
-            return true;
+            return 3;
         }
     }
     // If there's a collision with a stalagmite or a stalagtite, detroy the bullet. The stalag will be fine; stalags are strong.
@@ -737,7 +737,7 @@ bool MapBlocks::checkCollision(Bullet *b)
             int y = stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2;
             explosion_arr.push_back(Explosion(x, y, 1, gRenderer));
 			stalagm_arr.erase(stalagm_arr.begin() + i);
-            return true;
+            return 3;
         }
 	}
 	for (int i = 0; i < stalagt_arr.size(); i++)
@@ -746,11 +746,24 @@ bool MapBlocks::checkCollision(Bullet *b)
         {
             stalagt_arr[i].beenShot = 1;
             stalagt_arr[i].last_move = SDL_GetTicks();
-            return true;
+            return 3;
+        }
+    }
+	//ceiling and floor
+    for(int i = 0; i < ceiling_arr.size(); i++) {
+        if((checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        {
+            return 1;
+        }
+	}
+	for (int i = 0; i < floor_arr.size(); i++) {
+        if((checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        {
+            return 2;
         }
     }
 	// Otherwise, the bullet didn't collide with anything and will survive
-	return false;
+	return 0;
 }
 
 
