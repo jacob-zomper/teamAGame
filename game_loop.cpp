@@ -582,6 +582,9 @@ int main() {
 				if (en->getHealth() == 0)
 					blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
 			}
+			else if (cave_system->isEnabled && cave_system->checkCollision(bullets[i])) {
+				destroyed = true;
+			}
 			if (destroyed) {
 				bullets[i]->~Bullet();
 				delete bullets[i];
