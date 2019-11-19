@@ -50,6 +50,11 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		
 		prev_direction = 0;
     }
+	
+	Enemy::~Enemy() {
+		SDL_DestroyTexture(sprite1);
+		SDL_DestroyTexture(sprite2);
+	}
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
 			if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {

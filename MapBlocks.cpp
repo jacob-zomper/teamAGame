@@ -64,6 +64,32 @@ HealthBlock::HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRender
 
 }
 
+InfFireBlock::InfFireBlock(){
+    SDL_Renderer *gRenderer= nullptr;
+    HealthBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+}
+InfFireBlock::InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
+    INF_FIRE_HEIGHT=35;
+    INF_FIRE_WIDTH=35;
+    INF_FIRE_ABS_X = rand() % LEVEL_WIDTH;
+    INF_FIRE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
+
+    while ((INF_FIRE_ABS_X - 1280) % cave_freq <= cave_width) {
+        INF_FIRE_ABS_X = rand() % LEVEL_WIDTH;
+    }
+
+    INF_FIRE_REL_X=INF_FIRE_ABS_X;
+    INF_FIRE_REL_Y=INF_FIRE_ABS_Y;
+
+    if(INF_FIRE_ABS_X>(openAir*72) && INF_FIRE_ABS_X+INF_FIRE_WIDTH<(openAir+openAirLength)*72){
+        enabled=false;
+    }else{
+        enabled=true;
+    }
+
+
+}
+
 Stalagmite::Stalagmite()
 {
     SDL_Renderer *gRenderer= nullptr;
@@ -245,18 +271,22 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     healthSprite=loadImage("sprites/health.png", gRenderer);
     mSprite1=loadImage("sprites/missile.png", gRenderer);
     mSprite2=loadImage("sprites/missile2.png", gRenderer);
+    infFireSprite=loadImage("sprites/infFire.png", gRenderer);
 
     if(diff == 3){
         BLOCKS_N = 50;
         HEALTH_N = 20;
+        INF_FIRE_N = 5;
     }
     else if (diff == 2){
         BLOCKS_N = 40;
         HEALTH_N = 30;
+        INF_FIRE_N = 10;
     }
     else{
         BLOCKS_N = 20;
         HEALTH_N = 40;
+        INF_FIRE_N = 15;
     }
 
     int i;
@@ -276,7 +306,12 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
 
     for (i=0; i < HEALTH_N; i++)
     {
-        health_arr.push_back(HealthBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the stalagmites
+        health_arr.push_back(HealthBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the healthblocks
+    }
+
+        for (i=0; i < INF_FIRE_N; i++)
+    {
+        infFire_arr.push_back(InfFireBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the shooting powerup
     }
 
     for (i=0; i < STALAG_N; i++)
@@ -287,6 +322,26 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     {
         stalagt_arr.push_back(Stalagtite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the stalagtites
     }
+}
+
+MapBlocks::~MapBlocks()
+{
+	SDL_DestroyTexture(explosionSprite);
+	SDL_DestroyTexture(dustCloudSprite);
+	SDL_DestroyTexture(topTurretSprite);
+	SDL_DestroyTexture(bottomTurretSprite);
+	SDL_DestroyTexture(stalactiteSprite1);
+	SDL_DestroyTexture(stalactiteSprite2);
+	SDL_DestroyTexture(stalactiteSprite3);
+	SDL_DestroyTexture(stalactiteSprite4);
+	SDL_DestroyTexture(stalagmiteSprite1);
+	SDL_DestroyTexture(stalagmiteSprite2);
+	SDL_DestroyTexture(stalagmiteSprite3);
+	SDL_DestroyTexture(stalagmiteSprite4);
+	SDL_DestroyTexture(healthSprite);
+	SDL_DestroyTexture(mSprite1);
+	SDL_DestroyTexture(mSprite2);
+    SDL_DestroyTexture(infFireSprite);
 }
 
 bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -322,6 +377,11 @@ void MapBlocks::moveBlocks(int camX, int camY)
         health_arr[i].HEALTH_REL_Y = health_arr[i].HEALTH_ABS_Y-camY;
     }
 
+    for (i = 0; i < infFire_arr.size(); i++)
+    {
+        infFire_arr[i].INF_FIRE_REL_X = infFire_arr[i].INF_FIRE_ABS_X - camX;
+        infFire_arr[i].INF_FIRE_REL_Y = infFire_arr[i].INF_FIRE_ABS_Y-camY;
+    }
 
     for (i = 0; i < stalagm_arr.size(); i++)
     {
@@ -427,6 +487,18 @@ void MapBlocks::checkCollision(Player *p)
         {
             p->heal(20);
             health_arr.erase(health_arr.begin() + i);
+        }
+    }
+
+    for (i = infFire_arr.size() - 1; i >= 0; i--)
+    {
+        // If there's a collision, heal the player and delete health powerup
+        if (infFire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT))
+        {
+            //turn off player overheats
+            p->setInfiniteVal(true);
+            p->resetHeatVals();
+            infFire_arr.erase(infFire_arr.begin()+i);
         }
     }
 
@@ -670,6 +742,16 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         {
             SDL_Rect fillRect = {health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT};
             SDL_RenderCopyEx(gRenderer, healthSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+    for (i = 0; i < infFire_arr.size(); i++)
+    {
+        // Only render the shooting powerup if it will be screen
+        if (infFire_arr[i].INF_FIRE_REL_X < SCREEN_WIDTH && infFire_arr[i].INF_FIRE_REL_Y < SCREEN_HEIGHT&& infFire_arr[i].enabled)
+        {
+            SDL_Rect fillRect = {infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, infFireSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
 

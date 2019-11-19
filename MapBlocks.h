@@ -46,6 +46,25 @@ public:
     HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
 
+class InfFireBlock
+{
+public:
+    int INF_FIRE_ABS_Y;
+    int INF_FIRE_ABS_X;
+
+    int INF_FIRE_REL_Y;
+    int INF_FIRE_REL_X;
+
+    int INF_FIRE_HEIGHT;
+    int INF_FIRE_WIDTH;
+
+    bool enabled;
+
+    InfFireBlock();
+    InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
+
 
 class Stalagmite
 {
@@ -175,14 +194,13 @@ class MapBlocks
 {
 
 public:
-    static const int BLOCKS_STARTING_N = 50;
     int BLOCKS_N;
 
-    static const int STALAG_STARTING_N=50;
     int STALAG_N = 30;
 
-    static const int HEALTH_STARTING_N=20;
     int HEALTH_N;
+
+    int INF_FIRE_N;
 
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
@@ -206,6 +224,7 @@ public:
     SDL_Texture* healthSprite;
     SDL_Texture* mSprite1;
     SDL_Texture* mSprite2;
+    SDL_Texture* infFireSprite;
 
 
 
@@ -216,9 +235,11 @@ public:
     std::vector<WallBlock> ceiling_arr;
     std::vector<WallBlock> floor_arr;
     std::vector<HealthBlock> health_arr;
+    std::vector<InfFireBlock> infFire_arr;
 
 
     MapBlocks();
+	~MapBlocks();
 
     MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength, int diff);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);

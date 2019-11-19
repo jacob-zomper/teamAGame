@@ -25,6 +25,7 @@ public:
 	static const int SHOOT_COST = 7000;
 	static const int RECOVERY_RATE = 10;
 	static const int COOLDOWN_TIME = 2000;
+	static const int INFINITE_TIME =4000;
 
 	// Animation frequency, the frequency with which the player flickers when hit, and the amount of time the player flickers after being hit
 	static const int ANIMATION_FREQ = 100;
@@ -33,6 +34,8 @@ public:
 
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
+	int time_since_f_shot;
+	int time_since_b_shot;
 	int last_move;
 	int fshot_heat;
 	int bshot_heat;
@@ -40,6 +43,8 @@ public:
 	int bshot_max_time;
 	bool fshot_maxed;
 	bool bshot_maxed;
+	int time_since_invincible;
+	bool infiniteShooting;
 
 	// Last time the player was hit, and their current health (out of 100)
 	int time_hit;
@@ -58,7 +63,6 @@ public:
 	// Sprites for the player
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
-	SDL_Texture* gBackground;
 	int difficulty;
 
 	// Used to load sprites
@@ -66,6 +70,7 @@ public:
 
     //Initializes the variables
     Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer);
+	~Player();
 
     //Takes key presses and adjusts the player's velocity
     void handleEvent(SDL_Event &e);
@@ -105,6 +110,9 @@ public:
 	int getHealth();
 	int getFrontHeat();
 	int getBackHeat();
+	void setHealthMax();
+	void setInfiniteVal(bool);
+	void resetHeatVals();
 
 	// Methods that can be used to undo the user's moves when dealing with collisions
 	void undoXMove();
