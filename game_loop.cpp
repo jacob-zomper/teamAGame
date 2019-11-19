@@ -501,15 +501,6 @@ int main() {
 			}else{
 				kam->setArrivalTime(500);
 			}
-			// if(difficulty == 3){
-			// 	kam->setArrivalTime(5000);
-			// }
-			// else if(difficulty == 2){
-			// 	kam->setArrivalTime(7000);
-			// }
-			// else{
-			// 	kam->setArrivalTime(10000);
-			// }
 
 		}
 
