@@ -136,6 +136,30 @@ InvincBlock::InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRender
     }
 }
 
+SmallBlock::SmallBlock(){
+    SDL_Renderer *gRenderer= nullptr;
+    SmallBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+}
+SmallBlock::SmallBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
+    SMALL_HEIGHT=35;
+    SMALL_WIDTH=35;
+    SMALL_ABS_X = rand() % LEVEL_WIDTH;
+    SMALL_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
+
+    while ((SMALL_ABS_X - 1280) % cave_freq <= cave_width) {
+        SMALL_ABS_X = rand() % LEVEL_WIDTH;
+    }
+
+    SMALL_REL_X=SMALL_ABS_X;
+    SMALL_REL_Y=SMALL_ABS_Y;
+
+    if(SMALL_ABS_X>(openAir*72) && SMALL_ABS_X+SMALL_WIDTH<(openAir+openAirLength)*72){
+        enabled=false;
+    }else{
+        enabled=true;
+    }
+}
+
 Stalagmite::Stalagmite()
 {
     SDL_Renderer *gRenderer= nullptr;
@@ -320,6 +344,7 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     infFireSprite=loadImage("sprites/infFire.png", gRenderer);
     invinceSprite=loadImage("sprites/invince.png", gRenderer);
     autofireSprite=loadImage("sprites/autofire.png", gRenderer);
+    smallSprite=loadImage("sprites/small.png", gRenderer);
 
 
     if(diff == 3){
@@ -328,22 +353,24 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
         INF_FIRE_N = 5;
         INVINCE_N = 5;
         AUTOFIRE_N=3;
+        SMALL_N = 8;
     }
     else if (diff == 2){
         BLOCKS_N = 40;
         HEALTH_N = 30;
         INF_FIRE_N = 10;
         INVINCE_N = 7;
-        AUTOFIRE_N=5;
-
+        AUTOFIRE_N = 5;
+        SMALL_N = 12;
     }
     else{
         BLOCKS_N = 20;
         HEALTH_N = 40;
         INF_FIRE_N = 15;
         INVINCE_N = 10;
-        AUTOFIRE_N=10;
-				
+        AUTOFIRE_N = 10;
+        SMALL_N = 15;
+
     }
 
     int i;
@@ -381,6 +408,11 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
         autofire_arr.push_back(AutoFireBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the shooting powerup
     }
 
+    for (i=0; i < SMALL_N; i++)
+    {
+        small_arr.push_back(SmallBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the small powerup
+    }
+
     for (i=0; i < STALAG_N; i++)
     {
         stalagm_arr.push_back(Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the stalagmites
@@ -411,6 +443,7 @@ MapBlocks::~MapBlocks()
     SDL_DestroyTexture(infFireSprite);
     SDL_DestroyTexture(invinceSprite);
     SDL_DestroyTexture(autofireSprite);
+    SDL_DestroyTexture(smallSprite);
 }
 
 bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -461,6 +494,12 @@ void MapBlocks::moveBlocks(int camX, int camY)
     {
         autofire_arr[i].AUTOFIRE_REL_X = autofire_arr[i].AUTOFIRE_ABS_X - camX;
         autofire_arr[i].AUTOFIRE_REL_Y = autofire_arr[i].AUTOFIRE_ABS_Y-camY;
+    }
+
+    for (i = 0; i < small_arr.size(); i++)
+    {
+        small_arr[i].SMALL_REL_X = small_arr[i].SMALL_ABS_X - camX;
+        small_arr[i].SMALL_REL_Y = small_arr[i].SMALL_ABS_Y-camY;
     }
 
     for (i = 0; i < stalagm_arr.size(); i++)
@@ -552,7 +591,7 @@ void MapBlocks::checkCollision(Player *p)
     for (i = blocks_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, damage the player and blow up the turret
-		if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+		if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
@@ -563,7 +602,7 @@ void MapBlocks::checkCollision(Player *p)
     for (i = health_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, heal the player and delete health powerup
-        if (health_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT))
+        if (health_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT))
         {
             p->heal(20);
             health_arr.erase(health_arr.begin() + i);
@@ -572,7 +611,7 @@ void MapBlocks::checkCollision(Player *p)
 
     for (i = infFire_arr.size() - 1; i >= 0; i--)
     {
-        if (infFire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT))
+        if (infFire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT))
         {
             //turn off player overheats
             p->setInfiniteVal(true);
@@ -583,27 +622,35 @@ void MapBlocks::checkCollision(Player *p)
 
     for (i = invince_arr.size() - 1; i >= 0; i--)
     {
-        if (invince_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT))
+        if (invince_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT))
         {
             p->setInvinceVal(true);
             invince_arr.erase(invince_arr.begin()+i);
         }
     }
+
     for (i = autofire_arr.size() - 1; i >= 0; i--)
     {
-        if (autofire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT))
+        if (autofire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT))
         {
             p->setAutoFire(true);
             autofire_arr.erase(autofire_arr.begin()+i);
         }
     }
 
-
+    for (i = small_arr.size() - 1; i >= 0; i--)
+    {
+        if (small_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), small_arr[i].SMALL_REL_X, small_arr[i].SMALL_REL_Y, small_arr[i].SMALL_WIDTH, small_arr[i].SMALL_HEIGHT))
+        {
+            p->setSmall(true);
+            small_arr.erase(small_arr.begin()+i);
+        }
+    }
 
     for (i = stalagm_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, damage the player and blow up the stalagmite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X + stalagm_arr[i].STALAG_WIDTH / 4, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].hitboxWidth, stalagm_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), stalagm_arr[i].STALAG_REL_X + stalagm_arr[i].STALAG_WIDTH / 4, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].hitboxWidth, stalagm_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
@@ -614,7 +661,7 @@ void MapBlocks::checkCollision(Player *p)
 	for (i = stalagt_arr.size() - 1; i >= 0; i--)
 	{
 		// If there's a collision, damage the player and blow up the stalactite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X + stalagt_arr[i].STALAG_WIDTH / 4, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].hitboxWidth, stalagt_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), stalagt_arr[i].STALAG_REL_X + stalagt_arr[i].STALAG_WIDTH / 4, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].hitboxWidth, stalagt_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
@@ -623,14 +670,14 @@ void MapBlocks::checkCollision(Player *p)
     }
     //ceiling and floor
     for(i = 0; i < ceiling_arr.size(); i++){
-        if((checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        if((checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
             p->undoXMove();
             p->undoYMove();
 
-            if(checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT,ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side))
+            if(checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(),ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side))
             {
-                p->setPosX(std::max(ceiling_arr[i].CEILING_REL_X - p->PLAYER_WIDTH, 0));
+                p->setPosX(std::max(ceiling_arr[i].CEILING_REL_X - p->getWidth(), 0));
                 p->redoYMove();
             }
 
@@ -638,14 +685,14 @@ void MapBlocks::checkCollision(Player *p)
 	}
 	for (i = 0; i < floor_arr.size(); i++) {
 
-        if((checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        if((checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
             p->undoXMove();
             p->undoYMove();
 
-            if(checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT,floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side))
+            if(checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(),floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side))
             {
-                p->setPosX(std::max(floor_arr[i].FLOOR_REL_X - p->PLAYER_WIDTH, 0));
+                p->setPosX(std::max(floor_arr[i].FLOOR_REL_X - p->getWidth(), 0));
                 p->redoYMove();
             }
 
@@ -857,13 +904,23 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         }
     }
 
-     for (i = 0; i < autofire_arr.size(); i++)
+    for (i = 0; i < autofire_arr.size(); i++)
     {
         // Only render the invince powerup if it will be screen
         if (autofire_arr[i].AUTOFIRE_REL_X < SCREEN_WIDTH && autofire_arr[i].AUTOFIRE_REL_Y < SCREEN_HEIGHT&& autofire_arr[i].enabled)
         {
             SDL_Rect fillRect = {autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT};
             SDL_RenderCopyEx(gRenderer, autofireSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+    for (i = 0; i < small_arr.size(); i++)
+    {
+        // Only render the invince powerup if it will be screen
+        if (small_arr[i].SMALL_REL_X < SCREEN_WIDTH && small_arr[i].SMALL_REL_Y < SCREEN_HEIGHT&& small_arr[i].enabled)
+        {
+            SDL_Rect fillRect = {small_arr[i].SMALL_REL_X, small_arr[i].SMALL_REL_Y, small_arr[i].SMALL_WIDTH, small_arr[i].SMALL_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, smallSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
 
