@@ -263,7 +263,7 @@ Missile * Turret::handleFiring(int posX, int posY) {
 		}
 		else {
             int missType = rand()%5;//1 in 5 chance of missile being red
-	        SDL_Texture* missSprite; 
+	        SDL_Texture* missSprite;
             if(missType < 4){
 		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
 	        }

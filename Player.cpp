@@ -166,7 +166,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         }
         else{
             fshot_heat -= (SHOOT_COST / 10);
-        }     	
+        }
 	}
 	if (!fshot_maxed) {
 		fshot_heat -= time_since_move * RECOVERY_RATE;
@@ -179,13 +179,13 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         }
         else{
             bshot_heat -= (SHOOT_COST / 10);
-        }  
+        }
 	}
 	if (!bshot_maxed) {
 		bshot_heat -= time_since_move * RECOVERY_RATE;
 		if (bshot_heat < 0) bshot_heat = 0;
 	}
-	
+
     x_pos += (double) (x_vel * time_since_move) / 1000;
     y_pos += (double) (y_vel * time_since_move) / 1000;
     bg_X += (double) (time_since_move) / 10;
@@ -209,12 +209,12 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         camY += (double) (y_vel * time_since_move) / 1000;
     }
     */
-    // Stop the player if they hit the top of the level  
+    // Stop the player if they hit the top of the level
     else if (y_pos < 0)
     {
         y_pos = 0;
     }
-    
+
 	/*
     // If they are near the bottom of the screen, scroll down
     else if (y_pos > (9 * SCREEN_HEIGHT) / 10 - PLAYER_HEIGHT && camY < LEVEL_HEIGHT - SCREEN_HEIGHT)
@@ -227,7 +227,7 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     {
         y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
     }
-    
+
 
     if (camY < 0)
     {
@@ -247,7 +247,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
 		return;
 	}
-    
+
     SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
 	// Alternates through the two sprites every ANIMATION_FREQ ticks
     if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
@@ -294,7 +294,7 @@ void Player::setInfiniteVal(bool val){
 void Player::setInvinceVal(bool val){
     invincePower=val;
     time_since_invincible=SDL_GetTicks();
-} 
+}
 
 void Player::setAutoFire(bool val){
     autoFire=val;
@@ -334,7 +334,7 @@ Bullet* Player::handleForwardFiring()
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
         std::cout << "Firing new bullet"<< std::endl;
 		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
-        if(!infiniteShooting || !autoFire){   
+        if(!infiniteShooting || !autoFire){
     		fshot_heat += SHOOT_COST;
     		if (fshot_heat > MAX_SHOOT_HEAT) {
     			fshot_maxed = true;
@@ -365,6 +365,7 @@ Bullet* Player::handleBackwardFiring()
 	}
 	return nullptr;
 }
+
 
 //Position and velocity accessors
 int Player::getPosX() { return x_pos; };
