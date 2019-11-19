@@ -47,10 +47,10 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		else{
 			health = 10;
 		}
-		
+
 		prev_direction = 0;
     }
-	
+
 	Enemy::~Enemy() {
 		SDL_DestroyTexture(sprite1);
 		SDL_DestroyTexture(sprite2);
@@ -243,7 +243,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 				}
 			}
 		}
-		
+
 		// Factor stalactites, stalagmites, and turrets into the risk score
 		// Basically, any block where there is/soon will be a stalactite or turret is dangerous
 		int firstX;
