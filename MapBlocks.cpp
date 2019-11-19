@@ -88,6 +88,30 @@ InfFireBlock::InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRend
     }
 }
 
+AutoFireBlock::AutoFireBlock(){
+    SDL_Renderer *gRenderer= nullptr;
+    AutoFireBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+}
+AutoFireBlock::AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
+    AUTOFIRE_HEIGHT=35;
+    AUTOFIRE_WIDTH=35;
+    AUTOFIRE_ABS_X = rand() % LEVEL_WIDTH;
+    AUTOFIRE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
+
+    while ((AUTOFIRE_ABS_X - 1280) % cave_freq <= cave_width) {
+        AUTOFIRE_ABS_X = rand() % LEVEL_WIDTH;
+    }
+
+    AUTOFIRE_REL_X=AUTOFIRE_ABS_X;
+    AUTOFIRE_REL_Y=AUTOFIRE_ABS_Y;
+
+    if(AUTOFIRE_ABS_X>(openAir*72) && AUTOFIRE_ABS_X+AUTOFIRE_WIDTH<(openAir+openAirLength)*72){
+        enabled=false;
+    }else{
+        enabled=true;
+    }
+}
+
 InvincBlock::InvincBlock(){
     SDL_Renderer *gRenderer= nullptr;
     InvincBlock(1,1,gRenderer, 5500, 2000, 0, 0);
@@ -295,24 +319,31 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     mSprite2=loadImage("sprites/missile2.png", gRenderer);
     infFireSprite=loadImage("sprites/infFire.png", gRenderer);
     invinceSprite=loadImage("sprites/invince.png", gRenderer);
+    autofireSprite=loadImage("sprites/autofire.png", gRenderer);
+
 
     if(diff == 3){
         BLOCKS_N = 50;
         HEALTH_N = 20;
         INF_FIRE_N = 5;
         INVINCE_N = 5;
+        AUTOFIRE_N=3;
     }
     else if (diff == 2){
         BLOCKS_N = 40;
         HEALTH_N = 30;
         INF_FIRE_N = 10;
         INVINCE_N = 7;
+        AUTOFIRE_N=5;
+
     }
     else{
         BLOCKS_N = 20;
         HEALTH_N = 40;
         INF_FIRE_N = 15;
         INVINCE_N = 10;
+        AUTOFIRE_N=10;
+
     }
 
     int i;
@@ -345,6 +376,11 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
         invince_arr.push_back(InvincBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the invincibility
     }
 
+    for (i=0; i < AUTOFIRE_N; i++)
+    {
+        autofire_arr.push_back(AutoFireBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the shooting powerup
+    }
+
     for (i=0; i < STALAG_N; i++)
     {
         stalagm_arr.push_back(Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the stalagmites
@@ -374,6 +410,7 @@ MapBlocks::~MapBlocks()
 	SDL_DestroyTexture(mSprite2);
     SDL_DestroyTexture(infFireSprite);
     SDL_DestroyTexture(invinceSprite);
+    SDL_DestroyTexture(autofireSprite);
 }
 
 bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -419,6 +456,11 @@ void MapBlocks::moveBlocks(int camX, int camY)
     {
         invince_arr[i].INVINCE_REL_X = invince_arr[i].INVINCE_ABS_X - camX;
         invince_arr[i].INVINCE_REL_Y = invince_arr[i].INVINCE_ABS_Y-camY;
+    }
+    for (i = 0; i < autofire_arr.size(); i++)
+    {
+        autofire_arr[i].AUTOFIRE_REL_X = autofire_arr[i].AUTOFIRE_ABS_X - camX;
+        autofire_arr[i].AUTOFIRE_REL_Y = autofire_arr[i].AUTOFIRE_ABS_Y-camY;
     }
 
     for (i = 0; i < stalagm_arr.size(); i++)
@@ -539,7 +581,7 @@ void MapBlocks::checkCollision(Player *p)
         }
     }
 
-     for (i = invince_arr.size() - 1; i >= 0; i--)
+    for (i = invince_arr.size() - 1; i >= 0; i--)
     {
         if (invince_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT))
         {
@@ -547,6 +589,15 @@ void MapBlocks::checkCollision(Player *p)
             invince_arr.erase(invince_arr.begin()+i);
         }
     }
+    for (i = autofire_arr.size() - 1; i >= 0; i--)
+    {
+        if (autofire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT))
+        {
+            p->setAutoFire(true);
+            autofire_arr.erase(autofire_arr.begin()+i);
+        }
+    }
+
 
 
     for (i = stalagm_arr.size() - 1; i >= 0; i--)
@@ -808,6 +859,16 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         {
             SDL_Rect fillRect = {invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT};
             SDL_RenderCopyEx(gRenderer, invinceSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+     for (i = 0; i < autofire_arr.size(); i++)
+    {
+        // Only render the invince powerup if it will be screen
+        if (autofire_arr[i].AUTOFIRE_REL_X < SCREEN_WIDTH && autofire_arr[i].AUTOFIRE_REL_Y < SCREEN_HEIGHT&& autofire_arr[i].enabled)
+        {
+            SDL_Rect fillRect = {autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, autofireSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
 
