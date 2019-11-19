@@ -16,7 +16,7 @@ class Missile
 
         void renderMissile(SDL_Renderer* gRenderer);
 
-        void move();
+        void move(double x_scroll);
 
         // Calculates how far the entity is to this missile
 		double calculate_distance(double entity_x, double entity_y);
