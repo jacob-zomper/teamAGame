@@ -28,7 +28,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
+    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
 	  	enemy_sprite = {(int) xPos, (int) yPos, width, height};
 		enemy_hitbox = enemy_sprite;
 		sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
@@ -38,9 +38,23 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		time_hit = SDL_GetTicks() - FLICKER_TIME;
 		last_shot = SDL_GetTicks() - FIRING_FREQ;
 		is_destroyed = false;
-		health = 20;
+		if(diff == 3){
+			health = 20;
+		}
+		else if(diff == 2){
+			health = 15;
+		}
+		else{
+			health = 10;
+		}
+
 		prev_direction = 0;
     }
+
+	Enemy::~Enemy() {
+		SDL_DestroyTexture(sprite1);
+		SDL_DestroyTexture(sprite2);
+	}
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
 			if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
@@ -229,7 +243,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 				}
 			}
 		}
-		
+
 		// Factor stalactites, stalagmites, and turrets into the risk score
 		// Basically, any block where there is/soon will be a stalactite or turret is dangerous
 		int firstX;

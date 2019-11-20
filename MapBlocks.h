@@ -46,6 +46,77 @@ public:
     HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
 
+class InfFireBlock
+{
+public:
+    int INF_FIRE_ABS_Y;
+    int INF_FIRE_ABS_X;
+
+    int INF_FIRE_REL_Y;
+    int INF_FIRE_REL_X;
+
+    int INF_FIRE_HEIGHT;
+    int INF_FIRE_WIDTH;
+
+    bool enabled;
+
+    InfFireBlock();
+    InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+class AutoFireBlock
+{
+public:
+    int AUTOFIRE_ABS_Y;
+    int AUTOFIRE_ABS_X;
+
+    int AUTOFIRE_REL_Y;
+    int AUTOFIRE_REL_X;
+
+    int AUTOFIRE_HEIGHT;
+    int AUTOFIRE_WIDTH;
+
+    bool enabled;
+
+    AutoFireBlock();
+    AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
+class InvincBlock
+{
+public:
+    int INVINCE_ABS_Y;
+    int INVINCE_ABS_X;
+
+    int INVINCE_REL_Y;
+    int INVINCE_REL_X;
+
+    int INVINCE_HEIGHT;
+    int INVINCE_WIDTH;
+
+    bool enabled;
+
+    InvincBlock();
+    InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
+class SmallBlock
+{
+public:
+    int SMALL_ABS_Y;
+    int SMALL_ABS_X;
+
+    int SMALL_REL_Y;
+    int SMALL_REL_X;
+
+    int SMALL_HEIGHT;
+    int SMALL_WIDTH;
+
+    bool enabled;
+
+    SmallBlock();
+    SmallBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
 
 class Stalagmite
 {
@@ -121,7 +192,7 @@ public:
     SDL_Renderer* gRenderer;
 
     Turret();
-    Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+    Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength, SDL_Texture* missileSprite1, SDL_Texture* missileSprite2);
 
 	int getRelX();
 	int getRelY();
@@ -132,6 +203,8 @@ public:
     SDL_Rect FB_sprite;
     //defines the hitbox of the turret
     SDL_Rect FB_hitbox;
+    SDL_Texture* missileSprite1;
+    SDL_Texture* missileSprite2;
 
 	Missile* handleFiring(int posX, int posY);
 };
@@ -173,14 +246,19 @@ class MapBlocks
 {
 
 public:
-    static const int BLOCKS_STARTING_N = 50;
-    int BLOCKS_N = 50;
+    int BLOCKS_N;
 
-    static const int STALAG_STARTING_N=50;
     int STALAG_N = 30;
 
-    static const int HEALTH_STARTING_N=20;
-    int HEALTH_N = 20;
+    int HEALTH_N;
+
+    int INF_FIRE_N;
+
+    int INVINCE_N;
+
+    int AUTOFIRE_N;
+
+    int SMALL_N;
 
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
@@ -202,7 +280,12 @@ public:
 	SDL_Texture* stalagmiteSprite3;
 	SDL_Texture* stalagmiteSprite4;
     SDL_Texture* healthSprite;
-
+    SDL_Texture* mSprite1;
+    SDL_Texture* mSprite2;
+    SDL_Texture* infFireSprite;
+    SDL_Texture* invinceSprite;
+    SDL_Texture* autofireSprite;
+    SDL_Texture* smallSprite;
 
 
     std::vector<Turret> blocks_arr;
@@ -212,18 +295,24 @@ public:
     std::vector<WallBlock> ceiling_arr;
     std::vector<WallBlock> floor_arr;
     std::vector<HealthBlock> health_arr;
-
+    std::vector<InfFireBlock> infFire_arr;
+    std::vector<InvincBlock> invince_arr;
+    std::vector<AutoFireBlock> autofire_arr;
+    std::vector<SmallBlock> small_arr;
 
     MapBlocks();
+	~MapBlocks();
 
-    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength);
+    MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int cave_freq, int cave_width, int openAir, int openAirLength, int diff);
     bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
 
     void moveBlocks(int camX, int camY);
 	void checkCollision(Player *p);
 	void checkCollision(Enemy *e);
-  bool checkCollision(Kamikaze *kam);
-	bool checkCollision(Bullet *b);
+    bool checkCollision(Kamikaze *kam);
+	bool checkCollision(Missile* m);
+    int checkCollision(Bullet *b);
+
 	std::vector<Missile*> handleFiring(std::vector<Missile*> missiles, int posX, int posY);
 
 	std::vector<Stalagmite> getStalagmites();

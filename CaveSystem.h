@@ -6,6 +6,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include "Player.h"
+#include "Enemy.h"
+#include "missile.h"
 
 class CaveBlock
 {
@@ -19,6 +21,7 @@ public:
     int CAVE_BLOCK_REL_Y;
 
     int enabled; // Is the cave block going to be visible? 1 = yes, 0 = no
+    int isPointy; //Pointy blocks only deal quarty damage to player and enemy
 
     static const int CAVE_BLOCK_HEIGHT = 20;
     static const int CAVE_BLOCK_WIDTH = 20;
@@ -55,12 +58,15 @@ public:
     CaveBlock *cave_system[CAVE_SYSTEM_HEIGHT][CAVE_SYSTEM_WIDTH];
 
     CaveSystem();
-    CaveSystem(int camX, int camY, int SCREEN_WIDTH);
+    CaveSystem(int camX, int camY, int SCREEN_WIDTH, int difficulty);
     ~CaveSystem();
 
     void render(SDL_Renderer *gRenderer);
     void moveCaveBlocks(int camX, int camY);
     void checkCollision(Player *p);
+    void checkCollision(Enemy *e);
+	bool checkCollision(Bullet *b);
+	bool checkCollision(Missile *m);
     void render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer *gRenderer);
     PathSequence* getPathSequence();
 	int getStartX();
@@ -68,6 +74,7 @@ public:
 
     SDL_Texture* ceilSprite;
     SDL_Texture* floorSprite;
+    int diff;
 private:
     void generateRandomCave();
 };
