@@ -586,7 +586,7 @@ bool MapBlocks::checkCollision(Kamikaze *kam){
 
 void MapBlocks::checkCollision(Player *p)
 {
-
+    if(p->health <= 0) return;
 	int i;
     for (i = blocks_arr.size() - 1; i >= 0; i--)
     {
