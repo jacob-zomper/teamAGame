@@ -586,7 +586,7 @@ bool MapBlocks::checkCollision(Kamikaze *kam){
 
 void MapBlocks::checkCollision(Player *p)
 {
-
+    if(p->health <= 0) return;
 	int i;
     for (i = blocks_arr.size() - 1; i >= 0; i--)
     {
@@ -852,24 +852,6 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 			}
         }
     }
-
-    // Render floor
-    // for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
-    // {
-    //     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-    //     SDL_Rect border1 = { i, SCREEN_HEIGHT - WallBlock::block_side - WallBlock::border, WallBlock::block_side, WallBlock::block_side - WallBlock::border};
-    //     SDL_RenderFillRect(gRenderer, &border1);
-
-    //    // SDL_Rect border2 = {i, 0, WallBlock::block_side, WallBlock::block_side + WallBlock::border};
-    //    // SDL_RenderFillRect(gRenderer, &border2);
-
-    //     SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
-    //     SDL_Rect fillRectWall1 = { i, SCREEN_HEIGHT - WallBlock::block_side, WallBlock::block_side, WallBlock::block_side };
-    //     SDL_RenderFillRect(gRenderer, &fillRectWall1);
-
-    //    // SDL_Rect fillRectWall2 = {i, 0, WallBlock::block_side, WallBlock::block_side};
-    //    // SDL_RenderFillRect(gRenderer, &fillRectWall);
-    // }
 
     //Render Ceiling and floor
     for(i = 0; i < ceiling_arr.size(); i++)
