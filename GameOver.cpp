@@ -6,7 +6,10 @@
 #include "CaveSystem.h"
 #include "DifficultySelectionScreen.h"
 
-GameOver::GameOver(){};
+GameOver::GameOver(SDL_Texture *cred, SDL_Texture *rest){
+    btn_restart = rest;
+    btn_credits = cred;
+};
 
 void GameOver::stopGame(Player *player, MapBlocks *map_blocks)
 {
@@ -15,7 +18,7 @@ void GameOver::stopGame(Player *player, MapBlocks *map_blocks)
     map_blocks->BLOCKS_N = 0;
 }
 
-int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer)
+int GameOver::handleEvent(SDL_Event &e, SDL_Renderer *gRenderer)
 {
 
     //If mouse event happened
@@ -34,7 +37,7 @@ int GameOver::handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, S
         else if (y > RESTART_BUTTON_Y + RESTART_BUTTON_HEIGHT){ inside_restart_button = false; }
 
         if (inside_restart_button && e.type == SDL_MOUSEBUTTONUP){
-            restart(player, map_blocks, gRenderer);
+            restart(gRenderer);
             return 0;
         }
 
@@ -63,21 +66,19 @@ void GameOver::render(SDL_Renderer *gRenderer)
     // SDL_RenderFillRect(gRenderer, &fillRectButton);
 
     SDL_Texture *restart_button_texture = nullptr;
-    SDL_Surface *restart_button_image_surface = IMG_Load("sprites/restart_button.png");
-    restart_button_texture = SDL_CreateTextureFromSurface(gRenderer, restart_button_image_surface);
-    SDL_FreeSurface(restart_button_image_surface);
+    
+    restart_button_texture = btn_restart;
     SDL_RenderCopyEx(gRenderer, restart_button_texture, nullptr, &fillRectRestartButton, 0.0, nullptr, SDL_FLIP_NONE);
 
     SDL_Rect fillRectCredButton = {CRED_BUTTON_X, CRED_BUTTON_Y, CRED_BUTTON_WIDTH, CRED_BUTTON_HEIGHT};
 
     SDL_Texture *cred_button_texture = nullptr;
-    SDL_Surface *cred_button_image_surface = IMG_Load("sprites/cred_button.png");
-    cred_button_texture = SDL_CreateTextureFromSurface(gRenderer, cred_button_image_surface);
-    SDL_FreeSurface(cred_button_image_surface);
+   
+    cred_button_texture = btn_credits;
     SDL_RenderCopyEx(gRenderer, cred_button_texture, nullptr, &fillRectCredButton, 0.0, nullptr, SDL_FLIP_NONE);
 }
 
-void GameOver::restart(Player *player, MapBlocks *map_blocks, SDL_Renderer* gRenderer)
+void GameOver::restart(SDL_Renderer* gRenderer)
 {
     DifficultySelectionScreen *diff_sel_screen;
 
@@ -104,7 +105,7 @@ void GameOver::restart(Player *player, MapBlocks *map_blocks, SDL_Renderer* gRen
 
     diff_sel_screen = new DifficultySelectionScreen(back_tex, e_tex, m_tex, h_tex);
     SDL_Event e;
-    int diff = 0;
+    diff = 0;
     while(diff == 0){
 		while(SDL_PollEvent(&e)) {
 			if(e.type==SDL_QUIT){
@@ -115,10 +116,7 @@ void GameOver::restart(Player *player, MapBlocks *map_blocks, SDL_Renderer* gRen
 		diff_sel_screen->render(gRenderer);
 		SDL_RenderPresent(gRenderer);
 	}
-    map_blocks->BLOCKS_N = map_blocks->BLOCKS_STARTING_N;
-    map_blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT,gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, 0,0, diff);
     isGameOver = false;
-    player->hit(-1*(100-player->getHealth())); // reset hp to 100
 }
 
 void GameOver::displayCredits(SDL_Renderer* gRenderer){

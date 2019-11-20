@@ -138,9 +138,9 @@ int main() {
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
 		// Move the enemy
-		
+
 		en->move(player->getPosX(), player->getPosY());
-		
+
 
 		//shoot one bullet
 		if(shootOnce)
@@ -151,7 +151,7 @@ int main() {
 		}
 		if(!bullets.empty())
 		{
-			moveBullets(gRenderer,&bullets);	
+			moveBullets(gRenderer,&bullets);
 		}
 
 		kam->move(player->getPosX(), player->getPosY(), SCREEN_WIDTH);
@@ -163,8 +163,8 @@ int main() {
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
-		
-		
+
+
 		// Draw the player
 		player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		en->renderEnemy(gRenderer);
@@ -174,7 +174,7 @@ int main() {
 		if(!bullets.empty()){
 			renderBullets(gRenderer,&bullets);
 		}
-		
+
 
 
 		SDL_RenderPresent(gRenderer);

@@ -15,7 +15,11 @@ public:
     static const int RESTART_BUTTON_HEIGHT = 50;
     static const int RESTART_BUTTON_X = (int)(1280/2) - 100;
     static const int RESTART_BUTTON_Y = (int)(720/1.5) - 25;
-    GameOver();
+    GameOver(SDL_Texture *cred, SDL_Texture *rest);
+
+    SDL_Texture* btn_restart;
+    SDL_Texture* btn_credits;
+	int diff;
 
     static const int CRED_BUTTON_WIDTH = 200;
     static const int CRED_BUTTON_HEIGHT = 50;
@@ -23,10 +27,10 @@ public:
     static const int CRED_BUTTON_Y = (int)(720/1.5) + 50;
 
     void stopGame(Player*, MapBlocks*);
-    int handleEvent(SDL_Event &e, Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer);
+    int handleEvent(SDL_Event &e, SDL_Renderer *gRenderer);
     void render(SDL_Renderer *gRenderer);
 private:
-    void restart(Player *player, MapBlocks *map_blocks, SDL_Renderer *gRenderer);
+    void restart(SDL_Renderer *gRenderer);
     void displayCredits(SDL_Renderer* gRenderer);
     int LEVEL_WIDTH = 100000;
     int LEVEL_HEIGHT = 2000;
