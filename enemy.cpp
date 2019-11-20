@@ -71,6 +71,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			}
 
 			if ((SDL_GetTicks() - time_destroyed) >= SPAWN_FREQ && is_destroyed){
+				xPos = -width;
 				health = 20;
 				is_destroyed = false;
 			}
@@ -78,10 +79,15 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 
     void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom, int kamiX, int kamiY, int cave_y)
     {
-		// If there is no cave, use the risk scores
-		if (cave_y == -1)
+		time_since_move = SDL_GetTicks() - last_move;
+		// If the enemy is offscreen, have them move right
+		if (xPos <= MIN_X)
 		{
-			time_since_move = SDL_GetTicks() - last_move;
+			xPos += (double) (maxXVelo * time_since_move) / 1000;
+		}
+		// If there is no cave, use the risk scores
+		else if (cave_y == -1)
+		{
 			xVelo = 0;
 			yVelo = 0;
 
