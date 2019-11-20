@@ -81,7 +81,6 @@ void Player::handleEvent(SDL_Event &e)
             break;
 
         case SDLK_d:
-            x_vel += MAX_PLAYER_VEL;
             xp_decel = true;
             break;
         }
