@@ -27,7 +27,7 @@ SDL_Texture* Kamikaze::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 Kamikaze::Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer* gRenderer, int diff) :xPos{(double) x}, yPos{(double) y}, width{w}, height{h}, diff{diff} {
     arrival_time = SDL_GetTicks() + delay;
     last_move = SDL_GetTicks();
-    initializeSprites(diff, gRenderer);
+    initializeSprites(gRenderer);
     tiltAngle = 0;
 }
 

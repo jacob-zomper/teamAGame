@@ -53,7 +53,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		SDL_DestroyTexture(sprite2);
 	}
 
-	void Enemy::initializeSprites(int diff, SDL_Renderer *gRenderer)
+	void Enemy::initializeSprites(SDL_Renderer *gRenderer)
 	{
 		if (diff == 1)
 		{
