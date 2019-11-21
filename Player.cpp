@@ -285,9 +285,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         {
             x_pos = 0;
         }
-        else if (x_pos > SCREEN_WIDTH - player_width)
+        else if (x_pos > SCREEN_WIDTH - getWidth())
         {
-           x_pos = SCREEN_WIDTH - player_width;
+           x_pos = SCREEN_WIDTH - getWidth();
         }
         // Stop the player if they hit the top of the level
         else if (y_pos < 0)
@@ -305,9 +305,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         {
             x_pos = 0;
         }
-        else if (x_pos > SCREEN_WIDTH - player_width)
+        else if (x_pos > SCREEN_WIDTH - getWidth())
         {
-           x_pos = SCREEN_WIDTH - player_width;
+           x_pos = SCREEN_WIDTH - getWidth();
         }
         // Stop the player if they hit the top of the level
         else if (y_pos < 0)
@@ -341,7 +341,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 		return;
 	}
     if(small == false){
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, player_width, player_height};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), player_height};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -351,7 +351,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	    }
     }
     else{
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, player_width, player_height};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), player_height};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -456,10 +456,10 @@ Bullet* Player::handleForwardFiring()
         std::cout << "Firing new bullet"<< std::endl;
         Bullet* b;
         if(small == false){
-            b = new Bullet(x_pos+player_width+5 -fabs(player_width/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
         }
         else{
-            b = new Bullet(x_pos+player_width+5 -fabs(player_width/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
         }
         if(!infiniteShooting){
     		fshot_heat += SHOOT_COST;
@@ -481,10 +481,10 @@ Bullet* Player::handleBackwardFiring()
 	if (!bshot_maxed && (SDL_GetTicks() - time_since_b_shot) >=100) {
         Bullet* b;
 		if(small == false){
-            b = new Bullet(x_pos-10 +fabs(player_width/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos-10 +fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
         }
         else{
-            b = new Bullet(x_pos-10 +fabs(player_width/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos-10 +fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
         }
 		if(!infiniteShooting){
             bshot_heat += SHOOT_COST;
