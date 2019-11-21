@@ -119,9 +119,9 @@ void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
 
     if(xPos < SCREEN_WIDTH){
       if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1)
-        SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_HORIZONTAL);
       else
-        SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_HORIZONTAL);
       kam_hitbox=kam_sprite;
     }
 }
