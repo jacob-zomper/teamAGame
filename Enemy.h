@@ -61,9 +61,9 @@ class Enemy
 		// Animation and shooting frequencies of the enemy
 		static const int ANIMATION_FREQ = 100;
 		static const int FIRING_FREQ = 1000;
-    static const int FLICKER_FREQ = 50;
-    static const int FLICKER_TIME = 500;
-    static const int SPAWN_FREQ = 3000;
+	    static const int FLICKER_FREQ = 50;
+	    static const int FLICKER_TIME = 500;
+	    static const int SPAWN_FREQ = 3000;
 
 		// Limits on where the enemy can go
 		static const int MIN_X = 0;
