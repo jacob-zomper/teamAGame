@@ -16,10 +16,6 @@ public:
     static const int PLAYER_HURT_WIDTH = 100;
     static const int PLAYER_HURT_HEIGHT = 28;
 
-	//smaller width,height, hurtwidth, and hurt height for powerup
-	static const int S_PLAYER_WIDTH = 125/1.5;
-    static const int S_PLAYER_HEIGHT = 53/1.5;
-
     //The dimensions of the player's hurtbox
     static const int S_PLAYER_HURT_WIDTH = 100/1.5;
     static const int S_PLAYER_HURT_HEIGHT = 28/1.5;
