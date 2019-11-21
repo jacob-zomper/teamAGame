@@ -25,8 +25,6 @@ SDL_Texture* Kamikaze::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 }
 
 Kamikaze::Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer* gRenderer, int diff) :xPos{(double) x}, yPos{(double) y}, width{w}, height{h}{
-    kam_sprite = {(int) xPos, (int) yPos, width, height};
-    kam_hitbox = kam_sprite;
     arrival_time = SDL_GetTicks() + delay;
     last_move = SDL_GetTicks();
     initializeSprites(diff, gRenderer);
@@ -112,6 +110,9 @@ void Kamikaze::initializeSprites(int diff, SDL_Renderer* gRenderer)
             break;
         }     
       }
+
+      kam_sprite = {(int) xPos, (int) yPos, width, height};
+      kam_hitbox = kam_sprite;
 }
 
 void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
