@@ -19,6 +19,7 @@ class Enemy
         //Initializes the variables, Constructor
         Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer);
 		~Enemy();
+		void initializeSprites(int diff);
 
         //Shows the enemy
         void renderEnemy(SDL_Renderer* gRenderer);
@@ -54,6 +55,18 @@ class Enemy
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
+
+		// Fighter jet sprites
+		SDL_Texture* a10;
+		SDL_Texture* f16;
+		SDL_Texture* f22;
+		SDL_Texture* f35;
+		SDL_Texture* f4;
+		SDL_Texture* mig21;
+		SDL_Texture* mig21e;
+		SDL_Texture* mig29;
+		SDL_Texture* mig31;
+		SDL_Texture* su24;
 
     private:
 
