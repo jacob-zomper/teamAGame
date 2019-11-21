@@ -614,7 +614,12 @@ int main() {
 			player->hit(10);
 			en->hit(10);
 			if (en->getHealth() == 0)
+			{
 				blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
+
+				// Change enemy's sprite
+				en->initializeSprites(diff, gRenderer);
+			}
 		}
 
 		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
@@ -638,6 +643,9 @@ int main() {
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
 			kam->setArrivalTime(1000);
+
+			// Change kamikaze sprite
+			kam->initializeSprites(difficulty, gRenderer);
 		}
 
 		if (en->checkCollision(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())){
@@ -648,6 +656,9 @@ int main() {
 			kam->setX(SCREEN_WIDTH+125);
 			kam->setY(SCREEN_HEIGHT/2);
 			kam->setArrivalTime(1000);
+
+			// Change kamikaze sprite
+			kam->initializeSprites(difficulty, gRenderer);
 		}
 
 		// Clear the screen
