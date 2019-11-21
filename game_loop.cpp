@@ -645,7 +645,7 @@ int main() {
 			kam->setArrivalTime(1000);
 
 			// Change kamikaze sprite
-			kam->initializeSprites(difficulty, gRenderer);
+			kam->initializeSprites(gRenderer);
 		}
 
 		if (en->checkCollision(kam->getX(), kam->getY(), kam->getWidth(), kam->getHeight())){
@@ -658,7 +658,7 @@ int main() {
 			kam->setArrivalTime(1000);
 
 			// Change kamikaze sprite
-			kam->initializeSprites(difficulty, gRenderer);
+			kam->initializeSprites(gRenderer);
 		}
 
 		// Clear the screen
