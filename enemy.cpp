@@ -29,7 +29,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 }
 
     Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},maxXVelo{xvel},maxYVelo{yvel}{
-		initializeSprites(diff, gRenderer, w, h);
+		initializeSprites(diff, gRenderer);
 		tiltAngle = 0;
 	  	last_move = SDL_GetTicks();
 		time_hit = SDL_GetTicks() - FLICKER_TIME;
@@ -53,10 +53,13 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		SDL_DestroyTexture(sprite2);
 	}
 
-	void Enemy::initializeSprites(int diff, SDL_Renderer *gRenderer, int w, int h)
+	void Enemy::initializeSprites(int diff, SDL_Renderer *gRenderer)
 	{
 		if (diff == 1)
 		{
+			width = 125;
+			height = 53;
+
 			enemy_sprite = {(int) xPos, (int) yPos, width, height};
 			enemy_hitbox = enemy_sprite;
 			sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
@@ -70,61 +73,81 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			switch (random_sprite)
 			{
 				case 1:
-					enemy_sprite = {(int) xPos, (int) yPos, 178, 47};
+					width = 178;
+					height = 47; 
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/a10.png", gRenderer);
 					sprite2 = loadImage("sprites/a10.png", gRenderer);
 					break;
 				case 2:
-					enemy_sprite = {(int) xPos, (int) yPos, 124, 37};
+					width = 124;
+					height = 37;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/f16.png", gRenderer);
 					sprite2 = loadImage("sprites/f16.png", gRenderer);
 					break;
 				case 3: 
-					enemy_sprite = {(int) xPos, (int) yPos, 164, 38};
+					width = 164;
+					height = 38;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/f22.png", gRenderer);
 					sprite2 = loadImage("sprites/f22.png", gRenderer);
 					break;
 				case 4:
-					enemy_sprite = {(int) xPos, (int) yPos, 125, 33};
+					width = 125;
+					height = 33;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/f35.png", gRenderer);
 					sprite2 = loadImage("sprites/f35.png", gRenderer);
 					break;
 				case 5:
-					enemy_sprite = {(int) xPos, (int) yPos, 152, 42};
+					width = 152;
+					height = 42;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/f4.png", gRenderer);
 					sprite2 = loadImage("sprites/f4.png", gRenderer);
 					break;
 				case 6:
-					enemy_sprite = {(int) xPos, (int) yPos, 155, 45};
+					width = 155;
+					height = 45;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/mig21.png", gRenderer);
 					sprite2 = loadImage("sprites/mig21.png", gRenderer);
 					break;
 				case 7:
-					enemy_sprite = {(int) xPos, (int) yPos, 155, 50};
+					width = 155;
+					height = 50;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/mig21e.png", gRenderer);
 					sprite2 = loadImage("sprites/mig21e.png", gRenderer);
 					break;
 				case 8:
-					enemy_sprite = {(int) xPos, (int) yPos, 209, 38};
+					width = 209;
+					height = 38;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/mig31.png", gRenderer);
 					sprite2 = loadImage("sprites/mig31.png", gRenderer);
 					break;
 				case 9:
-					enemy_sprite = {(int) xPos, (int) yPos, 148, 42};
+					width = 148;
+					height = 42;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/mig29.png", gRenderer);
 					sprite2 = loadImage("sprites/mig29.png", gRenderer);
 					break;
 				case 10:
-					enemy_sprite = {(int) xPos, (int) yPos, 176, 50};
+					width = 176;
+					height = 50;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
 					enemy_hitbox = enemy_sprite;
 					sprite1 = loadImage("sprites/su24.png", gRenderer);
 					sprite2 = loadImage("sprites/su24.png", gRenderer);
