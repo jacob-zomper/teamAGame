@@ -31,8 +31,7 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     y_vel = 0;
     x_accel = 0;
     y_accel = 0;
-	sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
-	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+    initializeSprites(diff, gRenderer);
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
@@ -60,6 +59,64 @@ Player::~Player()
 	SDL_DestroyTexture(sprite1);
 	SDL_DestroyTexture(sprite2);
 }
+
+void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
+    {
+        if (diff == 1)
+        {
+            sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
+            sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+        }
+        else
+        {
+            int min = 1, max = 9;
+            int random_sprite = rand() % (max - min + 1) + min;
+
+            switch (random_sprite)
+            {
+                case 1:
+                    sprite1 = loadImage("sprites/a10.png", gRenderer);
+                    sprite2 = loadImage("sprites/a10.png", gRenderer);
+                    break;
+                case 2:
+                    sprite1 = loadImage("sprites/f16.png", gRenderer);
+                    sprite2 = loadImage("sprites/f16.png", gRenderer);
+                    break;
+                case 3: 
+                    sprite1 = loadImage("sprites/f22.png", gRenderer);
+                    sprite2 = loadImage("sprites/f22.png", gRenderer);
+                    break;
+                case 4:
+                    sprite1 = loadImage("sprites/f35.png", gRenderer);
+                    sprite2 = loadImage("sprites/f35.png", gRenderer);
+                    break;
+                case 5:
+                    sprite1 = loadImage("sprites/f4.png", gRenderer);
+                    sprite2 = loadImage("sprites/f4.png", gRenderer);
+                    break;
+                case 6:
+                    sprite1 = loadImage("sprites/mig21.png", gRenderer);
+                    sprite2 = loadImage("sprites/mig21.png", gRenderer);
+                    break;
+                case 7:
+                    sprite1 = loadImage("sprites/mig21e.png", gRenderer);
+                    sprite2 = loadImage("sprites/mig21e.png", gRenderer);
+                    break;
+                case 8:
+                    sprite1 = loadImage("sprites/mig31.png", gRenderer);
+                    sprite2 = loadImage("sprites/mig31.png", gRenderer);
+                    break;
+                case 9:
+                    sprite1 = loadImage("sprites/mig29.png", gRenderer);
+                    sprite2 = loadImage("sprites/mig29.png", gRenderer);
+                    break;
+                case 10:
+                    sprite1 = loadImage("sprites/su24.png", gRenderer);
+                    sprite2 = loadImage("sprites/su24.png", gRenderer);
+                    break;
+            }           
+        }
+    }
 
 //Takes key presses and adjusts the player's velocity
 void Player::handleEvent(SDL_Event &e)

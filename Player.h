@@ -85,6 +85,7 @@ public:
 
 	// Used to load sprites
 	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
+	void initializeSprites(int diff, SDL_Renderer *gRenderer);
 
     //Initializes the variables
     Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer);
