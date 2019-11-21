@@ -17,7 +17,7 @@ Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, 
 	{
 		pitch = M_PI + pitch;
 	}
-	std::cout << xVel << " " << yVel << " " << pitch << std::endl;
+	//std::cout << xVel << " " << yVel << " " << pitch << std::endl;
 	air_time = 0;
 	last_move = SDL_GetTicks();
 }

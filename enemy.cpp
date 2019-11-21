@@ -28,11 +28,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
-	  	enemy_sprite = {(int) xPos, (int) yPos, width, height};
-		enemy_hitbox = enemy_sprite;
-		sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
-		sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
+    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},maxXVelo{xvel},maxYVelo{yvel}, diff{diff} {
+		initializeSprites(gRenderer);
 		tiltAngle = 0;
 	  	last_move = SDL_GetTicks();
 		time_hit = SDL_GetTicks() - FLICKER_TIME;
@@ -54,6 +51,109 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	Enemy::~Enemy() {
 		SDL_DestroyTexture(sprite1);
 		SDL_DestroyTexture(sprite2);
+	}
+
+	void Enemy::initializeSprites(SDL_Renderer *gRenderer)
+	{
+		if (diff == 1)
+		{
+			width = 125;
+			height = 53;
+
+			enemy_sprite = {(int) xPos, (int) yPos, width, height};
+			enemy_hitbox = enemy_sprite;
+			sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
+			sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
+		}
+		else
+		{
+			int min = 1, max = 9;
+			int random_sprite = rand() % (max - min + 1) + min;
+
+			switch (random_sprite)
+			{
+				case 1:
+					width = 178;
+					height = 47; 
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/a10.png", gRenderer);
+					sprite2 = loadImage("sprites/a10.png", gRenderer);
+					break;
+				case 2:
+					width = 124;
+					height = 37;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f16.png", gRenderer);
+					sprite2 = loadImage("sprites/f16.png", gRenderer);
+					break;
+				case 3: 
+					width = 164;
+					height = 38;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f22.png", gRenderer);
+					sprite2 = loadImage("sprites/f22.png", gRenderer);
+					break;
+				case 4:
+					width = 125;
+					height = 33;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f35.png", gRenderer);
+					sprite2 = loadImage("sprites/f35.png", gRenderer);
+					break;
+				case 5:
+					width = 152;
+					height = 42;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f4.png", gRenderer);
+					sprite2 = loadImage("sprites/f4.png", gRenderer);
+					break;
+				case 6:
+					width = 155;
+					height = 45;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig21.png", gRenderer);
+					sprite2 = loadImage("sprites/mig21.png", gRenderer);
+					break;
+				case 7:
+					width = 155;
+					height = 50;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig21e.png", gRenderer);
+					sprite2 = loadImage("sprites/mig21e.png", gRenderer);
+					break;
+				case 8:
+					width = 209;
+					height = 38;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig31.png", gRenderer);
+					sprite2 = loadImage("sprites/mig31.png", gRenderer);
+					break;
+				case 9:
+					width = 148;
+					height = 42;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig29.png", gRenderer);
+					sprite2 = loadImage("sprites/mig29.png", gRenderer);
+					break;
+				case 10:
+					width = 176;
+					height = 50;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/su24.png", gRenderer);
+					sprite2 = loadImage("sprites/su24.png", gRenderer);
+					break;
+			}			
+		}
 	}
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){

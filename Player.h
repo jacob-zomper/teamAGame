@@ -12,21 +12,15 @@ class Player
 public:
 	static constexpr double PI = 3.14159265358979323846;
 
-    //The dimensions of the player
+	//The default dimensions of the player
     static const int PLAYER_WIDTH = 125;
     static const int PLAYER_HEIGHT = 53;
 
     //The dimensions of the player's hurtbox
-    static const int PLAYER_HURT_WIDTH = 100;
-    static const int PLAYER_HURT_HEIGHT = 28;
-
-	//smaller width,height, hurtwidth, and hurt height for powerup
-	static const int S_PLAYER_WIDTH = 125/1.5;
-    static const int S_PLAYER_HEIGHT = 53/1.5;
-
-    //The dimensions of the player's hurtbox
-    static const int S_PLAYER_HURT_WIDTH = 100/1.5;
-    static const int S_PLAYER_HURT_HEIGHT = 28/1.5;
+    int player_hurt_width;
+    int player_hurt_height;
+    int s_player_hurt_width;
+   	int s_player_hurt_height;
 
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;
@@ -43,6 +37,10 @@ public:
 	static const int ANIMATION_FREQ = 100;
 	static const int FLICKER_FREQ = 50;
 	static const int FLICKER_TIME = 500;
+
+    //The dimensions of the player
+    int player_width;
+    int player_height;
 
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;
@@ -85,6 +83,7 @@ public:
 
 	// Used to load sprites
 	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
+	void initializeSprites(int diff, SDL_Renderer *gRenderer);
 
     //Initializes the variables
     Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer);
