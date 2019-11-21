@@ -12,6 +12,10 @@ class Player
 public:
 	static constexpr double PI = 3.14159265358979323846;
 
+	//The default dimensions of the player
+    static const int PLAYER_WIDTH = 125;
+    static const int PLAYER_HEIGHT = 53;
+
     //The dimensions of the player's hurtbox
     static const int PLAYER_HURT_WIDTH = 100;
     static const int PLAYER_HURT_HEIGHT = 28;
