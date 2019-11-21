@@ -449,11 +449,11 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
-    std::cout << "entered firing handler" << std::endl;
-    std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
+    //std::cout << "entered firing handler" << std::endl;
+    //std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
     double bulletAngle = tiltAngle*PI/180;
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
-        std::cout << "Firing new bullet"<< std::endl;
+        //std::cout << "Firing new bullet"<< std::endl;
         Bullet* b;
         if(small == false){
             b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
