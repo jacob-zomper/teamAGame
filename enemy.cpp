@@ -28,8 +28,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},maxXVelo{xvel},maxYVelo{yvel}{
-		initializeSprites(diff, gRenderer);
+    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},maxXVelo{xvel},maxYVelo{yvel}, diff{diff} {
+		initializeSprites(gRenderer);
 		tiltAngle = 0;
 	  	last_move = SDL_GetTicks();
 		time_hit = SDL_GetTicks() - FLICKER_TIME;

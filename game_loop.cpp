@@ -618,7 +618,7 @@ int main() {
 				blocks->addExplosion(en->getX() + camX, en->getY() + camY, en->getWidth(), en->getHeight(),0);
 
 				// Change enemy's sprite
-				en->initializeSprites(difficulty, gRenderer);
+				en->initializeSprites(gRenderer);
 			}
 		}
 

@@ -24,14 +24,14 @@ SDL_Texture* Kamikaze::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-Kamikaze::Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer* gRenderer, int diff) :xPos{(double) x}, yPos{(double) y}, width{w}, height{h}{
+Kamikaze::Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer* gRenderer, int diff) :xPos{(double) x}, yPos{(double) y}, width{w}, height{h}, diff{diff} {
     arrival_time = SDL_GetTicks() + delay;
     last_move = SDL_GetTicks();
     initializeSprites(diff, gRenderer);
     tiltAngle = 0;
 }
 
-void Kamikaze::initializeSprites(int diff, SDL_Renderer* gRenderer)
+void Kamikaze::initializeSprites(SDL_Renderer* gRenderer)
 {
   if (diff == 1)
       {

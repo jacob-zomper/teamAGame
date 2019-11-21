@@ -17,7 +17,7 @@ class Kamikaze
 
     //Shows Kamikaze on screen
     void renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
-    void initializeSprites(int diff, SDL_Renderer* gRenderer);
+    void initializeSprites(SDL_Renderer* gRenderer);
 
     //Move the plane into the frame, follows the player along
     //the y axis then assults the player after a certain period
@@ -67,7 +67,7 @@ class Kamikaze
     SDL_Rect kam_sprite;
     SDL_Rect kam_hitbox;
 
-
+    int diff;
 };
 
 #endif

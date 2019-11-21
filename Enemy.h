@@ -19,7 +19,7 @@ class Enemy
         //Initializes the variables, Constructor
         Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer);
 		~Enemy();
-		void initializeSprites(int diff, SDL_Renderer *gRenderer);
+		void initializeSprites(SDL_Renderer *gRenderer);
 
         //Shows the enemy
         void renderEnemy(SDL_Renderer* gRenderer);
@@ -105,6 +105,9 @@ class Enemy
 		// Shooting times, used for handling framerate-independent firing rate
 		int time_since_shoot;
 		int last_shot;
+
+		// Game difficulty
+		int diff;
 
     //health variables for the enemy
     int time_hit;
