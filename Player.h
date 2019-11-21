@@ -12,10 +12,6 @@ class Player
 public:
 	static constexpr double PI = 3.14159265358979323846;
 
-    //The dimensions of the player
-    static const int PLAYER_WIDTH = 125;
-    static const int PLAYER_HEIGHT = 53;
-
     //The dimensions of the player's hurtbox
     static const int PLAYER_HURT_WIDTH = 100;
     static const int PLAYER_HURT_HEIGHT = 28;
@@ -43,6 +39,10 @@ public:
 	static const int ANIMATION_FREQ = 100;
 	static const int FLICKER_FREQ = 50;
 	static const int FLICKER_TIME = 500;
+
+    //The dimensions of the player
+    int player_width;
+    int player_height;
 
 	// Move and shooting times, needed for framerate-independent movement and animation speeds
 	int time_since_move;

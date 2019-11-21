@@ -77,42 +77,62 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
                 case 1:
                     sprite1 = loadImage("sprites/a10.png", gRenderer);
                     sprite2 = loadImage("sprites/a10.png", gRenderer);
+                    player_width = 178;
+                    player_height = 47;
                     break;
                 case 2:
                     sprite1 = loadImage("sprites/f16.png", gRenderer);
                     sprite2 = loadImage("sprites/f16.png", gRenderer);
+                    player_width = 124;
+                    player_height = 37;
                     break;
                 case 3: 
                     sprite1 = loadImage("sprites/f22.png", gRenderer);
                     sprite2 = loadImage("sprites/f22.png", gRenderer);
+                    player_width = 164;
+                    player_height = 38;
                     break;
                 case 4:
                     sprite1 = loadImage("sprites/f35.png", gRenderer);
                     sprite2 = loadImage("sprites/f35.png", gRenderer);
+                    player_width = 125;
+                    player_height = 33;
                     break;
                 case 5:
                     sprite1 = loadImage("sprites/f4.png", gRenderer);
                     sprite2 = loadImage("sprites/f4.png", gRenderer);
+                    player_width = 152;
+                    player_height = 42;
                     break;
                 case 6:
                     sprite1 = loadImage("sprites/mig21.png", gRenderer);
                     sprite2 = loadImage("sprites/mig21.png", gRenderer);
+                    player_width = 155;
+                    player_height = 45;
                     break;
                 case 7:
                     sprite1 = loadImage("sprites/mig21e.png", gRenderer);
                     sprite2 = loadImage("sprites/mig21e.png", gRenderer);
+                    player_width = 155;
+                    player_height = 50;
                     break;
                 case 8:
                     sprite1 = loadImage("sprites/mig31.png", gRenderer);
                     sprite2 = loadImage("sprites/mig31.png", gRenderer);
+                    player_width = 209;
+                    player_height = 38;
                     break;
                 case 9:
                     sprite1 = loadImage("sprites/mig29.png", gRenderer);
                     sprite2 = loadImage("sprites/mig29.png", gRenderer);
+                    player_width = 148;
+                    player_height = 42;
                     break;
                 case 10:
                     sprite1 = loadImage("sprites/su24.png", gRenderer);
                     sprite2 = loadImage("sprites/su24.png", gRenderer);
+                    player_width = 176;
+                    player_height = 50;
                     break;
             }           
         }
@@ -256,9 +276,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         {
             x_pos = 0;
         }
-        else if (x_pos > SCREEN_WIDTH - PLAYER_WIDTH)
+        else if (x_pos > SCREEN_WIDTH - player_width)
         {
-           x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
+           x_pos = SCREEN_WIDTH - player_width;
         }
         // Stop the player if they hit the top of the level
         else if (y_pos < 0)
@@ -266,9 +286,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
           y_pos = 0;
         }
         // Stop the player if they hit the bottom
-        else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
+        else if (y_pos > SCREEN_HEIGHT - player_height)
         {
-            y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
+            y_pos = SCREEN_HEIGHT - player_height;
         }
     }
     else{
@@ -276,9 +296,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         {
             x_pos = 0;
         }
-        else if (x_pos > SCREEN_WIDTH - S_PLAYER_WIDTH)
+        else if (x_pos > SCREEN_WIDTH - S_player_width)
         {
-           x_pos = SCREEN_WIDTH - S_PLAYER_WIDTH;
+           x_pos = SCREEN_WIDTH - S_player_width;
         }
         // Stop the player if they hit the top of the level
         else if (y_pos < 0)
@@ -286,9 +306,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
           y_pos = 0;
         }
         // Stop the player if they hit the bottom
-        else if (y_pos > SCREEN_HEIGHT - S_PLAYER_HEIGHT)
+        else if (y_pos > SCREEN_HEIGHT - S_player_height)
         {
-            y_pos = SCREEN_HEIGHT - S_PLAYER_HEIGHT;
+            y_pos = SCREEN_HEIGHT - S_player_height;
         }
     }
 
@@ -312,7 +332,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 		return;
 	}
     if(small == false){
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, player_width, player_height};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -322,7 +342,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	    }
     }
     else{
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, S_PLAYER_WIDTH, S_PLAYER_HEIGHT};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, S_player_width, S_player_height};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -427,10 +447,10 @@ Bullet* Player::handleForwardFiring()
         std::cout << "Firing new bullet"<< std::endl;
         Bullet* b;
         if(small == false){
-            b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos+player_width+5 -fabs(player_width/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
         }
         else{
-            b = new Bullet(x_pos+S_PLAYER_WIDTH+5 -fabs(S_PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+S_PLAYER_HEIGHT/2+S_PLAYER_HEIGHT*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos+S_player_width+5 -fabs(S_player_width/8*sin(bulletAngle)), y_pos+S_player_height/2+S_player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
         }
         if(!infiniteShooting){
     		fshot_heat += SHOOT_COST;
@@ -452,10 +472,10 @@ Bullet* Player::handleBackwardFiring()
 	if (!bshot_maxed && (SDL_GetTicks() - time_since_b_shot) >=100) {
         Bullet* b;
 		if(small == false){
-            b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos-10 +fabs(player_width/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
         }
         else{
-            b = new Bullet(x_pos-10 +fabs(S_PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+S_PLAYER_HEIGHT/2-S_PLAYER_HEIGHT*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos-10 +fabs(S_player_width/8*sin(bulletAngle)), y_pos+S_player_height/2-S_player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
         }
 		if(!infiniteShooting){
             bshot_heat += SHOOT_COST;
@@ -484,19 +504,19 @@ void Player::setPosY(int y) { y_pos = y; }
 
 int Player::getWidth() { 
     if(small == false){
-        return PLAYER_WIDTH; 
+        return player_width; 
     }
     else{
-        return S_PLAYER_WIDTH;
+        return S_player_width;
     }
 }
 
 int Player::getHeight() { 
     if(small == false){
-        return PLAYER_HEIGHT; 
+        return player_height; 
     }
     else{
-        return S_PLAYER_HEIGHT; 
+        return S_player_height; 
     }
 }
 
