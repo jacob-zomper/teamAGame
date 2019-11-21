@@ -52,6 +52,7 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     invincePower = false;
     autoFire=false;
     small = false;
+    bullet_shot = Mix_LoadWAV("sounds/pew.wav");
 }
 
 Player::~Player()
@@ -454,7 +455,9 @@ Bullet* Player::handleForwardFiring()
     double bulletAngle = tiltAngle*PI/180;
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
         //std::cout << "Firing new bullet"<< std::endl;
-        Bullet* b;
+        Mix_PlayChannel(-1, bullet_shot, 0);
+
+        Bullet *b;
         if(small == false){
             b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
         }
@@ -472,13 +475,15 @@ Bullet* Player::handleForwardFiring()
         time_since_f_shot = SDL_GetTicks();
 		return b;
 	}
-	return nullptr;
+    return nullptr;
 }
 
 Bullet* Player::handleBackwardFiring()
 {
     double bulletAngle = tiltAngle*PI/180;
 	if (!bshot_maxed && (SDL_GetTicks() - time_since_b_shot) >=100) {
+        Mix_PlayChannel(-1, bullet_shot, 0);
+
         Bullet* b;
 		if(small == false){
             b = new Bullet(x_pos-10 +fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
