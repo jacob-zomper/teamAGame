@@ -10,6 +10,7 @@
 class Player
 {
 public:
+	static constexpr double PI = 3.14159265358979323846;
 
     //The dimensions of the player
     static const int PLAYER_WIDTH = 125;
