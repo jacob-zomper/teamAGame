@@ -82,8 +82,8 @@ class Enemy
         double yPos;
 		int current_x_square;
 		int current_y_square;
-        const int width;
-        const int height;
+        int width;
+        int height;
 		int prev_direction;
 
         //Velocity of the enemy
