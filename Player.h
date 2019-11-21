@@ -17,12 +17,10 @@ public:
     static const int PLAYER_HEIGHT = 53;
 
     //The dimensions of the player's hurtbox
-    static const int PLAYER_HURT_WIDTH = 100;
-    static const int PLAYER_HURT_HEIGHT = 28;
-
-    //The dimensions of the player's hurtbox
-    static const int S_PLAYER_HURT_WIDTH = 100/1.5;
-    static const int S_PLAYER_HURT_HEIGHT = 28/1.5;
+    int player_hurt_width;
+    int player_hurt_height;
+    int s_player_hurt_width;
+   	int s_player_hurt_height;
 
     //Maximum axis velocity, animation frequency, and shot frequency of the player
     static const int MAX_PLAYER_VEL = 300;

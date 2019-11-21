@@ -66,6 +66,9 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
         {
             sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
             sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+
+            player_height = PLAYER_HEIGHT;
+            player_width = PLAYER_WIDTH;
         }
         else
         {
@@ -77,6 +80,7 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
                 case 1:
                     sprite1 = loadImage("sprites/a10.png", gRenderer);
                     sprite2 = loadImage("sprites/a10.png", gRenderer);
+
                     player_width = 178;
                     player_height = 47;
                     break;
@@ -136,6 +140,11 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
                     break;
             }           
         }
+
+        player_hurt_height = player_height * 0.8;
+        player_hurt_width = player_width * 0.8;
+        s_player_hurt_height = player_hurt_height / 1.5;
+        s_player_hurt_width = player_hurt_width / 1.5;
     }
 
 //Takes key presses and adjusts the player's velocity
@@ -412,20 +421,20 @@ void Player::resetHeatVals(){
 // Checks if the player collided with a kamikaze, returning true if so
 bool Player::checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH) {
     if(small == false){
-        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos - 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos - 12, player_hurt_width, player_hurt_height);
     }
     else{
-        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 8, y_pos - 8, S_PLAYER_HURT_WIDTH, S_PLAYER_HURT_HEIGHT);
+        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 8, y_pos - 8, s_player_hurt_width, s_player_hurt_height);
     }
 }
 
 // Checks if the player collided with a bullet, returning true if so
 bool Player::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
     if(small == false){
-        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, player_hurt_width, player_hurt_height);
     }
     else{
-        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 9, y_pos + 9, S_PLAYER_HURT_WIDTH, S_PLAYER_HURT_HEIGHT);
+        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 9, y_pos + 9, s_player_hurt_width, s_player_hurt_height);
     }	
 }
 
@@ -522,19 +531,19 @@ int Player::getHeight() {
 
 int Player::getHurtWidth() { 
     if(small == false){
-        return PLAYER_HURT_WIDTH; 
+        return player_hurt_width; 
     }
     else{
-        return S_PLAYER_HURT_WIDTH;
+        return s_player_hurt_width;
     }
 }
 
 int Player::getHurtHeight() { 
     if(small == false){
-        return PLAYER_HURT_HEIGHT; 
+        return player_hurt_height; 
     }
     else{
-        return S_PLAYER_HURT_HEIGHT; 
+        return s_player_hurt_height; 
     }
 }
 
