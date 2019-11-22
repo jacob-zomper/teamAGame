@@ -251,15 +251,24 @@ void CaveSystem::generateRandomCave()
     // Start and end point
     // y values are have a 5 point padding so that it doesnt interfere with the walls
     x1 = 0;
-    y1 = 3 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 1);
+    y1 = 8 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 12);
 
     x2 = CaveSystem::CAVE_SYSTEM_WIDTH;
-    y2 = 3 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 1);
+    y2 = 8 + rnd_i0(CaveSystem::CAVE_SYSTEM_HEIGHT - 12);
 
     bresenham_line(&path, x1, y1, x2, y2);
     uti_perturb(&path, 2, 5, 40);
 
-    insert_path(CaveSystem::cave_system, &path, rand() % 6 + 8);
+    int padding;
+    if(diff == 3)
+        padding = rand() % 4 + 11;
+    else if (diff == 2)
+        padding = rand() % 5 + 9;
+    else if (diff == 1)
+        padding = rand() % 4 + 8;
+
+
+    insert_path(CaveSystem::cave_system, &path, padding);
 }
 
 void CaveSystem::moveCaveBlocks(int camX, int camY)
