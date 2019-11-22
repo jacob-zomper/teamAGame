@@ -28,6 +28,24 @@ public:
     WallBlock(int num);
 };
 
+class AllyPlaneBlock
+{
+public:
+    int ALLY_PLANE_ABS_Y;
+    int ALLY_PLANE_ABS_X;
+
+    int ALLY_PLANE_REL_Y;
+    int ALLY_PLANE_REL_X;
+
+    int ALLY_PLANE_HEIGHT;
+    int ALLY_PLANE_WIDTH;
+
+    bool enabled;
+
+    AllyPlaneBlock();
+    AllyPlaneBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
 class HealthBlock
 {
 public:
@@ -260,6 +278,8 @@ public:
 
     int SMALL_N;
 
+    int ALLY_N;
+
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
 
@@ -285,8 +305,8 @@ public:
     SDL_Texture* infFireSprite;
     SDL_Texture* invinceSprite;
     SDL_Texture* autofireSprite;
-    SDL_Texture* smallSprite;
-
+    SDL_Texture *smallSprite;
+    SDL_Texture *allySprite;
 
     std::vector<Turret> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
@@ -299,6 +319,7 @@ public:
     std::vector<InvincBlock> invince_arr;
     std::vector<AutoFireBlock> autofire_arr;
     std::vector<SmallBlock> small_arr;
+    std::vector<AllyPlaneBlock> ally_arr;
 
     MapBlocks();
 	~MapBlocks();
