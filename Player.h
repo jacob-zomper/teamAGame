@@ -5,6 +5,7 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "bullet.h"
 
 class Player
@@ -80,6 +81,9 @@ public:
 	SDL_Texture* sprite1;
 	SDL_Texture* sprite2;
 	int difficulty;
+
+	// Sounds
+	Mix_Chunk *bullet_shot;
 
 	// Used to load sprites
 	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
