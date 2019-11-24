@@ -36,6 +36,7 @@ class Kamikaze
     int getHeight();
     void setArrivalTime(int a);
     bool blast();
+	void moveRight();
 
     SDL_Rect* getHitbox();
     SDL_Texture* sprite1;

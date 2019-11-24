@@ -212,3 +212,9 @@ void Kamikaze::setArrivalTime(int delay){
 bool Kamikaze::blast(){
   return shootable;
 }
+
+void Kamikaze::moveRight() {
+	time_since_move = SDL_GetTicks() - last_move;
+	xPos += (double) (MAX_MOVE_VELO * time_since_move) / 1000;
+	last_move = SDL_GetTicks();
+}

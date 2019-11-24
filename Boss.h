@@ -22,6 +22,10 @@ public:
   Bullet* handleFiringUp();
   Bullet* handleFiringDown();
   void hit(int d);
+  
+  // Boss width and height
+  static const int WIDTH = 250;
+  static const int HEIGHT = 106;
 
   int getX();
   int getY();
@@ -37,9 +41,7 @@ private:
   SDL_Rect boss_hitbox_top;
   SDL_Rect boss_hitbox_bottom;
 
-  //Boss width height and x and y positions
-  static const int WIDTH = 250;
-  static const int HEIGHT = 106;
+  //Boss x and y positions
   double xPos;
   double yPos;
 

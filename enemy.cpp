@@ -543,6 +543,12 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     	return nullptr;
     }
 
-		int Enemy::getHealth(){
-			return health;
-		}
+	int Enemy::getHealth(){
+		return health;
+	}
+	
+	void Enemy::moveLeft() {
+		time_since_move = SDL_GetTicks() - last_move;
+		xPos -= (double) (maxXVelo * time_since_move) / 1000;
+		last_move = SDL_GetTicks();
+	}

@@ -18,10 +18,11 @@
 #include "CaveSystem.h"
 #include "Text.h"
 #include "Kamikaze.h"
+#include "Boss.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
-constexpr int LEVEL_WIDTH = 100000;
+constexpr int LEVEL_WIDTH = 2000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
 constexpr int BG_SCROLL_SPEED = 200;
@@ -42,6 +43,8 @@ double camX = 0;
 double camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
 double bg_x = 0;
 
+int difficulty = 0;
+
 Player * player;
 MapBlocks *blocks;
 GameOver *game_over;
@@ -52,6 +55,7 @@ std::vector<Bullet*> bullets;
 std::vector<Missile*> missiles;
 Enemy* en;
 Kamikaze* kam;
+Boss * boss;
 bool caveCounterHelp = false;
 bool prev_kam = false;
 
@@ -350,6 +354,22 @@ void check_missile_collisions(double x_scroll)
 		}
 	}
 }
+	
+void bossBattle() {
+	// Wait half a second before bringing the boss in
+	int startTime = SDL_GetTicks();
+	while (startTime > SDL_GetTicks() - 500)
+	{
+		
+	} 
+	
+	// Bring in the boss
+	boss = new Boss(SCREEN_WIDTH, SCREEN_HEIGHT/2 - Boss::HEIGHT/2, 0, 0, difficulty, gRenderer);
+	while (boss->getX() > SCREEN_WIDTH - Boss::HEIGHT - 50) {
+		//boss->moveLeft();
+		SDL_RenderPresent(gRenderer);
+	}
+}
 
 int main() {
 	if (!init()) {
@@ -398,7 +418,7 @@ int main() {
 		SDL_RenderPresent(gRenderer);
 	}
 
-	int difficulty = 0;
+	difficulty = 0;
 	while(difficulty == 0){
 		while(SDL_PollEvent(&e)) {
 			if(e.type==SDL_QUIT){
@@ -521,16 +541,19 @@ int main() {
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
 
-		//move enemy
-		moveEnemy(en, kam);
-		newBullet = en->handleFiring();
+		//move enemy, unless the level is over and it's boss time
+		if (camX < LEVEL_WIDTH) {
+			moveEnemy(en, kam);
+			newBullet = en->handleFiring();
+		}
+		else newBullet = nullptr;
 		if (newBullet != nullptr) {
 			bullets.push_back(newBullet);
 		}
 
 		missiles = blocks->handleFiring(missiles, player->getPosX(), player->getPosY());
 
-		if (!cave_system->isEnabled){
+		if (!cave_system->isEnabled || camX > LEVEL_WIDTH){
 			if(!prev_kam)
 				kam->move(player, SCREEN_WIDTH);
 			else{
@@ -661,6 +684,16 @@ int main() {
 			kam->initializeSprites(gRenderer);
 		}
 
+		// Have the enemy and kamikaze exit the screen. Player moves to the center of the screen in preparation for the battle
+		if (camX < LEVEL_WIDTH && (en->getX() > -en->getHeight() || kam->getX() < SCREEN_WIDTH)) {
+			en->moveLeft();
+			kam->moveRight();
+			SDL_RenderPresent(gRenderer);
+		}
+		else if (camX < LEVEL_WIDTH) {
+			bossBattle();
+		}
+		
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
@@ -794,7 +827,6 @@ int main() {
 			game_over->stopGame(player, blocks);
 			game_over->render(gRenderer);
 		}
-
 		SDL_RenderPresent(gRenderer);
 	}
 
