@@ -18,7 +18,7 @@ public:
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
   bool checkCollisionBullet(int x, int y, int w, int h);
   void move(int SCREEN_WIDTH, bool active);
-  Missile* handleFiringMiddle();
+  Missile* handleFiringMissile();
   Bullet* handleFiringUp();
   Bullet* handleFiringDown();
   void hit(int d);
@@ -57,10 +57,10 @@ private:
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;
-  int time_since_shot_middle;
+  int time_since_shot_missile;
   int time_since_shot_up;
   int time_since_shot_down;
-  int last_shot_middle;
+  int last_shot_missile;
   int last_shot_up;
   int last_shot_down;
 

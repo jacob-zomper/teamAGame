@@ -32,9 +32,9 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
   boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
   last_move = SDL_GetTicks();
-  last_shot_middle = SDL_GetTicks() - FIRING_FREQ;
-  last_shot_down = last_shot_middle;
-  last_shot_up = last_shot_middle;
+  last_shot_missile = SDL_GetTicks() - FIRING_FREQ;
+  last_shot_down = last_shot_missile;
+  last_shot_up = last_shot_missile;
   up = false;
   mvmt = false;
   //sprite1 = loadImage(name);
@@ -74,17 +74,17 @@ void Boss::move(int SCREEN_WIDTH, bool active){
         if (yPos > 300)
           up = false;
       }else{
-        if (yPos > MAX_UP && mvmt){
-          yVelo = -maxYVelo;
-          if (MAX_UP > yPos + (((double) yVelo * (SDL_GetTicks()-last_move))/1000))
-            mvmt = false;
-        }
-
-        if (yPos < MAX_DOWN && !mvmt){
-          yVelo = maxYVelo;
-          if(MAX_DOWN < yPos + (((double) yVelo * (SDL_GetTicks()-last_move))/1000))
-            mvmt = true;
-        }
+        // if (yPos > MAX_UP && mvmt){
+        //   yVelo = -maxYVelo;
+        //   if (MAX_UP > yPos + (((double) yVelo * (SDL_GetTicks()-last_move))/1000))
+        //     mvmt = false;
+        // }
+        //
+        // if (yPos < MAX_DOWN && !mvmt){
+        //   yVelo = maxYVelo;
+        //   if(MAX_DOWN < yPos + (((double) yVelo * (SDL_GetTicks()-last_move))/1000))
+        //     mvmt = true;
+        //}
       }
     }
   }
@@ -114,9 +114,15 @@ bool Boss::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTw
     return true;
 }
 
-Missile* Boss::handleFiringMiddle(){
+Missile* Boss::handleFiringMissile(){
   int damage = 500;
   int blast_radius = 150;
+  time_since_shot_missile = SDL_GetTicks() - last_shot_missile;
+  Missile* m = nullptr;
+  if(time_since_shot_missile >= FIRING_FREQ){
+
+  }
+
   return nullptr;
 }
 

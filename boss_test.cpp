@@ -425,7 +425,7 @@ int main() {
 	//start enemy on left side behind player
 	en = new Enemy(100, SCREEN_HEIGHT/2, 125, 53, 200, 200, difficulty, gRenderer);
 	//kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer);
-	bossman = new Boss(SCREEN_WIDTH+250, (SCREEN_HEIGHT/2)-106, 200, 200, difficulty, gRenderer);
+	bossman = new Boss(SCREEN_WIDTH+250, (SCREEN_HEIGHT/2)-25, 200, 200, difficulty, gRenderer);
 
 	while(gameon) {
 
