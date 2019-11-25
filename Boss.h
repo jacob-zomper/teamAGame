@@ -19,11 +19,11 @@ public:
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
   bool checkCollisionBullet(int x, int y, int w, int h);
   void move(int SCREEN_WIDTH);
-  Missile* handleFiringMiddle();
+  Missile* handleFiringMissile();
   Bullet* handleFiringUp();
   Bullet* handleFiringDown();
   void hit(int d);
-  
+
   // Boss width and height
   static const int WIDTH = 250;
   static const int HEIGHT = 106;
@@ -33,7 +33,7 @@ public:
   int getWidth();
   int getHeight();
   int getHealth();
-  
+
   void moveLeft();
 
   SDL_Texture* sprite1;
@@ -57,15 +57,25 @@ private:
   int yVelo;
   int time_since_move;
   int last_move;
-  bool up;
-  bool mvmt;
+
+
+  //Patern One function and variables
+  void patternOne(int SCREEN_WIDTH);
+  static const int PATTERNONEFREQ = 25000;
+  int time_since_pattern;
+  int last_pattern;
+  int corner_delay = 2500;
+  bool upright;
+  bool upleft;
+  bool downleft;
+  bool downright;
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;
-  int time_since_shot_middle;
+  int time_since_shot_missile;
   int time_since_shot_up;
   int time_since_shot_down;
-  int last_shot_middle;
+  int last_shot_missile;
   int last_shot_up;
   int last_shot_down;
 
