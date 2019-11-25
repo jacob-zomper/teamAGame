@@ -37,8 +37,16 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   last_shot_up = last_shot_middle;
   up = false;
   mvmt = false;
-  //sprite1 = loadImage(name);
+  maxXVelo = 200;
+  maxYVelo = 200;
+  //sprite1 = loadImage(name, gRenderer);
 }
+
+// IF YOU CREATE ANY POINTERS, DELETE THEM IN THIS METHOD
+Boss::~Boss() {
+	
+}
+
 
 void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
     if(xPos<SCREEN_WIDTH){
@@ -52,49 +60,24 @@ void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
     }
 }
 
-void Boss::move(int SCREEN_WIDTH, bool active){
-  xVelo = 0;
-  yVelo = 0;
-  if (xPos > SCREEN_WIDTH-WIDTH-10){
-    xVelo = -maxXVelo;
-  }else if (active && !up){
-    mvmt = false;
-    xVelo = -420;
-    yVelo = -500;
-    if (yPos < -HEIGHT)
-      up = true;
-  }else{
-    if (up && active){
-      if(xPos < SCREEN_WIDTH-WIDTH-10){
-        xVelo = 420;
-      }
-    }else{
-      if (up){
-        yVelo = 300;
-        if (yPos > 300)
-          up = false;
-      }else{
-        if (yPos > MAX_UP && mvmt){
-          yVelo = -maxYVelo;
-          if (MAX_UP > yPos + (((double) yVelo * (SDL_GetTicks()-last_move))/1000))
-            mvmt = false;
-        }
-
-        if (yPos < MAX_DOWN && !mvmt){
-          yVelo = maxYVelo;
-          if(MAX_DOWN < yPos + (((double) yVelo * (SDL_GetTicks()-last_move))/1000))
-            mvmt = true;
-        }
-      }
-    }
-  }
-  time_since_move = SDL_GetTicks() - last_move;
-  xPos += (double) (xVelo * time_since_move)/1000;
-  yPos += (double) (yVelo * time_since_move)/1000;
-  boss_sprite = {(int)xPos,(int)yPos,WIDTH,HEIGHT};
-  boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
-  boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
-  last_move = SDL_GetTicks();
+void Boss::move(int SCREEN_WIDTH){
+	xVelo = 0;
+	if (yVelo == 0) {
+		yVelo = maxYVelo;
+	}
+	else if (yVelo > 0 && yPos > MAX_DOWN) {
+		yVelo = -maxYVelo;
+	}
+	else if (yVelo < 0 && yPos < MAX_UP) {
+		yVelo = maxYVelo;
+	}
+	time_since_move = SDL_GetTicks() - last_move;
+	xPos += (double) (xVelo * time_since_move)/1000;
+	yPos += (double) (yVelo * time_since_move)/1000;
+	boss_sprite = {(int)xPos,(int)yPos,WIDTH,HEIGHT};
+	boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
+	boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
+	last_move = SDL_GetTicks();
 }
 
 // Boss::~Boss(){
@@ -153,4 +136,10 @@ int Boss::getHeight() {
 
 int Boss::getHealth(){
   return health;
+}
+
+void Boss::moveLeft() {
+	time_since_move = SDL_GetTicks() - last_move;
+	xPos -= (double) (maxXVelo * time_since_move) / 1000;
+	last_move = SDL_GetTicks();
 }

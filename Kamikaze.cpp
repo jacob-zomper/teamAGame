@@ -116,7 +116,8 @@ void Kamikaze::initializeSprites(SDL_Renderer* gRenderer)
 }
 
 void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
-
+	
+	kam_sprite = {(int)xPos,(int)yPos,width,height};
     if(xPos < SCREEN_WIDTH){
       if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1)
         SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_HORIZONTAL);

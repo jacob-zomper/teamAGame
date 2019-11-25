@@ -14,10 +14,11 @@ class Boss
 public:
   SDL_Texture* loadImage(std::string fname, SDL_Renderer* gRenderer);
   Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer* gRenderer);
+  ~Boss();
   void renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
   bool checkCollisionBullet(int x, int y, int w, int h);
-  void move(int SCREEN_WIDTH, bool active);
+  void move(int SCREEN_WIDTH);
   Missile* handleFiringMiddle();
   Bullet* handleFiringUp();
   Bullet* handleFiringDown();
@@ -32,6 +33,8 @@ public:
   int getWidth();
   int getHeight();
   int getHealth();
+  
+  void moveLeft();
 
   SDL_Texture* sprite1;
 

@@ -22,7 +22,7 @@
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
-constexpr int LEVEL_WIDTH = 2000;
+constexpr int LEVEL_WIDTH = 20000;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
 constexpr int BG_SCROLL_SPEED = 200;
@@ -80,6 +80,15 @@ int last_horiz_scroll = SDL_GetTicks();
 Uint32 fps_last_time = SDL_GetTicks();
 Uint32 fps_cur_time = 0;
 int framecount;
+
+SDL_Event e;
+Bullet* newBullet;
+
+std::string fps;//for onscreen fps
+std::string score; // for onscreen score
+std::string high_score_string;
+static TTF_Font *font_16;
+int high_score;
 
 bool init() {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -354,19 +363,324 @@ void check_missile_collisions(double x_scroll)
 		}
 	}
 }
+
+void renderTextAndHealth() {
+	framecount++;
+	fps_cur_time=SDL_GetTicks();
+	if (fps_cur_time - fps_last_time > 1000) {
+		fps= std::to_string((int) (framecount / ((fps_cur_time - fps_last_time) / 1000.0)));
+		fps +=" fps";
+		// reset
+		fps_last_time = fps_cur_time;
+		framecount = 0;
+	}
+	Text fps_text(gRenderer, fps, {255, 255, 255, 255}, font_16);
+	fps_text.render(gRenderer,20,20);
+
+	score = "Score: ";
+	score.append(std::to_string(getScore()));
+	Text score_text(gRenderer, score, {255, 255, 255, 255}, font_16);
+	score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
+
+	high_score_string = "High Score: ";
+	high_score_string.append(std::to_string(high_score));
+	Text high_score_text(gRenderer, high_score_string, {255, 255, 255, 255}, font_16);
+	high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
+
+	std::string health_string = "Health ";
+	std::string back_gun = "Back Gun";
+	std::string front_gun = "Front Gun";
+	Text healthText(gRenderer, health_string, {255, 255, 255, 255}, font_16);
+	healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
+	Text backText(gRenderer, back_gun, {255, 255, 255, 255}, font_16);
+	backText.render(gRenderer, 670, SCREEN_HEIGHT - 52);
+	Text frontText(gRenderer, front_gun, {255, 255, 255, 255}, font_16);
+	frontText.render(gRenderer, 960, SCREEN_HEIGHT - 52);
+
+	int health = player->getHealth();
+	SDL_Rect outline = {199, SCREEN_HEIGHT - 56, 202, 32};
+	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+	SDL_RenderDrawRect(gRenderer, &outline);
+	if(player->invincePower){
+		SDL_SetRenderDrawColor(gRenderer, 0xD4, 0xAF, 0x37, 0xFF);
+	}
+	else{
+		if (health > 75) {
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+		}
+		else if (health >= 50) {
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
+		}
+		else if (health >= 20) {
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
+		}
+		else {
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+		}
+	}
+	SDL_Rect health_rect = {200, SCREEN_HEIGHT - 55, 2 * health, 30};
+	SDL_RenderFillRect(gRenderer, &health_rect);
+
+	// Draw the bars for forward heat and backwards heat
+	int fHeat = player->getFrontHeat();
+	int bHeat = player->getBackHeat();
+	outline = {749, SCREEN_HEIGHT - 56, 152, 32};
+	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+	SDL_RenderDrawRect(gRenderer, &outline);
+	outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
+	SDL_RenderDrawRect(gRenderer, &outline);
+
+	if(player->bshot_maxed){
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+	}
+	else{
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+	}
+	SDL_Rect heat_rect = {750, SCREEN_HEIGHT - 55, bHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
+	SDL_RenderFillRect(gRenderer, &heat_rect);
+	if(player->fshot_maxed){
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+	}
+	else{
+		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+	}
+	heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
+	SDL_RenderFillRect(gRenderer, &heat_rect);
+}
 	
 void bossBattle() {
-	// Wait half a second before bringing the boss in
-	int startTime = SDL_GetTicks();
-	while (startTime > SDL_GetTicks() - 500)
-	{
-		
-	} 
+	delete en;
+	delete blocks;
 	
-	// Bring in the boss
-	boss = new Boss(SCREEN_WIDTH, SCREEN_HEIGHT/2 - Boss::HEIGHT/2, 0, 0, difficulty, gRenderer);
-	while (boss->getX() > SCREEN_WIDTH - Boss::HEIGHT - 50) {
-		//boss->moveLeft();
+	bool bossFight = true;
+	bool bossArrived = false;
+	bool bossEntered = false;
+	int start_time = SDL_GetTicks();
+	while (bossFight) {
+		
+		// Scroll to the side
+		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
+		bg_x += (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
+		last_horiz_scroll = SDL_GetTicks();
+		
+		while(SDL_PollEvent(&e)) {
+			if (e.type == SDL_QUIT) {
+				int current_highscore = readHighScore(difficulty);
+				if (current_highscore < getScore() || current_highscore == 0)
+				{
+					saveHighScore(difficulty);
+				}
+
+				close();
+			}
+			// Game can end by either pressing on '7' on the numpad or on top row of numbers
+			if (e.type == SDL_KEYDOWN && e.key.repeat == 0 && (e.key.keysym.sym == SDLK_7 || e.key.keysym.sym == SDLK_KP_7))
+			{
+				game_over->isGameOver = true;
+			}
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+				newBullet = player->handleForwardFiring();
+				if (newBullet != nullptr) {
+					bullets.push_back(newBullet);
+				}
+			}
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_b) {
+				newBullet = player->handleBackwardFiring();
+				if (newBullet != nullptr) {
+					bullets.push_back(newBullet);
+				}
+			}
+			else {
+				player->handleEvent(e);
+			}
+			if(game_over->isGameOver)
+			{
+				int over = game_over->handleEvent(e, gRenderer);
+				if(over){
+					close();
+				}
+				// If the game is restarted, reset some things
+				if (!game_over->isGameOver) {
+					en = new Enemy(-125, SCREEN_HEIGHT/2, 125, 53, 200, 200, game_over->diff, gRenderer);
+					delete player;
+					player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, game_over->diff, gRenderer);
+					delete boss;
+					//random open air area
+					int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
+					int openAirLength = (rand() % 200) + 100;
+					blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, game_over->diff);
+					playerDestroyed = false;
+					camX = 0;
+					camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
+					return;
+				}
+			}
+		}
+		
+		// Move player
+		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
+		
+		//move the bullets
+		for (int i = 0; i < bullets.size(); i++) {
+			bullets[i]->move();
+		}
+		for (int i = 0; i < missiles.size(); i++)
+		{
+			double x_scroll = (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
+			missiles[i]->move(x_scroll);
+		}
+		
+		// Wait half a second before bringing the boss in
+		if (SDL_GetTicks() - 500 > start_time && !bossArrived) {
+			// Bring in the boss
+			if (!bossEntered) {
+				std::cout << "Creating new boss..." << std::endl;
+				boss = new Boss(SCREEN_WIDTH, SCREEN_HEIGHT/2 - Boss::HEIGHT/2, 0, 0, difficulty, gRenderer);
+				bossEntered = true;
+			}
+			if (boss->getX() > SCREEN_WIDTH - Boss::WIDTH - 50) {
+				boss->moveLeft();
+			}
+			else {
+				bossArrived = true;
+			}
+		}
+		if (bossArrived){
+			boss->move(SCREEN_WIDTH);
+		}
+		
+		// Handle missile collisions (can move this to a separate method if we want, but we can't use the current check_missile_collisions because the boss loop uses different objects
+		for (int i = 0; i < missiles.size(); i++) {
+			
+			bool destroyed = false;
+
+			//loop to check for missiles colliding with each other
+			for(int j = i + 1; j < missiles.size();j++){
+				if(missiles[i]->checkCollision(missiles[j])){
+					destroyed = true;
+					//Need to redo this line with a different version of the MapBlocks object for the boss battle
+					//blocks->addExplosion(missiles[j]->getX() + camX, missiles[j]->getY() + camY, missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
+					delete missiles[j];
+					missiles.erase(missiles.begin() + j);
+				}
+			}
+			//check collisions with bullets
+			for(int j = 0; j < bullets.size();j++){
+				if(missiles[i]->checkCollision(bullets[j])){
+					destroyed = true;
+					bullets[j]->~Bullet();
+					delete bullets[j];
+					bullets.erase(bullets.begin() + j);
+				}
+			}
+			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
+			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
+
+			int missile_hitbox = missiles[i]->get_blast_radius() / 3;
+
+			// Explode the warhead if the missile hits the enemy or player
+			if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
+			{
+				// Deal damage to the player and/or enemy depending on their distance and blast radius
+
+				if (player_distance <= missiles[i]->get_blast_radius())
+				{
+					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
+					player->hit(damage);
+				}
+
+				if (enemy_distance <= missiles[i]->get_blast_radius())
+				{
+					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
+					en->hit(damage);
+				}
+
+				destroyed = true;
+			}
+			
+			// Remove missiles from the game if they are destroyed
+			// after rendering explosion
+			if (destroyed)
+			{
+				//Need to redo this line with a different version of the MapBlocks object for the boss battle
+				//blocks->addExplosion(missiles[i]->getX() + camX, missiles[i]->getY() + camY, missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+				delete missiles[i];
+				missiles.erase(missiles.begin() + i);
+			}
+			else if (missiles[i]->getX() > SCREEN_WIDTH || missiles[i]->getX() - missiles[i]->getWidth() < 0 || missiles[i]->getY() > SCREEN_HEIGHT || missiles[i]->getY() - missiles[i]->getHeight() < 0) {
+				delete missiles[i];
+				missiles.erase(missiles.begin() + i);
+			}
+		}
+		
+		// Handle bullet collisions
+		for (int i = bullets.size() - 1; i >= 0; i--) {
+			// If the bullet leaves the screen or hits something, it is destroyed
+			bool destroyed = false;
+			if (bullets[i]->getX() > SCREEN_WIDTH || bullets[i]->getX() - bullets[i]->getWidth() < 0 || bullets[i]->getY() > SCREEN_HEIGHT || bullets[i]->getY() - bullets[i]->getHeight() < 0) {
+				destroyed = true;
+			}
+			if (player->checkCollisionBullet(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+				destroyed = true;
+				player->hit(5);
+			}
+			
+			if (destroyed) {
+				delete bullets[i];
+				bullets.erase(bullets.begin() + i);
+			}
+		}
+		
+		// Clear the screen
+		SDL_RenderClear(gRenderer);
+
+		// Finally removed background drawing from the Player class
+		SDL_Rect bgRect = {-((int)bg_x % SCREEN_WIDTH), 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+		bgRect.x += SCREEN_WIDTH;
+		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
+		
+		// Draw the boss if it exists
+		if (bossEntered) {
+			boss->renderBoss(SCREEN_WIDTH, gRenderer);
+		}
+		
+		// Draw the player
+		if (!playerDestroyed) player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+		
+		//draw the bullets
+		for (int i = 0; i < bullets.size(); i++) {
+			bullets[i]->renderBullet(gRenderer);
+		}
+
+		// Render the missiles
+		for (auto& missile : missiles)
+		{
+			missile->renderMissile(gRenderer);
+		}
+		
+		renderTextAndHealth();
+		
+		int health = player->getHealth();
+		if(health < 1 && !playerDestroyed){
+			playerDestroyed = true;
+			time_destroyed = SDL_GetTicks();
+			//Need to redo this line with a different version of the MapBlocks object for the boss battle
+			//blocks->addExplosion(player->getPosX() + camX, player->getPosY() + camY, player->getWidth(), player->getHeight(),0);
+			Mix_HaltMusic();
+		}
+		if (playerDestroyed && SDL_GetTicks() > time_destroyed + 1000) {
+			game_over->isGameOver = true;
+		}
+		if(game_over->isGameOver)
+		{
+			if (current_track != 1) {
+				Mix_PlayMusic(trash_beat, -1);
+				current_track = 1;
+			}
+			game_over->stopGame(player);
+			game_over->render(gRenderer);
+		}
 		SDL_RenderPresent(gRenderer);
 	}
 }
@@ -394,14 +708,7 @@ int main() {
 	diff_sel_screen = new DifficultySelectionScreen(loadImage("sprites/DiffScreen.png"), loadImage("sprites/easy_button.png"), loadImage("sprites/med_button.png"), loadImage("sprites/hard_button.png"));
 	game_over = new GameOver(loadImage("sprites/cred_button.png"), loadImage("sprites/restart_button.png"));
 
-	Bullet* newBullet;
-	std::string fps;//for onscreen fps
-	std::string score; // for onscreen score
-	std::string high_score_string;
-
-
 	SDL_Rect bgRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-	SDL_Event e;
 	bool gameon = true;
 
 	Mix_PlayMusic(start_track, -1);
@@ -431,10 +738,11 @@ int main() {
 		SDL_RenderPresent(gRenderer);
 	}
 
-	int high_score = readHighScore(difficulty); // For onscreen high score
+	high_score = readHighScore(difficulty); // For onscreen high score
 
 	static TTF_Font *font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
-	static TTF_Font *font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
+	font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
+	
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, difficulty);
 
 	//Start the player on the left side of the screen
@@ -442,6 +750,7 @@ int main() {
 
 	//start enemy on left side behind player
 	en = new Enemy(-125, SCREEN_HEIGHT/2, 125, 53, 200, 200, difficulty, gRenderer);
+	
 	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer, difficulty);
 
 	while(gameon) {
@@ -450,13 +759,11 @@ int main() {
 			current_track = 0;
 			Mix_PlayMusic(main_track, -1);
 		}
-		// Scroll to the side, unless the end of the level has been reached
+		// Scroll to the side
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		bg_x += (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
-		if (camX > LEVEL_WIDTH - SCREEN_WIDTH) {
-			camX = LEVEL_WIDTH - SCREEN_WIDTH;
-		}
+
 		last_horiz_scroll = SDL_GetTicks();
 
 		while(SDL_PollEvent(&e)) {
@@ -553,7 +860,7 @@ int main() {
 
 		missiles = blocks->handleFiring(missiles, player->getPosX(), player->getPosY());
 
-		if (!cave_system->isEnabled || camX > LEVEL_WIDTH){
+		if (!cave_system->isEnabled && camX < LEVEL_WIDTH){
 			if(!prev_kam)
 				kam->move(player, SCREEN_WIDTH);
 			else{
@@ -575,7 +882,16 @@ int main() {
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
 		}
-
+		// Have the enemy and kamikaze exit the screen if it's boss time.
+		if (camX > LEVEL_WIDTH && (en->getX() > -en->getWidth() || kam->getX() < SCREEN_WIDTH)) {
+			en->moveLeft();
+			kam->moveRight();
+			SDL_RenderPresent(gRenderer);
+		}
+		else if (camX > LEVEL_WIDTH + SCREEN_WIDTH) {
+			bossBattle();
+		}
+		
 		//Move Blocks and check collisions
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
@@ -645,7 +961,8 @@ int main() {
 			}
 		}
 
-		if((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
+		if(((int) camX % CaveSystem::CAVE_SYSTEM_FREQ < ((int) (camX - (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000)) % CaveSystem::CAVE_SYSTEM_FREQ)
+					&& camX < LEVEL_WIDTH - CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH - SCREEN_WIDTH)
 		{
 			// std::cout << "Creating Cave System" << std::endl;
 			cave_system = new CaveSystem(camX, camY, SCREEN_WIDTH, difficulty);
@@ -683,16 +1000,6 @@ int main() {
 			// Change kamikaze sprite
 			kam->initializeSprites(gRenderer);
 		}
-
-		// Have the enemy and kamikaze exit the screen. Player moves to the center of the screen in preparation for the battle
-		if (camX < LEVEL_WIDTH && (en->getX() > -en->getHeight() || kam->getX() < SCREEN_WIDTH)) {
-			en->moveLeft();
-			kam->moveRight();
-			SDL_RenderPresent(gRenderer);
-		}
-		else if (camX < LEVEL_WIDTH) {
-			bossBattle();
-		}
 		
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
@@ -725,90 +1032,9 @@ int main() {
 			missile->renderMissile(gRenderer);
 		}
 
-		framecount++;
-		fps_cur_time=SDL_GetTicks();
-		if (fps_cur_time - fps_last_time > 1000) {
-			fps= std::to_string((int) (framecount / ((fps_cur_time - fps_last_time) / 1000.0)));
-			fps +=" fps";
-			// reset
-			fps_last_time = fps_cur_time;
-			framecount = 0;
-		}
-		Text fps_text(gRenderer, fps, {255, 255, 255, 255}, font_16);
-		fps_text.render(gRenderer,20,20);
-
-		score = "Score: ";
-		score.append(std::to_string(getScore()));
-		Text score_text(gRenderer, score, {255, 255, 255, 255}, font_16);
-		score_text.render(gRenderer, SCREEN_WIDTH - 130, 7);
-
-		high_score_string = "High Score: ";
-		high_score_string.append(std::to_string(high_score));
-		Text high_score_text(gRenderer, high_score_string, {255, 255, 255, 255}, font_16);
-		high_score_text.render(gRenderer, SCREEN_WIDTH - 130, 32);
-
-		std::string health_string = "Health ";
-		std::string back_gun = "Back Gun";
-		std::string front_gun = "Front Gun";
-		Text healthText(gRenderer, health_string, {255, 255, 255, 255}, font_16);
-		healthText.render(gRenderer, 140, SCREEN_HEIGHT - 52);
-		Text backText(gRenderer, back_gun, {255, 255, 255, 255}, font_16);
-		backText.render(gRenderer, 670, SCREEN_HEIGHT - 52);
-		Text frontText(gRenderer, front_gun, {255, 255, 255, 255}, font_16);
-		frontText.render(gRenderer, 960, SCREEN_HEIGHT - 52);
-
-
+		renderTextAndHealth();
 
 		int health = player->getHealth();
-		SDL_Rect outline = {199, SCREEN_HEIGHT - 56, 202, 32};
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-		SDL_RenderDrawRect(gRenderer, &outline);
-		if(player->invincePower){
-			SDL_SetRenderDrawColor(gRenderer, 0xD4, 0xAF, 0x37, 0xFF);
-		}
-		else{
-			if (health > 75) {
-				SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-			}
-			else if (health >= 50) {
-				SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
-			}
-			else if (health >= 20) {
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
-			}
-			else {
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-			}
-		}
-		SDL_Rect health_rect = {200, SCREEN_HEIGHT - 55, 2 * health, 30};
-		SDL_RenderFillRect(gRenderer, &health_rect);
-
-		// Draw the bars for forward heat and backwards heat
-		int fHeat = player->getFrontHeat();
-		int bHeat = player->getBackHeat();
-		outline = {749, SCREEN_HEIGHT - 56, 152, 32};
-		SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-		SDL_RenderDrawRect(gRenderer, &outline);
-		outline = {1049, SCREEN_HEIGHT - 56, 152, 32};
-		SDL_RenderDrawRect(gRenderer, &outline);
-
-		if(player->bshot_maxed){
-			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-		}
-		else{
-			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-		}
-		SDL_Rect heat_rect = {750, SCREEN_HEIGHT - 55, bHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
-		SDL_RenderFillRect(gRenderer, &heat_rect);
-		if(player->fshot_maxed){
-			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-		}
-		else{
-			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-		}
-		heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
-		SDL_RenderFillRect(gRenderer, &heat_rect);
-
 		if(health < 1 && !playerDestroyed){
 			playerDestroyed = true;
 			time_destroyed = SDL_GetTicks();
@@ -824,7 +1050,7 @@ int main() {
 				Mix_PlayMusic(trash_beat, -1);
 				current_track = 1;
 			}
-			game_over->stopGame(player, blocks);
+			game_over->stopGame(player);
 			game_over->render(gRenderer);
 		}
 		SDL_RenderPresent(gRenderer);

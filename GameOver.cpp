@@ -11,11 +11,10 @@ GameOver::GameOver(SDL_Texture *cred, SDL_Texture *rest){
     btn_credits = cred;
 };
 
-void GameOver::stopGame(Player *player, MapBlocks *map_blocks)
+void GameOver::stopGame(Player *player)
 {
     player->setVelX(0);
     player->setVelY(0);
-    map_blocks->BLOCKS_N = 0;
 }
 
 int GameOver::handleEvent(SDL_Event &e, SDL_Renderer *gRenderer)
