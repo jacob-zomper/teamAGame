@@ -18,7 +18,7 @@ public:
   void renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
   bool checkCollisionBullet(int x, int y, int w, int h);
-  void move(int SCREEN_WIDTH, bool active);
+  void move(int SCREEN_WIDTH);
   Missile* handleFiringMissile();
   Bullet* handleFiringUp();
   Bullet* handleFiringDown();
@@ -57,8 +57,18 @@ private:
   int yVelo;
   int time_since_move;
   int last_move;
-  bool up;
-  bool mvmt;
+
+
+  //Patern One function and variables
+  void patternOne(int SCREEN_WIDTH);
+  static const int PATTERNONEFREQ = 25000;
+  int time_since_pattern;
+  int last_pattern;
+  int corner_delay = 2500;
+  bool upright;
+  bool upleft;
+  bool downleft;
+  bool downright;
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;

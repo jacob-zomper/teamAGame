@@ -32,13 +32,17 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
   boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
   last_move = SDL_GetTicks();
+  time_since_pattern = SDL_GetTicks();
   last_shot_missile = SDL_GetTicks() - FIRING_FREQ;
   last_shot_down = last_shot_missile;
   last_shot_up = last_shot_missile;
-  up = false;
-  mvmt = false;
+  upright = false;
+  upleft = false;
+  downleft = false;
+  downright = false;
   maxXVelo = 200;
   maxYVelo = 200;
+  last_pattern = 0;
   //sprite1 = loadImage(name, gRenderer);
 }
 
@@ -62,15 +66,20 @@ void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
 
 void Boss::move(int SCREEN_WIDTH){
 	xVelo = 0;
-	if (yVelo == 0) {
-		yVelo = maxYVelo;
-	}
-	else if (yVelo > 0 && yPos > MAX_DOWN) {
-		yVelo = -maxYVelo;
-	}
-	else if (yVelo < 0 && yPos < MAX_UP) {
-		yVelo = maxYVelo;
-	}
+  time_since_pattern = SDL_GetTicks() - last_pattern;
+  if (time_since_pattern >= PATTERNONEFREQ){
+    patternOne(SCREEN_WIDTH);
+  }else{
+      if (yVelo == 0) {
+		      yVelo = maxYVelo;
+	    }
+	    else if (yVelo > 0 && yPos > MAX_DOWN) {
+		      yVelo = -maxYVelo;
+	    }
+	    else if (yVelo < 0 && yPos < MAX_UP) {
+		      yVelo = maxYVelo;
+	    }
+  }
 	time_since_move = SDL_GetTicks() - last_move;
 	xPos += (double) (xVelo * time_since_move)/1000;
 	yPos += (double) (yVelo * time_since_move)/1000;
@@ -121,7 +130,7 @@ void Boss::hit(int d){
   if (health - d < 0)
     health = 0;
   else
-    health -= 0;
+    health -= d;
 }
 
 int Boss::getX(){
@@ -148,4 +157,63 @@ void Boss::moveLeft() {
 	time_since_move = SDL_GetTicks() - last_move;
 	xPos -= (double) (maxXVelo * time_since_move) / 1000;
 	last_move = SDL_GetTicks();
+}
+
+void Boss::patternOne(int SCREEN_WIDTH){
+  xVelo = 0;
+  yVelo = 0;
+  if(!upright){
+    if (yPos > MAX_UP)
+      yVelo = -maxYVelo;
+    else
+      yVelo = 0;
+
+    if (time_since_pattern - PATTERNONEFREQ >= corner_delay)
+      upright = true;
+
+  }else if(!upleft){
+
+    if (xPos > 50){
+      xVelo = -(maxXVelo*2);
+      yVelo = 0;
+    }else{
+      xVelo = 0;
+      yVelo = 0;
+    }
+
+    if ((time_since_pattern - PATTERNONEFREQ) >= corner_delay*2)
+      upleft = true;
+
+  }else if(!downleft){
+    if (yPos < MAX_DOWN){
+      xVelo = 0;
+      yVelo = maxYVelo;
+    }else{
+      xVelo = 0;
+      yVelo = 0;
+    }
+
+      if ((time_since_pattern-PATTERNONEFREQ) >= corner_delay*3)
+        downleft = true;
+
+  }else if(!downright){
+    if (xPos < SCREEN_WIDTH - WIDTH - 50){
+      xVelo = (maxXVelo*2);
+      yVelo = 0;
+    }else{
+      xVelo = 0;
+      yVelo = 0;
+    }
+
+    if (time_since_pattern-PATTERNONEFREQ >= corner_delay*4)
+      downright = true;
+  }
+
+  if(downright){
+    upright = false;
+    upleft = false;
+    downleft = false;
+    downright = false;
+    last_pattern = SDL_GetTicks();
+  }
 }
