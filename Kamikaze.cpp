@@ -116,7 +116,8 @@ void Kamikaze::initializeSprites(SDL_Renderer* gRenderer)
 }
 
 void Kamikaze::renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer) {
-
+	
+	kam_sprite = {(int)xPos,(int)yPos,width,height};
     if(xPos < SCREEN_WIDTH){
       if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1)
         SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &kam_sprite, tiltAngle, nullptr, SDL_FLIP_HORIZONTAL);
@@ -211,4 +212,10 @@ void Kamikaze::setArrivalTime(int delay){
 
 bool Kamikaze::blast(){
   return shootable;
+}
+
+void Kamikaze::moveRight() {
+	time_since_move = SDL_GetTicks() - last_move;
+	xPos += (double) (MAX_MOVE_VELO * time_since_move) / 1000;
+	last_move = SDL_GetTicks();
 }

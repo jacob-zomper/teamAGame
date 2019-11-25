@@ -157,24 +157,26 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	}
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
-			if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
-				return;
-			}
+		enemy_sprite = {(int)xPos,(int)yPos,width,height};
+		if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
+			return;
+		}
 
-			if (!is_destroyed){
-				if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
-      		SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-      	}else {
-        	SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-      	}
-      	enemy_hitbox=enemy_sprite;
+		if (!is_destroyed){
+			if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+				SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
 			}
+			else {
+				SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+			}
+			enemy_hitbox=enemy_sprite;
+		}
 
-			if ((SDL_GetTicks() - time_destroyed) >= SPAWN_FREQ && is_destroyed){
-				xPos = -width;
-				health = 20;
-				is_destroyed = false;
-			}
+		if ((SDL_GetTicks() - time_destroyed) >= SPAWN_FREQ && is_destroyed){
+			xPos = -width;
+			health = 20;
+			is_destroyed = false;
+		}
     }
 
     void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom, int kamiX, int kamiY, int cave_y)
@@ -224,7 +226,6 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			if (cave_y > yPos + height / 2 + 5) yPos += (double) (maxYVelo * time_since_move) / 1000;
 			else if (cave_y < yPos + height / 2 - 5) yPos -= (double) (maxYVelo * time_since_move) / 1000;
 		}
-		enemy_sprite = {(int)xPos,(int)yPos,width,height};
 		last_move = SDL_GetTicks();
     }
 
@@ -543,6 +544,12 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     	return nullptr;
     }
 
-		int Enemy::getHealth(){
-			return health;
-		}
+	int Enemy::getHealth(){
+		return health;
+	}
+	
+	void Enemy::moveLeft() {
+		time_since_move = SDL_GetTicks() - last_move;
+		xPos -= (double) (maxXVelo * time_since_move) / 1000;
+		last_move = SDL_GetTicks();
+	}

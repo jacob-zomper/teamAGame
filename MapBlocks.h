@@ -282,8 +282,8 @@ public:
 
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
-
-    static const int CEILING_N = 100000/72;
+	
+	int CEILING_N;
 
     SDL_Renderer *gRenderer;
 

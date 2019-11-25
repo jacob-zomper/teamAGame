@@ -256,6 +256,7 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
 {
     BLOCK_ABS_X = rand() % LEVEL_WIDTH;
 	BLOCK_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT;
+	
 	if (rand() % 2 == 1) {
 		BLOCK_ABS_Y = LEVEL_HEIGHT - 720 + WallBlock::block_side;
 	}
@@ -402,6 +403,8 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
         AUTOFIRE_N = 10;
         SMALL_N = 15;
         ALLY_N = 30;    }
+	
+	CEILING_N = LEVEL_WIDTH / WallBlock::block_side;
 
     int i;
     for(i = 0; i<CEILING_N; i++){
