@@ -314,7 +314,7 @@ void check_missile_collisions(double x_scroll)
 			for(int j = i + 1; j < missiles.size();j++){//loop to check for missiles colliding with each other
 				if(missiles[i]->checkCollision(missiles[j])){
 					destroyed = true;
-					blocks->addExplosion(missiles[j]->getX(), missiles[j]->getY(), missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
+					blocks->addExplosion(missiles[j]->getX() + camX, missiles[j]->getY() + camY, missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
 					delete missiles[j];
 					missiles.erase(missiles.begin() + j);
 				}
@@ -322,6 +322,7 @@ void check_missile_collisions(double x_scroll)
 
 			for(int j = 0; j < bullets.size();j++){
 				if(missiles[i]->checkCollision(bullets[j])){
+				std::cout << 6 << std::endl;
 					destroyed = true;
 					bullets[j]->~Bullet();
 					delete bullets[j];
@@ -358,7 +359,7 @@ void check_missile_collisions(double x_scroll)
 		// after rendering explosion
 		if (destroyed)
 		{
-			blocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+			blocks->addExplosion(missiles[i]->getX() + camX, missiles[i]->getY() + camY, missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
 			delete missiles[i];
 			missiles.erase(missiles.begin() + i);
 		}
@@ -373,6 +374,7 @@ void check_missile_collisions_boss() {
 		//loop to check for missiles colliding with each other
 		for(int j = i + 1; j < missiles.size();j++){
 			if(missiles[i]->checkCollision(missiles[j])){
+				std::cout << 1 << std::endl;
 				destroyed = true;
 				bossBlocks->addExplosion(missiles[j]->getX(), missiles[j]->getY(), missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
 				delete missiles[j];
@@ -382,6 +384,7 @@ void check_missile_collisions_boss() {
 		//check collisions with bullets
 		for(int j = 0; j < bullets.size();j++){
 			if(missiles[i]->checkCollision(bullets[j])){
+				std::cout << 2 << std::endl;
 				destroyed = true;
 				bullets[j]->~Bullet();
 				delete bullets[j];
@@ -389,27 +392,19 @@ void check_missile_collisions_boss() {
 			}
 		}
 		double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
-		double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
 
 		int missile_hitbox = missiles[i]->get_blast_radius() / 3;
 
 		// Explode the warhead if the missile hits the enemy or player
-		if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
+		if (player_distance <= missile_hitbox)
 		{
-			// Deal damage to the player and/or enemy depending on their distance and blast radius
+			// Deal damage to the player depending on their distance and blast radius
 
 			if (player_distance <= missiles[i]->get_blast_radius())
 			{
 				double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
 				player->hit(damage);
 			}
-
-			if (enemy_distance <= missiles[i]->get_blast_radius())
-			{
-				double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
-				en->hit(damage);
-			}
-
 			destroyed = true;
 		}
 
@@ -417,11 +412,14 @@ void check_missile_collisions_boss() {
 		// after rendering explosion
 		if (destroyed)
 		{
+				std::cout << 3 << std::endl;
 			bossBlocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
 			delete missiles[i];
 			missiles.erase(missiles.begin() + i);
 		}
-		else if (missiles[i]->getX() > SCREEN_WIDTH || missiles[i]->getX() - missiles[i]->getWidth() < 0 || missiles[i]->getY() > SCREEN_HEIGHT || missiles[i]->getY() - missiles[i]->getHeight() < 0) {
+		else if (missiles[i]->getX() > SCREEN_WIDTH || missiles[i]->getX() + missiles[i]->getWidth() < 0 || missiles[i]->getY() > SCREEN_HEIGHT || missiles[i]->getY() - missiles[i]->getHeight() < 0) {
+			
+				std::cout << 4 << std::endl;
 			delete missiles[i];
 			missiles.erase(missiles.begin() + i);
 		}
