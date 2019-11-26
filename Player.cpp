@@ -62,91 +62,96 @@ Player::~Player()
 }
 
 void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
+{
+    if (diff == 1)
     {
-        if (diff == 1)
-        {
-            sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
-            sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+        sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
+        sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
 
-            player_height = PLAYER_HEIGHT;
-            player_width = PLAYER_WIDTH;
-        }
-        else
-        {
-            int min = 1, max = 9;
-            int random_sprite = rand() % (max - min + 1) + min;
-
-            switch (random_sprite)
-            {
-                case 1:
-                    sprite1 = loadImage("sprites/a10.png", gRenderer);
-                    sprite2 = loadImage("sprites/a10.png", gRenderer);
-
-                    player_width = 178;
-                    player_height = 47;
-                    break;
-                case 2:
-                    sprite1 = loadImage("sprites/f16.png", gRenderer);
-                    sprite2 = loadImage("sprites/f16.png", gRenderer);
-                    player_width = 124;
-                    player_height = 37;
-                    break;
-                case 3: 
-                    sprite1 = loadImage("sprites/f22.png", gRenderer);
-                    sprite2 = loadImage("sprites/f22.png", gRenderer);
-                    player_width = 164;
-                    player_height = 38;
-                    break;
-                case 4:
-                    sprite1 = loadImage("sprites/f35.png", gRenderer);
-                    sprite2 = loadImage("sprites/f35.png", gRenderer);
-                    player_width = 125;
-                    player_height = 33;
-                    break;
-                case 5:
-                    sprite1 = loadImage("sprites/f4.png", gRenderer);
-                    sprite2 = loadImage("sprites/f4.png", gRenderer);
-                    player_width = 152;
-                    player_height = 42;
-                    break;
-                case 6:
-                    sprite1 = loadImage("sprites/mig21.png", gRenderer);
-                    sprite2 = loadImage("sprites/mig21.png", gRenderer);
-                    player_width = 155;
-                    player_height = 45;
-                    break;
-                case 7:
-                    sprite1 = loadImage("sprites/mig21e.png", gRenderer);
-                    sprite2 = loadImage("sprites/mig21e.png", gRenderer);
-                    player_width = 155;
-                    player_height = 50;
-                    break;
-                case 8:
-                    sprite1 = loadImage("sprites/mig31.png", gRenderer);
-                    sprite2 = loadImage("sprites/mig31.png", gRenderer);
-                    player_width = 209;
-                    player_height = 38;
-                    break;
-                case 9:
-                    sprite1 = loadImage("sprites/mig29.png", gRenderer);
-                    sprite2 = loadImage("sprites/mig29.png", gRenderer);
-                    player_width = 148;
-                    player_height = 42;
-                    break;
-                case 10:
-                    sprite1 = loadImage("sprites/su24.png", gRenderer);
-                    sprite2 = loadImage("sprites/su24.png", gRenderer);
-                    player_width = 176;
-                    player_height = 50;
-                    break;
-            }           
-        }
-
-        player_hurt_height = player_height * 0.8;
-        player_hurt_width = player_width * 0.8;
-        s_player_hurt_height = player_hurt_height / 1.5;
-        s_player_hurt_width = player_hurt_width / 1.5;
+        player_height = PLAYER_HEIGHT;
+        player_width = PLAYER_WIDTH;
     }
+    else
+    {
+        int min = 1, max = 9;
+        int random_sprite = rand() % (max - min + 1) + min;
+
+        switch (random_sprite)
+        {
+            case 1:
+                sprite1 = loadImage("sprites/a10.png", gRenderer);
+                sprite2 = loadImage("sprites/a10.png", gRenderer);
+
+                player_width = 178;
+                player_height = 47;
+                break;
+            case 2:
+                sprite1 = loadImage("sprites/f16.png", gRenderer);
+                sprite2 = loadImage("sprites/f16.png", gRenderer);
+                player_width = 124;
+                player_height = 37;
+                break;
+            case 3: 
+                sprite1 = loadImage("sprites/f22.png", gRenderer);
+                sprite2 = loadImage("sprites/f22.png", gRenderer);
+                player_width = 164;
+                player_height = 38;
+                break;
+            case 4:
+                sprite1 = loadImage("sprites/f35.png", gRenderer);
+                sprite2 = loadImage("sprites/f35.png", gRenderer);
+                player_width = 125;
+                player_height = 33;
+                break;
+            case 5:
+                sprite1 = loadImage("sprites/f4.png", gRenderer);
+                sprite2 = loadImage("sprites/f4.png", gRenderer);
+                player_width = 152;
+                player_height = 42;
+                break;
+            case 6:
+                sprite1 = loadImage("sprites/mig21.png", gRenderer);
+                sprite2 = loadImage("sprites/mig21.png", gRenderer);
+                player_width = 155;
+                player_height = 45;
+                break;
+            case 7:
+                sprite1 = loadImage("sprites/mig21e.png", gRenderer);
+                sprite2 = loadImage("sprites/mig21e.png", gRenderer);
+                player_width = 155;
+                player_height = 50;
+                break;
+            case 8:
+                sprite1 = loadImage("sprites/mig31.png", gRenderer);
+                sprite2 = loadImage("sprites/mig31.png", gRenderer);
+                player_width = 209;
+                player_height = 38;
+                break;
+            case 9:
+                sprite1 = loadImage("sprites/mig29.png", gRenderer);
+                sprite2 = loadImage("sprites/mig29.png", gRenderer);
+                player_width = 148;
+                player_height = 42;
+                break;
+            case 10:
+                sprite1 = loadImage("sprites/su24.png", gRenderer);
+                sprite2 = loadImage("sprites/su24.png", gRenderer);
+                player_width = 176;
+                player_height = 50;
+                break;
+        }           
+    }
+
+    player_hurt_height = player_height * 0.8;
+    player_hurt_width = player_width * 0.8;
+    s_player_hurt_height = player_hurt_height / 1.5;
+    s_player_hurt_width = player_hurt_width / 1.5;
+}
+
+void Player::handleMute()
+{
+    Mix_VolumeChunk(bullet_shot, abs(Mix_VolumeChunk(bullet_shot, -1) - 128));
+}
 
 //Takes key presses and adjusts the player's velocity
 void Player::handleEvent(SDL_Event &e)
