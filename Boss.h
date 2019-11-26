@@ -60,22 +60,20 @@ private:
   int last_move;
 
 
-  //Patern One function and variables
+  //Pattern functions and variables
+  static const int NUM_PATTERNS = 1;
+  static const int PATTERN_DELAY = 1000;	// Amount of delay between patterns
+  int time_since_pattern;		// Time since a pattern finished
+  int last_pattern;				// Time when last pattern finished
+  int pattern;					// Current pattern number (0 for no pattern)
+  int phase;					// Current phase of a pattern (varies by pattern)	
+  bool needsFiring;				// True when it's time to fire
+  int numFired;					// Number of missiles fired in pattern so far
+
+  // Pattern one methods and variables
   void patternOne(int SCREEN_WIDTH);
-  static const int PATTERNONEFREQ = 1000;
-  int time_since_pattern;
-  int last_pattern;
-  int corner_delay = 2500;
-  bool upright;
-  bool upleft;
-  bool downleft;
-  bool downright;
-  bool ur_fire;
-  bool ul_fire;
-  bool dl_fire;
-  bool dr_fire;
-  bool oneActive;
-  int corner_location;
+  std::vector<Missile*> handleFiringMissilePatternOne(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
+  static const int pattern_one_delay = 2500;
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;
@@ -88,6 +86,7 @@ private:
 
   //Health variables
   int health;
+  int difficulty;
 
 };
 #endif
