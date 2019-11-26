@@ -62,7 +62,7 @@ private:
 
   //Patern One function and variables
   void patternOne(int SCREEN_WIDTH);
-  static const int PATTERNONEFREQ = 25000;
+  static const int PATTERNONEFREQ = 1000;
   int time_since_pattern;
   int last_pattern;
   int corner_delay = 2500;
