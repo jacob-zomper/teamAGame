@@ -47,6 +47,7 @@ int difficulty = 0;
 
 Player * player;
 MapBlocks *blocks;
+BossBlocks * bossBlocks;
 GameOver *game_over;
 StartScreen *start_screen;
 DifficultySelectionScreen *diff_sel_screen;
@@ -74,7 +75,7 @@ int time_destroyed;
 
 // Scrolling-related times so that scroll speed is independent of framerate
 int time_since_horiz_scroll;
-int last_horiz_scroll = SDL_GetTicks();
+int last_horiz_scroll;
 
 //framerate timer
 Uint32 fps_last_time = SDL_GetTicks();
@@ -313,7 +314,7 @@ void check_missile_collisions(double x_scroll)
 			for(int j = i + 1; j < missiles.size();j++){//loop to check for missiles colliding with each other
 				if(missiles[i]->checkCollision(missiles[j])){
 					destroyed = true;
-					blocks->addExplosion(missiles[j]->getX() + camX, missiles[j]->getY() + camY, missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
+					blocks->addExplosion(missiles[j]->getX(), missiles[j]->getY(), missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
 					delete missiles[j];
 					missiles.erase(missiles.begin() + j);
 				}
@@ -357,7 +358,70 @@ void check_missile_collisions(double x_scroll)
 		// after rendering explosion
 		if (destroyed)
 		{
-			blocks->addExplosion(missiles[i]->getX() + camX, missiles[i]->getY() + camY, missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+			blocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+			delete missiles[i];
+			missiles.erase(missiles.begin() + i);
+		}
+	}
+}
+
+void check_missile_collisions_boss() {
+	for (int i = 0; i < missiles.size(); i++) {
+
+		bool destroyed = false;
+
+		//loop to check for missiles colliding with each other
+		for(int j = i + 1; j < missiles.size();j++){
+			if(missiles[i]->checkCollision(missiles[j])){
+				destroyed = true;
+				bossBlocks->addExplosion(missiles[j]->getX(), missiles[j]->getY(), missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
+				delete missiles[j];
+				missiles.erase(missiles.begin() + j);
+			}
+		}
+		//check collisions with bullets
+		for(int j = 0; j < bullets.size();j++){
+			if(missiles[i]->checkCollision(bullets[j])){
+				destroyed = true;
+				bullets[j]->~Bullet();
+				delete bullets[j];
+				bullets.erase(bullets.begin() + j);
+			}
+		}
+		double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
+		double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
+
+		int missile_hitbox = missiles[i]->get_blast_radius() / 3;
+
+		// Explode the warhead if the missile hits the enemy or player
+		if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
+		{
+			// Deal damage to the player and/or enemy depending on their distance and blast radius
+
+			if (player_distance <= missiles[i]->get_blast_radius())
+			{
+				double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
+				player->hit(damage);
+			}
+
+			if (enemy_distance <= missiles[i]->get_blast_radius())
+			{
+				double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
+				en->hit(damage);
+			}
+
+			destroyed = true;
+		}
+
+		// Remove missiles from the game if they are destroyed
+		// after rendering explosion
+		if (destroyed)
+		{
+			bossBlocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
+			delete missiles[i];
+			missiles.erase(missiles.begin() + i);
+		}
+		else if (missiles[i]->getX() > SCREEN_WIDTH || missiles[i]->getX() - missiles[i]->getWidth() < 0 || missiles[i]->getY() > SCREEN_HEIGHT || missiles[i]->getY() - missiles[i]->getHeight() < 0) {
 			delete missiles[i];
 			missiles.erase(missiles.begin() + i);
 		}
@@ -451,7 +515,7 @@ void renderTextAndHealth() {
 void bossBattle() {
 	delete en;
 	delete blocks;
-
+	bossBlocks = new BossBlocks(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer, difficulty);
 	bool bossFight = true;
 	bool bossArrived = false;
 	bool bossEntered = false;
@@ -505,6 +569,7 @@ void bossBattle() {
 					delete player;
 					player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, game_over->diff, gRenderer);
 					delete boss;
+					delete bossBlocks;
 					//random open air area
 					int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
 					int openAirLength = (rand() % 200) + 100;
@@ -512,8 +577,19 @@ void bossBattle() {
 					playerDestroyed = false;
 					camX = 0;
 					camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
+					last_horiz_scroll = SDL_GetTicks();
 					return;
 				}
+			}
+		}
+		if(player->getAutoFire()){
+			newBullet = player->handleForwardFiring();
+			if (newBullet != nullptr) {
+				bullets.push_back(newBullet);
+			}
+			newBullet = player->handleBackwardFiring();
+			if (newBullet != nullptr) {
+				bullets.push_back(newBullet);
 			}
 		}
 
@@ -529,6 +605,8 @@ void bossBattle() {
 			double x_scroll = (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 			missiles[i]->move(x_scroll);
 		}
+		double camShift = (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
+		bossBlocks->moveBlocks(camShift);
 
 		// Wait half a second before bringing the boss in
 		if (SDL_GetTicks() - 500 > start_time && !bossArrived) {
@@ -550,69 +628,8 @@ void bossBattle() {
 			missiles = boss->handleFiringMissile(missiles, player->getPosX(), player->getPosY(), gRenderer);
 		}
 
-		// Handle missile collisions (can move this to a separate method if we want, but we can't use the current check_missile_collisions because the boss loop uses different objects
-		for (int i = 0; i < missiles.size(); i++) {
-
-			bool destroyed = false;
-
-			//loop to check for missiles colliding with each other
-			for(int j = i + 1; j < missiles.size();j++){
-				if(missiles[i]->checkCollision(missiles[j])){
-					destroyed = true;
-					//Need to redo this line with a different version of the MapBlocks object for the boss battle
-					//blocks->addExplosion(missiles[j]->getX() + camX, missiles[j]->getY() + camY, missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
-					delete missiles[j];
-					missiles.erase(missiles.begin() + j);
-				}
-			}
-			//check collisions with bullets
-			for(int j = 0; j < bullets.size();j++){
-				if(missiles[i]->checkCollision(bullets[j])){
-					destroyed = true;
-					bullets[j]->~Bullet();
-					delete bullets[j];
-					bullets.erase(bullets.begin() + j);
-				}
-			}
-			double player_distance = missiles[i]->calculate_distance(player->getPosX(), player->getPosY());
-			double enemy_distance = missiles[i]->calculate_distance(en->getX(), en->getY());
-
-			int missile_hitbox = missiles[i]->get_blast_radius() / 3;
-
-			// Explode the warhead if the missile hits the enemy or player
-			if (player_distance <= missile_hitbox || enemy_distance <= missile_hitbox)
-			{
-				// Deal damage to the player and/or enemy depending on their distance and blast radius
-
-				if (player_distance <= missiles[i]->get_blast_radius())
-				{
-					double damage = missiles[i]->calculate_damage(player->getPosX(), player->getPosY());
-					player->hit(damage);
-				}
-
-				if (enemy_distance <= missiles[i]->get_blast_radius())
-				{
-					double damage = missiles[i]->calculate_damage(en->getX(), en->getY());
-					en->hit(damage);
-				}
-
-				destroyed = true;
-			}
-
-			// Remove missiles from the game if they are destroyed
-			// after rendering explosion
-			if (destroyed)
-			{
-				//Need to redo this line with a different version of the MapBlocks object for the boss battle
-				//blocks->addExplosion(missiles[i]->getX() + camX, missiles[i]->getY() + camY, missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
-				delete missiles[i];
-				missiles.erase(missiles.begin() + i);
-			}
-			else if (missiles[i]->getX() > SCREEN_WIDTH || missiles[i]->getX() - missiles[i]->getWidth() < 0 || missiles[i]->getY() > SCREEN_HEIGHT || missiles[i]->getY() - missiles[i]->getHeight() < 0) {
-				delete missiles[i];
-				missiles.erase(missiles.begin() + i);
-			}
-		}
+		// Handle missile collisions
+		check_missile_collisions_boss();
 
 		// Handle bullet collisions
 		for (int i = bullets.size() - 1; i >= 0; i--) {
@@ -631,6 +648,9 @@ void bossBattle() {
 				bullets.erase(bullets.begin() + i);
 			}
 		}
+		
+		// Handle player/powerup collisions
+		bossBlocks->checkCollision(player);
 
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
@@ -648,7 +668,10 @@ void bossBattle() {
 
 		// Draw the player
 		if (!playerDestroyed) player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-
+		
+		// Draw the powerups
+		bossBlocks->render(gRenderer);
+		
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->renderBullet(gRenderer);
@@ -666,8 +689,7 @@ void bossBattle() {
 		if(health < 1 && !playerDestroyed){
 			playerDestroyed = true;
 			time_destroyed = SDL_GetTicks();
-			//Need to redo this line with a different version of the MapBlocks object for the boss battle
-			//blocks->addExplosion(player->getPosX() + camX, player->getPosY() + camY, player->getWidth(), player->getHeight(),0);
+			bossBlocks->addExplosion(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight(),0);
 			Mix_HaltMusic();
 		}
 		if (playerDestroyed && SDL_GetTicks() > time_destroyed + 1000) {
@@ -753,7 +775,8 @@ int main() {
 	en = new Enemy(-125, SCREEN_HEIGHT/2, 125, 53, 200, 200, difficulty, gRenderer);
 
 	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer, difficulty);
-
+	
+	last_horiz_scroll = SDL_GetTicks();
 
 	while(gameon) {
 
@@ -827,6 +850,7 @@ int main() {
 					playerDestroyed = false;
 					camX = 0;
 					camY = LEVEL_HEIGHT - SCREEN_HEIGHT;
+					last_horiz_scroll = SDL_GetTicks();
 				}
 			}
 		}
@@ -955,7 +979,7 @@ int main() {
 			}
 		}
 
-		check_missile_collisions((double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000);
+		check_missile_collisions((double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000);
 
 		// Check collisions between enemy and player
 		if (en->checkCollision(player->getPosX(), player->getPosY(), player->getWidth(), player->getHeight())) {
