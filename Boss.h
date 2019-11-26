@@ -61,7 +61,7 @@ private:
 
 
   //Pattern functions and variables
-  static const int NUM_PATTERNS = 1;
+  static const int NUM_PATTERNS = 2;
   static const int PATTERN_DELAY = 1000;	// Amount of delay between patterns
   int time_since_pattern;		// Time since a pattern finished
   int last_pattern;				// Time when last pattern finished
@@ -74,6 +74,11 @@ private:
   void patternOne(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissilePatternOne(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
   static const int pattern_one_delay = 2500;
+  
+  // Pattern two methods and variables
+  void patternTwo(int SCREEN_WIDTH);
+  std::vector<Missile*> handleFiringMissilePatternTwo(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
+  static const int PATTERN_ONE_FIRING_FREQ = 500;
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;
