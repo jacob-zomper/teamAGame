@@ -19,7 +19,8 @@ public:
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
   bool checkCollisionBullet(int x, int y, int w, int h);
   void move(int SCREEN_WIDTH);
-  Missile* handleFiringMissile();
+  std::vector<Missile*> handleFiringMissile(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
+  Missile* MissleLoc(int x, int y);
   Bullet* handleFiringUp();
   Bullet* handleFiringDown();
   void hit(int d);
@@ -69,6 +70,12 @@ private:
   bool upleft;
   bool downleft;
   bool downright;
+  bool ur_fire;
+  bool ul_fire;
+  bool dl_fire;
+  bool dr_fire;
+  bool oneActive;
+  int corner_location;
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;

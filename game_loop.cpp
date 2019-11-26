@@ -447,22 +447,22 @@ void renderTextAndHealth() {
 	heat_rect = {1050, SCREEN_HEIGHT - 55, fHeat * 150 / Player::MAX_SHOOT_HEAT, 30};
 	SDL_RenderFillRect(gRenderer, &heat_rect);
 }
-	
+
 void bossBattle() {
 	delete en;
 	delete blocks;
-	
+
 	bool bossFight = true;
 	bool bossArrived = false;
 	bool bossEntered = false;
 	int start_time = SDL_GetTicks();
 	while (bossFight) {
-		
+
 		// Scroll to the side
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		bg_x += (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		last_horiz_scroll = SDL_GetTicks();
-		
+
 		while(SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) {
 				int current_highscore = readHighScore(difficulty);
@@ -516,10 +516,10 @@ void bossBattle() {
 				}
 			}
 		}
-		
+
 		// Move player
 		player->move(SCREEN_WIDTH, SCREEN_HEIGHT, LEVEL_HEIGHT, camY);
-		
+
 		//move the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->move();
@@ -529,7 +529,7 @@ void bossBattle() {
 			double x_scroll = (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 			missiles[i]->move(x_scroll);
 		}
-		
+
 		// Wait half a second before bringing the boss in
 		if (SDL_GetTicks() - 500 > start_time && !bossArrived) {
 			// Bring in the boss
@@ -547,11 +547,12 @@ void bossBattle() {
 		}
 		if (bossArrived){
 			boss->move(SCREEN_WIDTH);
+			missiles = boss->handleFiringMissile(missiles, player->getPosX(), player->getPosY(), gRenderer);
 		}
-		
+
 		// Handle missile collisions (can move this to a separate method if we want, but we can't use the current check_missile_collisions because the boss loop uses different objects
 		for (int i = 0; i < missiles.size(); i++) {
-			
+
 			bool destroyed = false;
 
 			//loop to check for missiles colliding with each other
@@ -597,7 +598,7 @@ void bossBattle() {
 
 				destroyed = true;
 			}
-			
+
 			// Remove missiles from the game if they are destroyed
 			// after rendering explosion
 			if (destroyed)
@@ -612,7 +613,7 @@ void bossBattle() {
 				missiles.erase(missiles.begin() + i);
 			}
 		}
-		
+
 		// Handle bullet collisions
 		for (int i = bullets.size() - 1; i >= 0; i--) {
 			// If the bullet leaves the screen or hits something, it is destroyed
@@ -624,13 +625,13 @@ void bossBattle() {
 				destroyed = true;
 				player->hit(5);
 			}
-			
+
 			if (destroyed) {
 				delete bullets[i];
 				bullets.erase(bullets.begin() + i);
 			}
 		}
-		
+
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 
@@ -639,15 +640,15 @@ void bossBattle() {
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
-		
+
 		// Draw the boss if it exists
 		if (bossEntered) {
 			boss->renderBoss(SCREEN_WIDTH, gRenderer);
 		}
-		
+
 		// Draw the player
 		if (!playerDestroyed) player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-		
+
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets[i]->renderBullet(gRenderer);
@@ -658,9 +659,9 @@ void bossBattle() {
 		{
 			missile->renderMissile(gRenderer);
 		}
-		
+
 		renderTextAndHealth();
-		
+
 		int health = player->getHealth();
 		if(health < 1 && !playerDestroyed){
 			playerDestroyed = true;
@@ -742,7 +743,7 @@ int main() {
 
 	static TTF_Font *font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
 	font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
-	
+
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, difficulty);
 
 	//Start the player on the left side of the screen
@@ -750,7 +751,7 @@ int main() {
 
 	//start enemy on left side behind player
 	en = new Enemy(-125, SCREEN_HEIGHT/2, 125, 53, 200, 200, difficulty, gRenderer);
-	
+
 	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer, difficulty);
 
 	while(gameon) {
@@ -891,7 +892,7 @@ int main() {
 		else if (camX > LEVEL_WIDTH + SCREEN_WIDTH) {
 			bossBattle();
 		}
-		
+
 		//Move Blocks and check collisions
 		blocks->moveBlocks(camX, camY);
 		blocks->checkCollision(player);
@@ -1000,7 +1001,7 @@ int main() {
 			// Change kamikaze sprite
 			kam->initializeSprites(gRenderer);
 		}
-		
+
 		// Clear the screen
 		SDL_RenderClear(gRenderer);
 

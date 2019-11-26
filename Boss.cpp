@@ -40,9 +40,15 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   upleft = false;
   downleft = false;
   downright = false;
+  oneActive = false;
+  ur_fire = false;
+  ul_fire = false;
+  dl_fire = false;
+  dr_fire = false;
   maxXVelo = 200;
   maxYVelo = 200;
   last_pattern = 0;
+  corner_location = 0;
   //sprite1 = loadImage(name, gRenderer);
 }
 
@@ -106,16 +112,33 @@ bool Boss::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTw
     return true;
 }
 
-Missile* Boss::handleFiringMissile(){
+std::vector<Missile*> Boss::handleFiringMissile(std::vector<Missile*> missiles ,int x, int y, SDL_Renderer* gRenderer){
   int damage = 500;
   int blast_radius = 150;
   time_since_shot_missile = SDL_GetTicks() - last_shot_missile;
   Missile* m = nullptr;
-  if(time_since_shot_missile >= FIRING_FREQ){
-
+  if(oneActive){
+    int xDist = x - xPos;
+    int yDist = y - (yPos+(HEIGHT/2));
+    double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
+    double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
+    if(!ul_fire && corner_location == 1){
+      m = new Missile(damage, blast_radius, xPos, yPos+HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
+      ul_fire = true;
+    }else if (!ur_fire && corner_location == 2){
+      m = new Missile(damage, blast_radius, xPos+WIDTH, yPos+HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
+      ur_fire = true;
+    }else if (!dl_fire && corner_location == 3){
+      m = new Missile(damage, blast_radius, xPos+WIDTH, yPos+(HEIGHT/2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
+      dl_fire = true;
+    }else if (!dr_fire && corner_location == 4){
+      m = new Missile(damage, blast_radius, xPos, yPos+(HEIGHT/2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
+      dr_fire = true;
+    }
+    if (m != nullptr)
+      missiles.push_back(m);
   }
-
-  return nullptr;
+  return missiles;
 }
 
 Bullet* Boss::handleFiringUp(){
@@ -165,11 +188,16 @@ void Boss::patternOne(int SCREEN_WIDTH){
   if(!upright){
     if (yPos > MAX_UP)
       yVelo = -maxYVelo;
-    else
+    else{
       yVelo = 0;
+      oneActive = true;
+      corner_location = 1;
+    }
 
-    if (time_since_pattern - PATTERNONEFREQ >= corner_delay)
+    if (time_since_pattern - PATTERNONEFREQ >= corner_delay){
       upright = true;
+      oneActive = false;
+    }
 
   }else if(!upleft){
 
@@ -179,10 +207,14 @@ void Boss::patternOne(int SCREEN_WIDTH){
     }else{
       xVelo = 0;
       yVelo = 0;
+      oneActive = true;
+      corner_location = 2;
     }
 
-    if ((time_since_pattern - PATTERNONEFREQ) >= corner_delay*2)
+    if ((time_since_pattern - PATTERNONEFREQ) >= corner_delay*2){
       upleft = true;
+      oneActive = false;
+    }
 
   }else if(!downleft){
     if (yPos < MAX_DOWN){
@@ -191,10 +223,14 @@ void Boss::patternOne(int SCREEN_WIDTH){
     }else{
       xVelo = 0;
       yVelo = 0;
+      oneActive = true;
+      corner_location = 3;
     }
 
-      if ((time_since_pattern-PATTERNONEFREQ) >= corner_delay*3)
+      if ((time_since_pattern-PATTERNONEFREQ) >= corner_delay*3){
         downleft = true;
+        oneActive = false;
+      }
 
   }else if(!downright){
     if (xPos < SCREEN_WIDTH - WIDTH - 50){
@@ -203,6 +239,8 @@ void Boss::patternOne(int SCREEN_WIDTH){
     }else{
       xVelo = 0;
       yVelo = 0;
+      oneActive = true;
+      corner_location = 4;
     }
 
     if (time_since_pattern-PATTERNONEFREQ >= corner_delay*4)
@@ -214,6 +252,12 @@ void Boss::patternOne(int SCREEN_WIDTH){
     upleft = false;
     downleft = false;
     downright = false;
+    ur_fire = false;
+    ul_fire = false;
+    dl_fire = false;
+    dr_fire = false;
     last_pattern = SDL_GetTicks();
+    oneActive = false;
+    corner_location = 0;
   }
 }
