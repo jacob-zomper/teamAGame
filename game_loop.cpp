@@ -753,12 +753,15 @@ int main() {
 	
 	kam = new Kamikaze(SCREEN_WIDTH+125, SCREEN_HEIGHT/2, 125, 53, 1000, gRenderer, difficulty);
 
+
 	while(gameon) {
 
 		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver) {
 			current_track = 0;
-			Mix_PlayMusic(main_track, -1);
+			Mix_PlayMusic(main_track, 0);
 		}
+
+
 		// Scroll to the side
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		camX += (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
@@ -793,6 +796,11 @@ int main() {
 				if (newBullet != nullptr) {
 					bullets.push_back(newBullet);
 				}
+			}
+			else if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_m)
+			{
+				Mix_VolumeMusic(abs(Mix_VolumeMusic(-1) - 128));
+				player->handleMute();
 			}
 			else {
 				player->handleEvent(e);
