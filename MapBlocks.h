@@ -19,10 +19,10 @@ public:
     int FLOOR_ABS_X;
     int FLOOR_ABS_Y;
 
-    int CEILING_REL_X;
-    int CEILING_REL_Y;
-    int FLOOR_REL_X;
-    int FLOOR_REL_Y;
+    double CEILING_REL_X;
+    double CEILING_REL_Y;
+    double FLOOR_REL_X;
+    double FLOOR_REL_Y;
 
     WallBlock();
     WallBlock(int num);
@@ -34,8 +34,8 @@ public:
     int ALLY_PLANE_ABS_Y;
     int ALLY_PLANE_ABS_X;
 
-    int ALLY_PLANE_REL_Y;
-    int ALLY_PLANE_REL_X;
+    double ALLY_PLANE_REL_Y;
+    double ALLY_PLANE_REL_X;
 
     int ALLY_PLANE_HEIGHT;
     int ALLY_PLANE_WIDTH;
@@ -52,8 +52,8 @@ public:
     int HEALTH_ABS_Y;
     int HEALTH_ABS_X;
 
-    int HEALTH_REL_Y;
-    int HEALTH_REL_X;
+    double HEALTH_REL_Y;
+    double HEALTH_REL_X;
 
     int HEALTH_HEIGHT;
     int HEALTH_WIDTH;
@@ -70,8 +70,8 @@ public:
     int INF_FIRE_ABS_Y;
     int INF_FIRE_ABS_X;
 
-    int INF_FIRE_REL_Y;
-    int INF_FIRE_REL_X;
+    double INF_FIRE_REL_Y;
+    double INF_FIRE_REL_X;
 
     int INF_FIRE_HEIGHT;
     int INF_FIRE_WIDTH;
@@ -87,8 +87,8 @@ public:
     int AUTOFIRE_ABS_Y;
     int AUTOFIRE_ABS_X;
 
-    int AUTOFIRE_REL_Y;
-    int AUTOFIRE_REL_X;
+    double AUTOFIRE_REL_Y;
+    double AUTOFIRE_REL_X;
 
     int AUTOFIRE_HEIGHT;
     int AUTOFIRE_WIDTH;
@@ -105,8 +105,8 @@ public:
     int INVINCE_ABS_Y;
     int INVINCE_ABS_X;
 
-    int INVINCE_REL_Y;
-    int INVINCE_REL_X;
+    double INVINCE_REL_Y;
+    double INVINCE_REL_X;
 
     int INVINCE_HEIGHT;
     int INVINCE_WIDTH;
@@ -123,8 +123,8 @@ public:
     int SMALL_ABS_Y;
     int SMALL_ABS_X;
 
-    int SMALL_REL_Y;
-    int SMALL_REL_X;
+    double SMALL_REL_Y;
+    double SMALL_REL_X;
 
     int SMALL_HEIGHT;
     int SMALL_WIDTH;
@@ -142,8 +142,8 @@ public:
     int STALAG_ABS_Y;
     int STALAG_ABS_X;
 
-    int STALAG_REL_Y;
-    int STALAG_REL_X;
+    double STALAG_REL_Y;
+    double STALAG_REL_X;
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
@@ -163,8 +163,8 @@ public:
     int STALAG_ABS_Y;
     int STALAG_ABS_X;
 
-    int STALAG_REL_Y;
-    int STALAG_REL_X;
+    double STALAG_REL_Y;
+    double STALAG_REL_X;
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
@@ -196,8 +196,8 @@ public:
     int BLOCK_ABS_Y;
 
     // coordinates of each Turret relative to camera
-    int BLOCK_REL_X;
-    int BLOCK_REL_Y;
+    double BLOCK_REL_X;
+    double BLOCK_REL_Y;
 
     int BLOCK_HEIGHT;
     int BLOCK_WIDTH;
@@ -239,8 +239,8 @@ public:
 	double current_size;
 
 	// Absolute location of the explosion's center
-	int center_x;
-	int center_y;
+	double center_x;
+	double center_y;
 
 	// Absolute location of the explosion's top left corner
 	double abs_x;
@@ -282,8 +282,8 @@ public:
 
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
-
-    static const int CEILING_N = 100000/72;
+	
+	int CEILING_N;
 
     SDL_Renderer *gRenderer;
 
@@ -346,6 +346,51 @@ public:
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
+};
+
+class BossBlocks
+{
+public:
+    std::vector<Explosion> explosion_arr;
+    std::vector<HealthBlock> health_arr;
+    std::vector<InfFireBlock> infFire_arr;
+    std::vector<InvincBlock> invince_arr;
+    std::vector<AutoFireBlock> autofire_arr;
+    std::vector<SmallBlock> small_arr;
+    std::vector<AllyPlaneBlock> ally_arr;
+	
+    SDL_Renderer *gRenderer;
+
+    SDL_Texture* explosionSprite;
+    SDL_Texture* dustCloudSprite;
+    SDL_Texture* healthSprite;
+    SDL_Texture* infFireSprite;
+    SDL_Texture* invinceSprite;
+    SDL_Texture* autofireSprite;
+    SDL_Texture *smallSprite;
+    SDL_Texture *allySprite;
+	
+	BossBlocks(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gr, int diff);
+	~BossBlocks();
+	
+	bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
+	void moveBlocks(double camShift);
+	void createPowerups();
+	void addExplosion(int x, int y, int w, int h, int type);
+	void checkCollision(Player *p);
+	void render(SDL_Renderer* gRenderer);
+	
+private:
+	
+	// Margin is the minimum distance between powerups and the edge of the screen
+	static const int MARGIN = 100;	
+	
+	// Tracks the x position so that new powerups can be made every SCREEN_WIDTH pixels
+	double currentX;
+	
+	int screen_width;
+	int screen_height;
+	int difficulty;
 };
 
 #endif

@@ -17,7 +17,6 @@ Missile::Missile(int damage, int blast_radius, double x, double y, double xvel, 
 	{
 		pitch = M_PI + pitch;
 	}
-	//std::cout << xVel << " " << yVel << " " << pitch << std::endl;
 	air_time = 0;
 	last_move = SDL_GetTicks();
 }
@@ -50,7 +49,6 @@ void Missile::renderMissile(SDL_Renderer* gRenderer)
 void Missile::move(double x_scroll)
 {
 	time_since_move = SDL_GetTicks() - last_move;
-
 	xPos += (double) time_since_move * xVel / 1000 - x_scroll;
 	yPos += (double) time_since_move * yVel / 1000;
 	air_time += time_since_move;

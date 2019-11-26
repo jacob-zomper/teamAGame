@@ -14,20 +14,28 @@ class Boss
 public:
   SDL_Texture* loadImage(std::string fname, SDL_Renderer* gRenderer);
   Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer* gRenderer);
+  ~Boss();
   void renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
   bool checkCollisionBullet(int x, int y, int w, int h);
-  void move(int SCREEN_WIDTH, bool active);
-  Missile* handleFiringMiddle();
+  void move(int SCREEN_WIDTH);
+  std::vector<Missile*> handleFiringMissile(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
+  Missile* MissleLoc(int x, int y);
   Bullet* handleFiringUp();
   Bullet* handleFiringDown();
   void hit(int d);
+
+  // Boss width and height
+  static const int WIDTH = 250;
+  static const int HEIGHT = 106;
 
   int getX();
   int getY();
   int getWidth();
   int getHeight();
   int getHealth();
+
+  void moveLeft();
 
   SDL_Texture* sprite1;
 
@@ -37,9 +45,7 @@ private:
   SDL_Rect boss_hitbox_top;
   SDL_Rect boss_hitbox_bottom;
 
-  //Boss width height and x and y positions
-  static const int WIDTH = 250;
-  static const int HEIGHT = 106;
+  //Boss x and y positions
   double xPos;
   double yPos;
 
@@ -52,20 +58,35 @@ private:
   int yVelo;
   int time_since_move;
   int last_move;
-  bool up;
-  bool mvmt;
+
+
+  //Pattern functions and variables
+  static const int NUM_PATTERNS = 1;
+  static const int PATTERN_DELAY = 1000;	// Amount of delay between patterns
+  int time_since_pattern;		// Time since a pattern finished
+  int last_pattern;				// Time when last pattern finished
+  int pattern;					// Current pattern number (0 for no pattern)
+  int phase;					// Current phase of a pattern (varies by pattern)	
+  bool needsFiring;				// True when it's time to fire
+  int numFired;					// Number of missiles fired in pattern so far
+
+  // Pattern one methods and variables
+  void patternOne(int SCREEN_WIDTH);
+  std::vector<Missile*> handleFiringMissilePatternOne(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
+  static const int pattern_one_delay = 2500;
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;
-  int time_since_shot_middle;
+  int time_since_shot_missile;
   int time_since_shot_up;
   int time_since_shot_down;
-  int last_shot_middle;
+  int last_shot_missile;
   int last_shot_up;
   int last_shot_down;
 
   //Health variables
   int health;
+  int difficulty;
 
 };
 #endif
