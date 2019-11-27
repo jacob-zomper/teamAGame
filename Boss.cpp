@@ -84,10 +84,13 @@ void Boss::move(int SCREEN_WIDTH){
 	}
 	if (pattern == 1) {
 		patternOne(SCREEN_WIDTH);
-	}
+  }
 	else if (pattern == 2) {
 		patternTwo(SCREEN_WIDTH);
 	}
+  else if (pattern == 3){
+    patternThree(SCREEN_WIDTH);
+  }
 	else{
 		if (yVelo == 0) {
 			yVelo = maxYVelo;
@@ -128,6 +131,9 @@ std::vector<Missile*> Boss::handleFiringMissile(std::vector<Missile*> missiles ,
   }
   if (pattern == 2) {
 	  missiles = handleFiringMissilePatternTwo(missiles, x, y, gRenderer);
+  }
+  if (pattern == 3){
+    missiles = handleFiringMissilePatternThree(missiles, x, y, gRenderer);
   }
   return missiles;
 }
@@ -188,6 +194,24 @@ std::vector<Missile*> Boss::handleFiringMissilePatternTwo(std::vector<Missile*> 
 	return missiles;
 }
 	
+std::vector<Missile*> Boss::handleFiringMissilePatternThree(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer)
+{
+  int damage = 500;
+  int blast_radius = 150;
+  int xDist = x - xPos;
+  int yDist = y - (yPos + (HEIGHT / 2));
+  double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
+  double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
+  // Fire a missile to the left if in phases 2 or 3
+  if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_ONE_FIRING_FREQ)
+  {
+    Missile *m = new Missile(damage, blast_radius, xPos, yPos + (HEIGHT / 2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
+    missiles.push_back(m);
+    last_shot_missile = SDL_GetTicks();
+  }
+  return missiles;
+}
+
 
 Bullet* Boss::handleFiringUp(){
   return nullptr;
@@ -351,4 +375,63 @@ void Boss::patternTwo(int SCREEN_WIDTH)
 		pattern = 0;
 		numFired = 0;
 	}
+}
+
+void Boss::patternThree(int SCREEN_WIDTH)
+{
+  xVelo = 0;
+  yVelo = 0;
+
+  if (phase == 1)
+  {
+    // Moving to start position
+    int x_dist_to_start = SCREEN_WIDTH / 2 - WIDTH / 2 - xPos;
+    int y_dist_to_start = MAX_DOWN / 2 - HEIGHT / 2 - yPos;
+    xVelo = maxXVelo * ((double)x_dist_to_start / (-x_dist_to_start + y_dist_to_start));
+    yVelo = maxYVelo * ((double)y_dist_to_start / (-x_dist_to_start + y_dist_to_start));
+    if (x_dist_to_start > -5 && y_dist_to_start < 5)
+    {
+      phase = 2;
+    }
+  }
+  // Phase 2: move to the left of the screen while firing
+  else if (phase == 2)
+  {
+    yVelo = 0;
+    xVelo = -maxXVelo;
+    if (xPos < 1)
+    {
+      phase = 3;
+    }
+  }
+  // Phase 3: move to the right of the screen while firing
+  else if (phase == 3)
+  {
+    yVelo = 0;
+    xVelo = maxXVelo;
+    if (xPos > SCREEN_WIDTH - WIDTH - 1)
+    {
+      phase = 4;
+    }
+  }
+  // Phase 4: go back to the starting position
+  else if (phase == 4)
+  {
+    int x_dist_to_start = SCREEN_WIDTH / 2 - WIDTH / 2 - xPos;
+    int y_dist_to_start = MAX_DOWN / 2 - HEIGHT / 2 - yPos;
+    xVelo = maxXVelo * ((double)x_dist_to_start / (-x_dist_to_start + y_dist_to_start));
+    yVelo = maxYVelo * ((double)y_dist_to_start / (-x_dist_to_start + y_dist_to_start));
+    if (x_dist_to_start < 5 && y_dist_to_start > -5)
+    {
+      phase = 5;
+    }
+  }
+  // Phase 5: reset everything so that another pattern can be used
+  if (phase == 5)
+  {
+    phase = 1;
+    last_pattern = SDL_GetTicks();
+    pattern = 0;
+    numFired = 0;
+  }
 }
