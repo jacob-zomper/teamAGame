@@ -322,7 +322,6 @@ void check_missile_collisions(double x_scroll)
 
 			for(int j = 0; j < bullets.size();j++){
 				if(missiles[i]->checkCollision(bullets[j])){
-				std::cout << 6 << std::endl;
 					destroyed = true;
 					bullets[j]->~Bullet();
 					delete bullets[j];
@@ -374,7 +373,6 @@ void check_missile_collisions_boss() {
 		//loop to check for missiles colliding with each other
 		for(int j = i + 1; j < missiles.size();j++){
 			if(missiles[i]->checkCollision(missiles[j])){
-				std::cout << 1 << std::endl;
 				destroyed = true;
 				bossBlocks->addExplosion(missiles[j]->getX(), missiles[j]->getY(), missiles[j]->getHeight(), missiles[j]->getHeight(), 0);
 				delete missiles[j];
@@ -384,7 +382,6 @@ void check_missile_collisions_boss() {
 		//check collisions with bullets
 		for(int j = 0; j < bullets.size();j++){
 			if(missiles[i]->checkCollision(bullets[j])){
-				std::cout << 2 << std::endl;
 				destroyed = true;
 				bullets[j]->~Bullet();
 				delete bullets[j];
@@ -412,14 +409,12 @@ void check_missile_collisions_boss() {
 		// after rendering explosion
 		if (destroyed)
 		{
-				std::cout << 3 << std::endl;
 			bossBlocks->addExplosion(missiles[i]->getX(), missiles[i]->getY(), missiles[i]->getHeight(), missiles[i]->getHeight(), 0);
 			delete missiles[i];
 			missiles.erase(missiles.begin() + i);
 		}
 		else if (missiles[i]->getX() > SCREEN_WIDTH || missiles[i]->getX() + missiles[i]->getWidth() < 0 || missiles[i]->getY() > SCREEN_HEIGHT || missiles[i]->getY() - missiles[i]->getHeight() < 0) {
 			
-				std::cout << 4 << std::endl;
 			delete missiles[i];
 			missiles.erase(missiles.begin() + i);
 		}
@@ -568,9 +563,9 @@ void bossBattle() {
 					player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, game_over->diff, gRenderer);
 					delete boss;
 					delete bossBlocks;
-					//random open air area
-					int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
-					int openAirLength = (rand() % 200) + 100;
+					//random open air area. Basing this on level width should make there always be a functional open air area
+					int openAir = (rand() % (LEVEL_WIDTH / (2 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
+					int openAirLength = (rand() % (LEVEL_WIDTH / (4 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
 					blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, game_over->diff);
 					playerDestroyed = false;
 					camX = 0;
@@ -720,9 +715,9 @@ int main() {
 
 	srand(time(NULL));
 
-	//random open air area
-	int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
-    int openAirLength = (rand() % 200) + 100;
+	//random open air area. Basing this on level width should make there always be a functional open air area
+	int openAir = (rand() % (LEVEL_WIDTH / (2 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
+	int openAirLength = (rand() % (LEVEL_WIDTH / (4 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
 
 	cave_system = new CaveSystem();
 	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
@@ -841,9 +836,9 @@ int main() {
 					delete player;
 					player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, game_over->diff, gRenderer);
 					delete blocks;
-					//random open air area
-					int openAir = rand() % ((LEVEL_WIDTH-50)/72) + 50;
-					int openAirLength = (rand() % 200) + 100;
+					//random open air area. Basing this on level width should make there always be a functional open air area
+					int openAir = (rand() % (LEVEL_WIDTH / (2 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
+					int openAirLength = (rand() % (LEVEL_WIDTH / (4 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
 					blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, game_over->diff);
 					playerDestroyed = false;
 					camX = 0;
