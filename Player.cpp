@@ -538,6 +538,16 @@ int Player::getHeight() {
         return player_height / 1.5; 
     }
 }
+ 
+int Player::getHitboxX() {
+	if (small) return x_pos + 9;
+	else return x_pos + 12;
+}
+
+int Player::getHitboxY() {
+	if (small) return y_pos + 9;
+	else return y_pos + 12;
+};
 
 int Player::getHurtWidth() { 
     if(small == false){

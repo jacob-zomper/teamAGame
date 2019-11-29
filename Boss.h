@@ -17,7 +17,7 @@ public:
   ~Boss();
   void renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
-  bool checkCollisionBullet(int x, int y, int w, int h);
+  bool checkCollision(int x, int y, int w, int h);
   void move(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissile(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
   Missile* MissleLoc(int x, int y);
@@ -34,6 +34,7 @@ public:
   int getWidth();
   int getHeight();
   int getHealth();
+  double getHealthPercentage();
 
   void moveLeft();
 
@@ -78,7 +79,7 @@ private:
   // Pattern two methods and variables
   void patternTwo(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissilePatternTwo(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
-  static const int PATTERN_ONE_FIRING_FREQ = 500;
+  static const int PATTERN_TWO_FIRING_FREQ = 500;
 
   void patternThree(int SCREEN_WIDTH);
   std::vector<Missile *> handleFiringMissilePatternThree(std::vector<Missile *> missiles, int x, int y, SDL_Renderer *gRenderer);
@@ -94,6 +95,7 @@ private:
 
   //Health variables
   int health;
+  int max_health;
   int difficulty;
 
 };

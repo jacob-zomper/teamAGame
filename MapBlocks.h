@@ -366,7 +366,8 @@ public:
 	void createPowerups();
 	void addExplosion(int x, int y, int w, int h, int type);
 	void checkCollision(Player *p);
-	void render(SDL_Renderer* gRenderer);
+	void renderPowerups(SDL_Renderer* gRenderer);
+	void renderExplosions(SDL_Renderer* gRenderer);
 	
 private:
 	

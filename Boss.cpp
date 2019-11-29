@@ -46,14 +46,15 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   maxYVelo = 200;
   last_pattern = 0;
   if(diff == 3){
-	health = 2000;
+	max_health = 2000;
   }
   else if(diff == 2){
-	health = 1500;
+	max_health = 1500;
   }
   else{
-	health = 1000;
+	max_health = 1000;
   }
+  health = max_health;
   difficulty = diff;
   //sprite1 = loadImage(name, gRenderer);
 }
@@ -111,8 +112,18 @@ void Boss::move(int SCREEN_WIDTH){
 	last_move = SDL_GetTicks();
 }
 
-bool Boss::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
-	return checkCollide(bullX, bullY, bullW, bullH, xPos, yPos, WIDTH, HEIGHT);
+bool Boss::checkCollision(int x, int y, int w, int h) {
+	// Check collision with the top part
+	if (checkCollide(x, y, w, h, xPos, yPos + HEIGHT/2, WIDTH, HEIGHT/2)) {
+		return true;
+	}
+	// Check collision with the bottom part
+	else if (checkCollide(x, y, w, h, xPos + WIDTH/4, yPos, WIDTH/2, HEIGHT)) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 bool Boss::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -186,7 +197,7 @@ std::vector<Missile*> Boss::handleFiringMissilePatternTwo(std::vector<Missile*> 
     double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
     double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
 	// Fire a missile to the left if in phases 2 or 3
-	if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_ONE_FIRING_FREQ){
+	if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_TWO_FIRING_FREQ){
 		Missile * m = new Missile(damage, blast_radius, xPos, yPos+(HEIGHT/2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
 		missiles.push_back(m);
 		last_shot_missile = SDL_GetTicks();
@@ -203,7 +214,7 @@ std::vector<Missile*> Boss::handleFiringMissilePatternThree(std::vector<Missile*
   double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
   double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
   // Fire a missile to the left if in phases 2 or 3
-  if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_ONE_FIRING_FREQ)
+  if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_TWO_FIRING_FREQ)
   {
     Missile *m = new Missile(damage, blast_radius, xPos, yPos + (HEIGHT / 2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
     missiles.push_back(m);
@@ -246,6 +257,10 @@ int Boss::getHeight() {
 
 int Boss::getHealth(){
   return health;
+}
+
+double Boss::getHealthPercentage() {
+	return 100.0 * health / max_health;
 }
 
 void Boss::moveLeft() {
