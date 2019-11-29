@@ -1235,7 +1235,7 @@ void BossBlocks::checkCollision(Player *p)
     }
 }
 
-void BossBlocks::render(SDL_Renderer* gRenderer)
+void BossBlocks::renderPowerups(SDL_Renderer* gRenderer)
 {
     int i;
 	
@@ -1306,7 +1306,10 @@ void BossBlocks::render(SDL_Renderer* gRenderer)
             SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
+}
 
+void BossBlocks::renderExplosions(SDL_Renderer* gRenderer) {
+	int i;
 	for (i = explosion_arr.size() - 1; i >= 0; i--) {
         if(explosion_arr[i].type == 0){
 		    SDL_RenderCopyEx(gRenderer, explosionSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);

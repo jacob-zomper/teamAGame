@@ -89,6 +89,7 @@ std::string fps;//for onscreen fps
 std::string score; // for onscreen score
 std::string high_score_string;
 static TTF_Font *font_16;
+static TTF_Font *font_20;
 int high_score;
 
 bool init() {
@@ -512,7 +513,10 @@ void bossBattle() {
 	bool bossFight = true;
 	bool bossArrived = false;
 	bool bossEntered = false;
+	int arrivalTime = 0;
 	int start_time = SDL_GetTicks();
+	int player_hit_time = 0;
+	int time_since_hit_player = 0;
 	while (bossFight) {
 
 		// Scroll to the side
@@ -608,6 +612,7 @@ void bossBattle() {
 				std::cout << "Creating new boss..." << std::endl;
 				boss = new Boss(SCREEN_WIDTH, SCREEN_HEIGHT/2 - Boss::HEIGHT/2, 0, 0, difficulty, gRenderer);
 				bossEntered = true;
+				arrivalTime = SDL_GetTicks();
 			}
 			if (boss->getX() > SCREEN_WIDTH - Boss::WIDTH - 50) {
 				boss->moveLeft();
@@ -635,11 +640,23 @@ void bossBattle() {
 				destroyed = true;
 				player->hit(5);
 			}
+			if (bossEntered && boss->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+				destroyed = true;
+				boss->hit(25);
+			}
 
 			if (destroyed) {
 				delete bullets[i];
 				bullets.erase(bullets.begin() + i);
 			}
+		}
+		
+		// Handle player/boss collisions
+		time_since_hit_player = SDL_GetTicks() - player_hit_time;
+		if (time_since_hit_player > 2000 && bossEntered && boss->checkCollision(player->getHitboxX(), player->getHitboxY(), player->getHurtWidth(), player->getHurtHeight())) {
+			player_hit_time = SDL_GetTicks();
+			player->hit(30);
+			boss->hit(50);
 		}
 		
 		// Handle player/powerup collisions
@@ -654,6 +671,9 @@ void bossBattle() {
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 
+		// Draw the powerups
+		bossBlocks->renderPowerups(gRenderer);
+		
 		// Draw the boss if it exists
 		if (bossEntered) {
 			boss->renderBoss(SCREEN_WIDTH, gRenderer);
@@ -662,8 +682,8 @@ void bossBattle() {
 		// Draw the player
 		if (!playerDestroyed) player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		
-		// Draw the powerups
-		bossBlocks->render(gRenderer);
+		// Draw the explosions
+		bossBlocks->renderExplosions(gRenderer);
 		
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
@@ -677,6 +697,37 @@ void bossBattle() {
 		}
 
 		renderTextAndHealth();
+		std::string boss_string = "Boss";
+		Text bossText(gRenderer, boss_string, {255, 255, 255, 255}, font_20);
+		bossText.render(gRenderer, 50, 50);
+
+		if (bossEntered) {
+			double health = boss->getHealthPercentage();
+			SDL_Rect outline = {99, 49, 1002, 52};
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+			SDL_RenderDrawRect(gRenderer, &outline);
+			std::cout << "diff: " << arrivalTime << " " << SDL_GetTicks() << std::endl;
+			//int current = SDL_GetTicks();
+			if(arrivalTime > 0 && (SDL_GetTicks() - arrivalTime) / 2 < health * 10){
+				health = (SDL_GetTicks() - arrivalTime) / 20;
+				std::cout << health << std::endl;
+			}
+			if (health > 75) {
+				SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+			}
+			else if (health >= 50) {
+				SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
+			}
+			else if (health >= 20) {
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
+			}
+			else {
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+			}
+			
+			SDL_Rect health_rect = {100, 50, 10*((int)health), 50};
+			SDL_RenderFillRect(gRenderer, &health_rect);
+		}
 
 		int health = player->getHealth();
 		if(health < 1 && !playerDestroyed){
@@ -756,7 +807,7 @@ int main() {
 
 	high_score = readHighScore(difficulty); // For onscreen high score
 
-	static TTF_Font *font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
+	font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
 	font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
 
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, difficulty);

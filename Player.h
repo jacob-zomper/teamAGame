@@ -129,6 +129,8 @@ public:
     void setPosY(int y);
 	int getWidth();
 	int getHeight();
+	int getHitboxX();
+	int getHitboxY();
 	int getHurtWidth();
 	int getHurtHeight();
 	int getHealth();
