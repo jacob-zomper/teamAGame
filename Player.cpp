@@ -347,7 +347,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 		return;
 	}
     if(small == false){
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), player_height};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), getHeight()};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -357,7 +357,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	    }
     }
     else{
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), player_height};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), getHeight()};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);

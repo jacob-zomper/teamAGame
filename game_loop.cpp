@@ -517,6 +517,16 @@ void bossBattle() {
 	int start_time = SDL_GetTicks();
 	int player_hit_time = 0;
 	int time_since_hit_player = 0;
+	bool damaged = false;		// True when the boss' first health bar has been drained
+	int time_damaged = 0;
+	int time_since_damaged = 0;
+	bool tier2 = false;			// True when the boss has entered the second tier
+	int damageExplosions = 0;	// Number of explosions created so far in the enemy's damage or destruction animation
+	bool bossDestroyed = false;	// True when the boss has been destroyed
+	int time_destroyed = 0;
+	int time_since_destroyed = 0;
+	bool won = false;			// True when player wins
+	int time_won = 0;
 	while (bossFight) {
 
 		// Scroll to the side
@@ -659,6 +669,66 @@ void bossBattle() {
 			boss->hit(50);
 		}
 		
+		// Create explosions relating to the damaging of the boss
+		time_since_damaged = SDL_GetTicks() - time_damaged;
+		if (damaged && time_since_damaged < 4000) {
+			if (damageExplosions == 0 && time_since_damaged > 250) {
+				bossBlocks->addExplosion(boss->getX() + 50, boss->getY() + boss->getHeight() - 50, 90);
+				damageExplosions++;
+			}
+			if (damageExplosions == 1 && time_since_damaged > 800) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 60, boss->getY() + 55, 105);
+				damageExplosions++;
+			}
+			if (damageExplosions == 2 && time_since_damaged > 1020) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() / 2 - 30, boss->getY() + boss->getHeight() - 35, 100);
+				damageExplosions++;
+			}
+			if (damageExplosions == 3 && time_since_damaged > 1450) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 40, boss->getY() + boss->getHeight() - 40, 103);
+				damageExplosions++;
+			}
+			if (damageExplosions == 4 && time_since_damaged > 2000) {
+				bossBlocks->addExplosion(boss->getX() + 55, boss->getY() + 40, 95);
+				damageExplosions++;
+			}
+		}
+		else if (damaged) {
+			tier2 = true;
+		}
+		// Create explosions relating to the destruction of the boss
+		time_since_destroyed = SDL_GetTicks() - time_destroyed;
+		if (bossDestroyed) {
+			if (damageExplosions == 0 && time_since_destroyed > 250) {
+				bossBlocks->addExplosion(boss->getX() + 50, boss->getY() + boss->getHeight() - 50, 90);
+				damageExplosions++;
+			}
+			if (damageExplosions == 1 && time_since_destroyed > 800) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 70, boss->getY() + 25, 105);
+				damageExplosions++;
+			}
+			if (damageExplosions == 2 && time_since_destroyed > 1020) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() / 2 - 30, boss->getY() + boss->getHeight() - 35, 100);
+				damageExplosions++;
+			}
+			if (damageExplosions == 3 && time_since_destroyed > 1450) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 40, boss->getY() + boss->getHeight() - 40, 103);
+				damageExplosions++;
+			}
+			if (damageExplosions == 4 && time_since_destroyed > 2000) {
+				bossBlocks->addExplosion(boss->getX() + 75, boss->getY() + 30, 95);
+				damageExplosions++;
+			}
+			if (damageExplosions == 5 && time_since_destroyed > 4000) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() / 2, boss->getY() + boss->getHeight() / 2, 275);
+				damageExplosions++;
+			}
+		}
+		else if (bossDestroyed) {
+			won = true;
+			time_won = SDL_GetTicks();
+		}
+		
 		// Handle player/powerup collisions
 		bossBlocks->checkCollision(player);
 
@@ -699,18 +769,21 @@ void bossBattle() {
 		renderTextAndHealth();
 		std::string boss_string = "Boss";
 		Text bossText(gRenderer, boss_string, {255, 255, 255, 255}, font_20);
-		bossText.render(gRenderer, 50, 50);
+		bossText.render(gRenderer, 50, 60);
 
 		if (bossEntered) {
 			double health = boss->getHealthPercentage();
 			SDL_Rect outline = {99, 49, 1002, 52};
 			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
 			SDL_RenderDrawRect(gRenderer, &outline);
-			std::cout << "diff: " << arrivalTime << " " << SDL_GetTicks() << std::endl;
-			//int current = SDL_GetTicks();
 			if(arrivalTime > 0 && (SDL_GetTicks() - arrivalTime) / 2 < health * 10){
 				health = (SDL_GetTicks() - arrivalTime) / 20;
-				std::cout << health << std::endl;
+			}
+			else if (damaged && !tier2) {
+				health = 0;
+			}
+			else if (tier2 && (SDL_GetTicks() - time_damaged - 4000) / 2 < health * 10){
+				health = (SDL_GetTicks() - time_damaged - 4000) / 20;
 			}
 			if (health > 75) {
 				SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
@@ -747,6 +820,25 @@ void bossBattle() {
 			}
 			game_over->stopGame(player);
 			game_over->render(gRenderer);
+		}
+		
+		if (bossEntered) {
+			int enemyHealth = boss->getHealth();
+			if (!damaged && boss->isDamaged()) {
+				damaged = true;
+				time_damaged = SDL_GetTicks();
+			}
+			else if (damaged && !tier2) {
+				time_since_damaged = SDL_GetTicks() - time_damaged;
+				if (time_since_damaged > 4000) {
+					tier2 = true;
+				}
+			}
+			else if (tier2 && !bossDestroyed && enemyHealth == 0) {
+				damageExplosions = 0;
+				bossDestroyed = true;
+				time_destroyed = SDL_GetTicks();
+			}
 		}
 		SDL_RenderPresent(gRenderer);
 	}

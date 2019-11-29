@@ -35,8 +35,10 @@ public:
   int getHeight();
   int getHealth();
   double getHealthPercentage();
+  bool isDamaged();
 
   void moveLeft();
+  void backToCenter(int SCREEN_WIDTH);
 
   SDL_Texture* sprite1;
 
@@ -70,7 +72,7 @@ private:
   int phase;					// Current phase of a pattern (varies by pattern)	
   bool needsFiring;				// True when it's time to fire
   int numFired;					// Number of missiles fired in pattern so far
-
+  
   // Pattern one methods and variables
   void patternOne(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissilePatternOne(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
@@ -97,6 +99,13 @@ private:
   int health;
   int max_health;
   int difficulty;
+  
+  // Variables relating to being damaged and destroyed
+  bool damaged;
+  int time_damaged;
+  bool tier2;
+  bool destroyed;
+  int time_destroyed;
 
 };
 #endif
