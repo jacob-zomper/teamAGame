@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <string>
 #include <vector>
 #include <SDL.h>
@@ -56,6 +57,11 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   }
   health = max_health;
   difficulty = diff;
+  damaged = false;
+  time_damaged = 0;
+  tier2 = false;
+  destroyed = false;
+  time_destroyed = 0;
   //sprite1 = loadImage(name, gRenderer);
 }
 
@@ -66,7 +72,8 @@ Boss::~Boss() {
 
 
 void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
-    if(xPos<SCREEN_WIDTH){
+	if (destroyed && SDL_GetTicks() - time_destroyed > 4000) return;
+	if(xPos<SCREEN_WIDTH){
       //SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
       SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
       SDL_RenderFillRect(gRenderer, &boss_hitbox_top);
@@ -78,12 +85,26 @@ void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
 }
 
 void Boss::move(int SCREEN_WIDTH){
+	if (destroyed) return;
+	if (damaged) {
+		int time_since_damaged = SDL_GetTicks() - time_damaged;
+		if (time_since_damaged > 4000) {
+			tier2 = true;
+		}
+	}
+	if (damaged && !tier2) {
+		last_move = SDL_GetTicks();
+		return;
+	}
 	xVelo = 0;
 	time_since_pattern = SDL_GetTicks() - last_pattern;
 	if (time_since_pattern >= PATTERN_DELAY && pattern == 0){
 		pattern = (rand() % NUM_PATTERNS) + 1;
 	}
-	if (pattern == 1) {
+	if (tier2 && pattern == -1) {
+		backToCenter(SCREEN_WIDTH);
+	}
+	else if (pattern == 1) {
 		patternOne(SCREEN_WIDTH);
   }
 	else if (pattern == 2) {
@@ -113,6 +134,8 @@ void Boss::move(int SCREEN_WIDTH){
 }
 
 bool Boss::checkCollision(int x, int y, int w, int h) {
+	if (destroyed) return false;
+	if (damaged && !tier2) return false;
 	// Check collision with the top part
 	if (checkCollide(x, y, w, h, xPos, yPos + HEIGHT/2, WIDTH, HEIGHT/2)) {
 		return true;
@@ -136,6 +159,8 @@ bool Boss::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTw
 }
 
 std::vector<Missile*> Boss::handleFiringMissile(std::vector<Missile*> missiles ,int x, int y, SDL_Renderer* gRenderer){
+  if (destroyed) return missiles;
+  if (damaged && !tier2) return missiles;
   time_since_shot_missile = SDL_GetTicks() - last_shot_missile;
   if(pattern == 1){
 	  missiles = handleFiringMissilePatternOne(missiles, x, y, gRenderer);
@@ -233,10 +258,25 @@ Bullet* Boss::handleFiringDown(){
 }
 
 void Boss::hit(int d){
-  if (health - d < 0)
-    health = 0;
-  else
-    health -= d;
+	if (destroyed) return;
+	if (damaged && !tier2) return;
+	if (health - d < 0)
+		health = 0;
+	else
+		health -= d;
+	// Reaching 0 health for the first time = damaged
+	if (!damaged && health == 0) {
+		health = max_health;
+		damaged = true;
+		time_damaged = SDL_GetTicks();
+		pattern = -1;
+		phase = 1;
+	}
+	// Reaching 0 health later = destroyed
+	else if (health == 0) {
+		destroyed = true;
+		time_destroyed = SDL_GetTicks();
+	}
 }
 
 int Boss::getX(){
@@ -263,10 +303,27 @@ double Boss::getHealthPercentage() {
 	return 100.0 * health / max_health;
 }
 
+bool Boss::isDamaged() {
+	return damaged;
+}
+
 void Boss::moveLeft() {
 	time_since_move = SDL_GetTicks() - last_move;
 	xPos -= (double) (maxXVelo * time_since_move) / 1000;
 	last_move = SDL_GetTicks();
+}
+
+// Moving back to center
+void Boss::backToCenter(int SCREEN_WIDTH) {
+	xVelo = 0;
+	yVelo = 0;
+	int x_dist_to_start = SCREEN_WIDTH - 50 - WIDTH - xPos;
+	int y_dist_to_start = 360 - yPos;
+	xVelo = maxXVelo * ((double)x_dist_to_start / (abs(x_dist_to_start) + abs(y_dist_to_start)));
+	yVelo = maxYVelo * ((double)y_dist_to_start / (abs(x_dist_to_start) + abs(y_dist_to_start)));
+	if (abs(x_dist_to_start) < 5 && abs(y_dist_to_start) < 5) {
+		pattern = 0;
+	}
 }
 
 // Movement for pattern 1
