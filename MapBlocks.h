@@ -40,8 +40,6 @@ public:
     int ALLY_PLANE_HEIGHT;
     int ALLY_PLANE_WIDTH;
 
-    bool enabled;
-
     AllyPlaneBlock();
     AllyPlaneBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
@@ -57,8 +55,6 @@ public:
 
     int HEALTH_HEIGHT;
     int HEALTH_WIDTH;
-
-    bool enabled;
 
     HealthBlock();
     HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -76,8 +72,6 @@ public:
     int INF_FIRE_HEIGHT;
     int INF_FIRE_WIDTH;
 
-    bool enabled;
-
     InfFireBlock();
     InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
@@ -92,8 +86,6 @@ public:
 
     int AUTOFIRE_HEIGHT;
     int AUTOFIRE_WIDTH;
-
-    bool enabled;
 
     AutoFireBlock();
     AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -111,8 +103,6 @@ public:
     int INVINCE_HEIGHT;
     int INVINCE_WIDTH;
 
-    bool enabled;
-
     InvincBlock();
     InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
@@ -128,8 +118,6 @@ public:
 
     int SMALL_HEIGHT;
     int SMALL_WIDTH;
-
-    bool enabled;
 
     SmallBlock();
     SmallBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
