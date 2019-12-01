@@ -355,6 +355,8 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     autofireSprite=loadImage("sprites/autofire.png", gRenderer);
     smallSprite=loadImage("sprites/small.png", gRenderer);
     allySprite=loadImage("sprites/plus_ally_ai.png", gRenderer);
+	
+	explosion_sound = Mix_LoadWAV("sounds/explosion.wav");
 
 
     if(diff == 3){
@@ -462,6 +464,7 @@ MapBlocks::~MapBlocks()
     SDL_DestroyTexture(autofireSprite);
     SDL_DestroyTexture(smallSprite);
     SDL_DestroyTexture(allySprite);
+	Mix_FreeChunk(explosion_sound);
 }
 
 bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -1028,6 +1031,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 
 // Add an explosion at the given location
 void MapBlocks::addExplosion(int x, int y, int w, int h, int type) {
+	if (type == 0) Mix_PlayChannel(-1, explosion_sound, 0);
 	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
 }
 
@@ -1058,6 +1062,9 @@ BossBlocks::BossBlocks(int w, int h, SDL_Renderer *gr, int diff)
     autofireSprite=loadImage("sprites/autofire.png", gRenderer);
     smallSprite=loadImage("sprites/small.png", gRenderer);
     allySprite=loadImage("sprites/plus_ally_ai.png", gRenderer);
+	
+	explosion_sound = Mix_LoadWAV("sounds/explosion.wav");
+	
 	currentX = w;
 }
 
@@ -1071,6 +1078,7 @@ BossBlocks::~BossBlocks()
     SDL_DestroyTexture(autofireSprite);
     SDL_DestroyTexture(smallSprite);
     SDL_DestroyTexture(allySprite);
+	Mix_FreeChunk(explosion_sound);
 }
 
 bool BossBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -1193,11 +1201,13 @@ void BossBlocks::createPowerups()
 
 // Add an explosion at the given location
 void BossBlocks::addExplosion(int x, int y, int w, int h, int type) {
+    if (type == 0) Mix_PlayChannel(-1, explosion_sound, 0);
 	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
 }
 
 // Add an explosion at given x and y with given size
 void BossBlocks::addExplosion(int x, int y, int size) {
+	Mix_PlayChannel(-1, explosion_sound, 0);
 	explosion_arr.push_back(Explosion(x, y, size));
 }
 

@@ -53,12 +53,15 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     autoFire=false;
     small = false;
     bullet_shot = Mix_LoadWAV("sounds/pew.wav");
+	hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
 }
 
 Player::~Player()
 {
 	SDL_DestroyTexture(sprite1);
 	SDL_DestroyTexture(sprite2);
+	Mix_FreeChunk(bullet_shot);
+	Mix_FreeChunk(hit_sound);
 }
 
 void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
@@ -373,6 +376,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
 	if(!invincePower){
+        Mix_PlayChannel(-1, hit_sound, 0);
         if(this->difficulty == 2){
             damage /= 1.5;
         }

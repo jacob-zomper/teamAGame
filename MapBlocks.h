@@ -338,6 +338,9 @@ public:
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
+	
+	// Sounds
+	Mix_Chunk *explosion_sound;
 };
 
 class BossBlocks
@@ -385,6 +388,9 @@ private:
 	int screen_width;
 	int screen_height;
 	int difficulty;
+	
+	// Sounds
+	Mix_Chunk *explosion_sound;
 };
 
 #endif

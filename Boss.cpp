@@ -63,11 +63,12 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   destroyed = false;
   time_destroyed = 0;
   //sprite1 = loadImage(name, gRenderer);
+  hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
 }
 
 // IF YOU CREATE ANY POINTERS, DELETE THEM IN THIS METHOD
 Boss::~Boss() {
-
+	Mix_FreeChunk(hit_sound);
 }
 
 
@@ -260,6 +261,7 @@ Bullet* Boss::handleFiringDown(){
 void Boss::hit(int d){
 	if (destroyed) return;
 	if (damaged && !tier2) return;
+    Mix_PlayChannel(-1, hit_sound, 0);
 	if (health - d < 0)
 		health = 0;
 	else

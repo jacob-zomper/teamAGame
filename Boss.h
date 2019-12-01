@@ -6,6 +6,7 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "missile.h"
 #include "bullet.h"
 
@@ -41,6 +42,9 @@ public:
   void backToCenter(int SCREEN_WIDTH);
 
   SDL_Texture* sprite1;
+  
+  // Sounds
+  Mix_Chunk *hit_sound;
 
 private:
   //Boss sprite and hitboxes
