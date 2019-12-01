@@ -46,11 +46,13 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		}
 
 		prev_direction = 0;
+		hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
     }
 
 	Enemy::~Enemy() {
 		SDL_DestroyTexture(sprite1);
 		SDL_DestroyTexture(sprite2);
+		Mix_FreeChunk(hit_sound);
 	}
 
 	void Enemy::initializeSprites(SDL_Renderer *gRenderer)
@@ -467,6 +469,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	}
 
 	void Enemy::hit(int d){
+        Mix_PlayChannel(-1, hit_sound, 0);
 		// If the player has just been hit, they should be invunerable, so don't damage them
 		if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
 			return;

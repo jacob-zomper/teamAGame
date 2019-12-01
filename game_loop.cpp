@@ -64,9 +64,11 @@ bool prev_kam = false;
 SDL_Texture* gBackground;
 
 // Music stuff
-Mix_Music *trash_beat = NULL;
-Mix_Music* main_track = NULL;
-Mix_Music* start_track = NULL;
+Mix_Music* trash_beat = NULL;		// Track 1
+Mix_Music* main_track = NULL;		// Track 0
+Mix_Music* start_track = NULL;		// Track 2
+Mix_Music* boss_entry = NULL;		// Track 3
+Mix_Music* boss_track_1 = NULL;		// Track 4
 int current_track = -1;
 
 // Variables to indicate that the player has been destroyed
@@ -170,6 +172,8 @@ void close() {
 	Mix_FreeMusic(trash_beat);
 	Mix_FreeMusic(main_track);
 	Mix_FreeMusic(start_track);
+	Mix_FreeMusic(boss_entry);
+	Mix_FreeMusic(boss_track_1);
 
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -510,6 +514,8 @@ void bossBattle() {
 	delete en;
 	delete blocks;
 	bossBlocks = new BossBlocks(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer, difficulty);
+	Mix_PlayMusic(boss_entry, 0);
+	current_track = 3;
 	bool bossFight = true;
 	bool bossArrived = false;
 	bool bossEntered = false;
@@ -528,7 +534,12 @@ void bossBattle() {
 	bool won = false;			// True when player wins
 	int time_won = 0;
 	while (bossFight) {
-
+		
+		if (current_track != 4 && bossEntered && !game_over->isGameOver && !damaged) {
+			current_track = 4;
+			Mix_PlayMusic(boss_track_1, 0);
+		}
+		
 		// Scroll to the side
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		bg_x += (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
@@ -615,8 +626,8 @@ void bossBattle() {
 		double camShift = (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		bossBlocks->moveBlocks(camShift);
 
-		// Wait half a second before bringing the boss in
-		if (SDL_GetTicks() - 500 > start_time && !bossArrived) {
+		// Wait a second before bringing the boss in
+		if (SDL_GetTicks() - 4000 > start_time && !bossArrived) {
 			// Bring in the boss
 			if (!bossEntered) {
 				std::cout << "Creating new boss..." << std::endl;
@@ -825,6 +836,7 @@ void bossBattle() {
 		if (bossEntered) {
 			int enemyHealth = boss->getHealth();
 			if (!damaged && boss->isDamaged()) {
+				Mix_HaltMusic();
 				damaged = true;
 				time_damaged = SDL_GetTicks();
 			}
@@ -854,6 +866,8 @@ int main() {
 	trash_beat = loadMusic("sounds/lebron_trash_beat.wav");
 	main_track = loadMusic("sounds/track_2.wav");
 	start_track = loadMusic("sounds/game_track.wav");
+	boss_entry = loadMusic("sounds/boss_entry.wav");
+	boss_track_1 = loadMusic("sounds/boss_1.wav");
 	gBackground = loadImage("sprites/cave.png");
 
 	srand(time(NULL));
@@ -916,7 +930,7 @@ int main() {
 
 	while(gameon) {
 
-		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver) {
+		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver && camX < LEVEL_WIDTH) {
 			current_track = 0;
 			Mix_PlayMusic(main_track, 0);
 		}
@@ -1053,6 +1067,7 @@ int main() {
 		}
 		// Have the enemy and kamikaze exit the screen if it's boss time.
 		if (camX > LEVEL_WIDTH && (en->getX() > -en->getWidth() || kam->getX() < SCREEN_WIDTH)) {
+			Mix_HaltMusic();
 			en->moveLeft();
 			kam->moveRight();
 			SDL_RenderPresent(gRenderer);
