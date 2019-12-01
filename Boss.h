@@ -42,6 +42,7 @@ public:
   void backToCenter(int SCREEN_WIDTH);
 
   SDL_Texture* sprite1;
+  SDL_Texture* exclamation_point;
   
   // Sounds
   Mix_Chunk *hit_sound;
@@ -68,12 +69,13 @@ private:
 
 
   //Pattern functions and variables
-  static const int NUM_PATTERNS = 3;
+  static const int NUM_PATTERNS = 4;
   static const int PATTERN_DELAY = 1000;	// Amount of delay between patterns
   int time_since_pattern;		// Time since a pattern finished
   int last_pattern;				// Time when last pattern finished
   int pattern;					// Current pattern number (0 for no pattern)
   int phase;					// Current phase of a pattern (varies by pattern)	
+  int phase_time;				// Time the current phase was reached (not needed for all patterns)
   bool needsFiring;				// True when it's time to fire
   int numFired;					// Number of missiles fired in pattern so far
   
@@ -89,6 +91,13 @@ private:
 
   void patternThree(int SCREEN_WIDTH);
   std::vector<Missile *> handleFiringMissilePatternThree(std::vector<Missile *> missiles, int x, int y, SDL_Renderer *gRenderer);
+
+  void patternFour(int SCREEN_WIDTH);
+  static const int PATTERN_FOUR_DISAPPEAR_TIME = 2000;
+  static const int ANIMATION_FREQ = 200;
+  static const int NUM_DIVEBOMBS = 3;
+  int divebombs;
+
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;

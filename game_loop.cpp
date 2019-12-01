@@ -537,7 +537,7 @@ void bossBattle() {
 		
 		if (current_track != 4 && bossEntered && !game_over->isGameOver && !damaged) {
 			current_track = 4;
-			Mix_PlayMusic(boss_track_1, 0);
+			Mix_PlayMusic(boss_track_1, -1);
 		}
 		
 		// Scroll to the side
@@ -676,8 +676,8 @@ void bossBattle() {
 		time_since_hit_player = SDL_GetTicks() - player_hit_time;
 		if (time_since_hit_player > 2000 && bossEntered && boss->checkCollision(player->getHitboxX(), player->getHitboxY(), player->getHurtWidth(), player->getHurtHeight())) {
 			player_hit_time = SDL_GetTicks();
-			player->hit(30);
-			boss->hit(50);
+			player->hit(60);
+			boss->hit(20);
 		}
 		
 		// Create explosions relating to the damaging of the boss
