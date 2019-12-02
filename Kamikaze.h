@@ -13,10 +13,11 @@ class Kamikaze
     SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
 
     //Constructor initializing the variables
-    Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer *gRenderer);
+    Kamikaze(int x, int y, int w, int h, int delay, SDL_Renderer *gRenderer, int diff);
 
     //Shows Kamikaze on screen
     void renderKam(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
+    void initializeSprites(SDL_Renderer* gRenderer);
 
     //Move the plane into the frame, follows the player along
     //the y axis then assults the player after a certain period
@@ -35,6 +36,7 @@ class Kamikaze
     int getHeight();
     void setArrivalTime(int a);
     bool blast();
+	void moveRight();
 
     SDL_Rect* getHitbox();
     SDL_Texture* sprite1;
@@ -50,8 +52,8 @@ class Kamikaze
     double yPos;
     int xVelo;
     int yVelo;
-    const int width;
-    const int height;
+    int width;
+    int height;
 
     double tiltAngle;
 
@@ -66,7 +68,7 @@ class Kamikaze
     SDL_Rect kam_sprite;
     SDL_Rect kam_hitbox;
 
-
+    int diff;
 };
 
 #endif

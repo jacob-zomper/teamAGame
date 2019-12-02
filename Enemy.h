@@ -6,6 +6,7 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "bullet.h"
 #include <vector>
 using std::vector;
@@ -19,6 +20,7 @@ class Enemy
         //Initializes the variables, Constructor
         Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer);
 		~Enemy();
+		void initializeSprites(SDL_Renderer *gRenderer);
 
         //Shows the enemy
         void renderEnemy(SDL_Renderer* gRenderer);
@@ -50,19 +52,23 @@ class Enemy
         Bullet* handleFiring();
 		int chooseDirection();
 		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, int kamiX, int kamiY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom);
-
+		void moveLeft();
+		
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
+		
+		// Sounds
+		Mix_Chunk *hit_sound;
 
     private:
 
 		// Animation and shooting frequencies of the enemy
 		static const int ANIMATION_FREQ = 100;
 		static const int FIRING_FREQ = 1000;
-    static const int FLICKER_FREQ = 50;
-    static const int FLICKER_TIME = 500;
-    static const int SPAWN_FREQ = 3000;
+	    static const int FLICKER_FREQ = 50;
+	    static const int FLICKER_TIME = 500;
+	    static const int SPAWN_FREQ = 3000;
 
 		// Limits on where the enemy can go
 		static const int MIN_X = 0;
@@ -81,8 +87,8 @@ class Enemy
         double yPos;
 		int current_x_square;
 		int current_y_square;
-        const int width;
-        const int height;
+        int width;
+        int height;
 		int prev_direction;
 
         //Velocity of the enemy
@@ -104,6 +110,9 @@ class Enemy
 		// Shooting times, used for handling framerate-independent firing rate
 		int time_since_shoot;
 		int last_shot;
+
+		// Game difficulty
+		int diff;
 
     //health variables for the enemy
     int time_hit;

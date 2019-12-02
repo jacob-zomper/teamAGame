@@ -31,8 +31,7 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     y_vel = 0;
     x_accel = 0;
     y_accel = 0;
-	sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
-	sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+    initializeSprites(diff, gRenderer);
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
@@ -53,12 +52,108 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     invincePower = false;
     autoFire=false;
     small = false;
+    bullet_shot = Mix_LoadWAV("sounds/pew.wav");
+	hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
 }
 
 Player::~Player()
 {
 	SDL_DestroyTexture(sprite1);
 	SDL_DestroyTexture(sprite2);
+	Mix_FreeChunk(bullet_shot);
+	Mix_FreeChunk(hit_sound);
+}
+
+void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
+{
+    if (diff == 1)
+    {
+        sprite1 = loadImage("sprites/PlayerPlane1.png", gRenderer);
+        sprite2 = loadImage("sprites/PlayerPlane3.png", gRenderer);
+
+        player_height = PLAYER_HEIGHT;
+        player_width = PLAYER_WIDTH;
+    }
+    else
+    {
+        int min = 1, max = 9;
+        int random_sprite = rand() % (max - min + 1) + min;
+
+        switch (random_sprite)
+        {
+            case 1:
+                sprite1 = loadImage("sprites/a10.png", gRenderer);
+                sprite2 = loadImage("sprites/a10.png", gRenderer);
+
+                player_width = 178;
+                player_height = 47;
+                break;
+            case 2:
+                sprite1 = loadImage("sprites/f16.png", gRenderer);
+                sprite2 = loadImage("sprites/f16.png", gRenderer);
+                player_width = 124;
+                player_height = 37;
+                break;
+            case 3: 
+                sprite1 = loadImage("sprites/f22.png", gRenderer);
+                sprite2 = loadImage("sprites/f22.png", gRenderer);
+                player_width = 164;
+                player_height = 38;
+                break;
+            case 4:
+                sprite1 = loadImage("sprites/f35.png", gRenderer);
+                sprite2 = loadImage("sprites/f35.png", gRenderer);
+                player_width = 125;
+                player_height = 33;
+                break;
+            case 5:
+                sprite1 = loadImage("sprites/f4.png", gRenderer);
+                sprite2 = loadImage("sprites/f4.png", gRenderer);
+                player_width = 152;
+                player_height = 42;
+                break;
+            case 6:
+                sprite1 = loadImage("sprites/mig21.png", gRenderer);
+                sprite2 = loadImage("sprites/mig21.png", gRenderer);
+                player_width = 155;
+                player_height = 45;
+                break;
+            case 7:
+                sprite1 = loadImage("sprites/mig21e.png", gRenderer);
+                sprite2 = loadImage("sprites/mig21e.png", gRenderer);
+                player_width = 155;
+                player_height = 50;
+                break;
+            case 8:
+                sprite1 = loadImage("sprites/mig31.png", gRenderer);
+                sprite2 = loadImage("sprites/mig31.png", gRenderer);
+                player_width = 209;
+                player_height = 38;
+                break;
+            case 9:
+                sprite1 = loadImage("sprites/mig29.png", gRenderer);
+                sprite2 = loadImage("sprites/mig29.png", gRenderer);
+                player_width = 148;
+                player_height = 42;
+                break;
+            case 10:
+                sprite1 = loadImage("sprites/su24.png", gRenderer);
+                sprite2 = loadImage("sprites/su24.png", gRenderer);
+                player_width = 176;
+                player_height = 50;
+                break;
+        }           
+    }
+
+    player_hurt_height = player_height * 0.8;
+    player_hurt_width = player_width * 0.8;
+    s_player_hurt_height = player_hurt_height / 1.5;
+    s_player_hurt_width = player_hurt_width / 1.5;
+}
+
+void Player::handleMute()
+{
+    Mix_VolumeChunk(bullet_shot, abs(Mix_VolumeChunk(bullet_shot, -1) - 128));
 }
 
 //Takes key presses and adjusts the player's velocity
@@ -199,9 +294,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         {
             x_pos = 0;
         }
-        else if (x_pos > SCREEN_WIDTH - PLAYER_WIDTH)
+        else if (x_pos > SCREEN_WIDTH - getWidth())
         {
-           x_pos = SCREEN_WIDTH - PLAYER_WIDTH;
+           x_pos = SCREEN_WIDTH - getWidth();
         }
         // Stop the player if they hit the top of the level
         else if (y_pos < 0)
@@ -209,9 +304,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
           y_pos = 0;
         }
         // Stop the player if they hit the bottom
-        else if (y_pos > SCREEN_HEIGHT - PLAYER_HEIGHT)
+        else if (y_pos > SCREEN_HEIGHT - player_height)
         {
-            y_pos = SCREEN_HEIGHT - PLAYER_HEIGHT;
+            y_pos = SCREEN_HEIGHT - player_height;
         }
     }
     else{
@@ -219,9 +314,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
         {
             x_pos = 0;
         }
-        else if (x_pos > SCREEN_WIDTH - S_PLAYER_WIDTH)
+        else if (x_pos > SCREEN_WIDTH - getWidth())
         {
-           x_pos = SCREEN_WIDTH - S_PLAYER_WIDTH;
+           x_pos = SCREEN_WIDTH - getWidth();
         }
         // Stop the player if they hit the top of the level
         else if (y_pos < 0)
@@ -229,9 +324,9 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
           y_pos = 0;
         }
         // Stop the player if they hit the bottom
-        else if (y_pos > SCREEN_HEIGHT - S_PLAYER_HEIGHT)
+        else if (y_pos > SCREEN_HEIGHT - player_height)
         {
-            y_pos = SCREEN_HEIGHT - S_PLAYER_HEIGHT;
+            y_pos = SCREEN_HEIGHT - player_height;
         }
     }
 
@@ -255,7 +350,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 		return;
 	}
     if(small == false){
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, PLAYER_WIDTH, PLAYER_HEIGHT};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), getHeight()};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -265,7 +360,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	    }
     }
     else{
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, S_PLAYER_WIDTH, S_PLAYER_HEIGHT};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), getHeight()};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -281,6 +376,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
 	if(!invincePower){
+        Mix_PlayChannel(-1, hit_sound, 0);
         if(this->difficulty == 2){
             damage /= 1.5;
         }
@@ -335,20 +431,20 @@ void Player::resetHeatVals(){
 // Checks if the player collided with a kamikaze, returning true if so
 bool Player::checkCollisionKami(int kamiX, int kamiY, int kamiW, int kamiH) {
     if(small == false){
-        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos - 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 12, y_pos - 12, player_hurt_width, player_hurt_height);
     }
     else{
-        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 8, y_pos - 8, S_PLAYER_HURT_WIDTH, S_PLAYER_HURT_HEIGHT);
+        return checkCollide(kamiX, kamiY, kamiW, kamiH, x_pos + 8, y_pos - 8, s_player_hurt_width, s_player_hurt_height);
     }
 }
 
 // Checks if the player collided with a bullet, returning true if so
 bool Player::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
     if(small == false){
-        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, PLAYER_HURT_WIDTH, PLAYER_HURT_HEIGHT);
+        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 12, y_pos + 12, player_hurt_width, player_hurt_height);
     }
     else{
-        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 9, y_pos + 9, S_PLAYER_HURT_WIDTH, S_PLAYER_HURT_HEIGHT);
+        return checkCollide(bullX, bullY, bullW, bullH, x_pos + 9, y_pos + 9, s_player_hurt_width, s_player_hurt_height);
     }	
 }
 
@@ -363,17 +459,19 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
-    std::cout << "entered firing handler" << std::endl;
-    std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
+    //std::cout << "entered firing handler" << std::endl;
+    //std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
     double bulletAngle = tiltAngle*PI/180;
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
-        std::cout << "Firing new bullet"<< std::endl;
-        Bullet* b;
+        //std::cout << "Firing new bullet"<< std::endl;
+        Mix_PlayChannel(-1, bullet_shot, 0);
+
+        Bullet *b;
         if(small == false){
-            b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
         }
         else{
-            b = new Bullet(x_pos+S_PLAYER_WIDTH+5 -fabs(S_PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+S_PLAYER_HEIGHT/2+S_PLAYER_HEIGHT*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
         }
         if(!infiniteShooting){
     		fshot_heat += SHOOT_COST;
@@ -386,19 +484,21 @@ Bullet* Player::handleForwardFiring()
         time_since_f_shot = SDL_GetTicks();
 		return b;
 	}
-	return nullptr;
+    return nullptr;
 }
 
 Bullet* Player::handleBackwardFiring()
 {
     double bulletAngle = tiltAngle*PI/180;
 	if (!bshot_maxed && (SDL_GetTicks() - time_since_b_shot) >=100) {
+        Mix_PlayChannel(-1, bullet_shot, 0);
+
         Bullet* b;
 		if(small == false){
-            b = new Bullet(x_pos-10 +fabs(PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+PLAYER_HEIGHT/2-PLAYER_HEIGHT*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos-10 +fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
         }
         else{
-            b = new Bullet(x_pos-10 +fabs(S_PLAYER_WIDTH/8*sin(bulletAngle)), y_pos+S_PLAYER_HEIGHT/2-S_PLAYER_HEIGHT*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
+            b = new Bullet(x_pos-10 +fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2-player_height*sin(bulletAngle), -fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? -fabs(450*sin(bulletAngle)) : fabs(450*sin(bulletAngle)));
         }
 		if(!infiniteShooting){
             bshot_heat += SHOOT_COST;
@@ -427,37 +527,47 @@ void Player::setPosY(int y) { y_pos = y; }
 
 int Player::getWidth() { 
     if(small == false){
-        return PLAYER_WIDTH; 
+        return player_width; 
     }
     else{
-        return S_PLAYER_WIDTH;
+        return player_width / 1.5;
     }
 }
 
 int Player::getHeight() { 
     if(small == false){
-        return PLAYER_HEIGHT; 
+        return player_height; 
     }
     else{
-        return S_PLAYER_HEIGHT; 
+        return player_height / 1.5; 
     }
 }
+ 
+int Player::getHitboxX() {
+	if (small) return x_pos + 9;
+	else return x_pos + 12;
+}
+
+int Player::getHitboxY() {
+	if (small) return y_pos + 9;
+	else return y_pos + 12;
+};
 
 int Player::getHurtWidth() { 
     if(small == false){
-        return PLAYER_HURT_WIDTH; 
+        return player_hurt_width; 
     }
     else{
-        return S_PLAYER_HURT_WIDTH;
+        return s_player_hurt_width;
     }
 }
 
 int Player::getHurtHeight() { 
     if(small == false){
-        return PLAYER_HURT_HEIGHT; 
+        return player_hurt_height; 
     }
     else{
-        return S_PLAYER_HURT_HEIGHT; 
+        return s_player_hurt_height; 
     }
 }
 

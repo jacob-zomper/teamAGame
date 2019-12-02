@@ -28,11 +28,8 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	return newText;
 }
 
-    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},width{w},height{h},maxXVelo{xvel},maxYVelo{yvel}{
-	  	enemy_sprite = {(int) xPos, (int) yPos, width, height};
-		enemy_hitbox = enemy_sprite;
-		sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
-		sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
+    Enemy::Enemy(int x, int y, int w, int h, int xvel, int yvel, int diff, SDL_Renderer *gRenderer) :xPos{(double) x}, yPos{(double) y},maxXVelo{xvel},maxYVelo{yvel}, diff{diff} {
+		initializeSprites(gRenderer);
 		tiltAngle = 0;
 	  	last_move = SDL_GetTicks();
 		time_hit = SDL_GetTicks() - FLICKER_TIME;
@@ -49,39 +46,152 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 		}
 
 		prev_direction = 0;
+		hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
     }
 
 	Enemy::~Enemy() {
 		SDL_DestroyTexture(sprite1);
 		SDL_DestroyTexture(sprite2);
+		Mix_FreeChunk(hit_sound);
+	}
+
+	void Enemy::initializeSprites(SDL_Renderer *gRenderer)
+	{
+		if (diff == 1)
+		{
+			width = 125;
+			height = 53;
+
+			enemy_sprite = {(int) xPos, (int) yPos, width, height};
+			enemy_hitbox = enemy_sprite;
+			sprite1 = loadImage("sprites/EnemyPlane1.png", gRenderer);
+			sprite2 = loadImage("sprites/EnemyPlane3.png", gRenderer);
+		}
+		else
+		{
+			int min = 1, max = 9;
+			int random_sprite = rand() % (max - min + 1) + min;
+
+			switch (random_sprite)
+			{
+				case 1:
+					width = 178;
+					height = 47; 
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/a10.png", gRenderer);
+					sprite2 = loadImage("sprites/a10.png", gRenderer);
+					break;
+				case 2:
+					width = 124;
+					height = 37;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f16.png", gRenderer);
+					sprite2 = loadImage("sprites/f16.png", gRenderer);
+					break;
+				case 3: 
+					width = 164;
+					height = 38;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f22.png", gRenderer);
+					sprite2 = loadImage("sprites/f22.png", gRenderer);
+					break;
+				case 4:
+					width = 125;
+					height = 33;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f35.png", gRenderer);
+					sprite2 = loadImage("sprites/f35.png", gRenderer);
+					break;
+				case 5:
+					width = 152;
+					height = 42;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/f4.png", gRenderer);
+					sprite2 = loadImage("sprites/f4.png", gRenderer);
+					break;
+				case 6:
+					width = 155;
+					height = 45;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig21.png", gRenderer);
+					sprite2 = loadImage("sprites/mig21.png", gRenderer);
+					break;
+				case 7:
+					width = 155;
+					height = 50;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig21e.png", gRenderer);
+					sprite2 = loadImage("sprites/mig21e.png", gRenderer);
+					break;
+				case 8:
+					width = 209;
+					height = 38;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig31.png", gRenderer);
+					sprite2 = loadImage("sprites/mig31.png", gRenderer);
+					break;
+				case 9:
+					width = 148;
+					height = 42;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/mig29.png", gRenderer);
+					sprite2 = loadImage("sprites/mig29.png", gRenderer);
+					break;
+				case 10:
+					width = 176;
+					height = 50;
+					enemy_sprite = {(int) xPos, (int) yPos, width, height};
+					enemy_hitbox = enemy_sprite;
+					sprite1 = loadImage("sprites/su24.png", gRenderer);
+					sprite2 = loadImage("sprites/su24.png", gRenderer);
+					break;
+			}			
+		}
 	}
 
     void Enemy::renderEnemy(SDL_Renderer* gRenderer){
-			if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
-				return;
-			}
+		enemy_sprite = {(int)xPos,(int)yPos,width,height};
+		if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME && ((SDL_GetTicks() - time_hit) / FLICKER_FREQ) % 2 == 0) {
+			return;
+		}
 
-			if (!is_destroyed){
-				if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
-      		SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-      	}else {
-        	SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
-      	}
-      	enemy_hitbox=enemy_sprite;
+		if (!is_destroyed){
+			if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
+				SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
 			}
+			else {
+				SDL_RenderCopyEx(gRenderer, sprite2, nullptr, &enemy_sprite, tiltAngle, nullptr, SDL_FLIP_NONE);
+			}
+			enemy_hitbox=enemy_sprite;
+		}
 
-			if ((SDL_GetTicks() - time_destroyed) >= SPAWN_FREQ && is_destroyed){
-				health = 20;
-				is_destroyed = false;
-			}
+		if ((SDL_GetTicks() - time_destroyed) >= SPAWN_FREQ && is_destroyed){
+			xPos = -width;
+			health = 20;
+			is_destroyed = false;
+		}
     }
 
     void Enemy::move(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom, int kamiX, int kamiY, int cave_y)
     {
-		// If there is no cave, use the risk scores
-		if (cave_y == -1)
+		time_since_move = SDL_GetTicks() - last_move;
+		// If the enemy is offscreen, have them move right
+		if (xPos <= MIN_X)
 		{
-			time_since_move = SDL_GetTicks() - last_move;
+			xPos += (double) (maxXVelo * time_since_move) / 1000;
+		}
+		// If there is no cave, use the risk scores
+		else if (cave_y == -1)
+		{
 			xVelo = 0;
 			yVelo = 0;
 
@@ -118,7 +228,6 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 			if (cave_y > yPos + height / 2 + 5) yPos += (double) (maxYVelo * time_since_move) / 1000;
 			else if (cave_y < yPos + height / 2 - 5) yPos -= (double) (maxYVelo * time_since_move) / 1000;
 		}
-		enemy_sprite = {(int)xPos,(int)yPos,width,height};
 		last_move = SDL_GetTicks();
     }
 
@@ -360,6 +469,7 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
 	}
 
 	void Enemy::hit(int d){
+        Mix_PlayChannel(-1, hit_sound, 0);
 		// If the player has just been hit, they should be invunerable, so don't damage them
 		if ((SDL_GetTicks() - time_hit) <= FLICKER_TIME) {
 			return;
@@ -437,6 +547,12 @@ SDL_Texture* Enemy::loadImage(std::string fname, SDL_Renderer *gRenderer) {
     	return nullptr;
     }
 
-		int Enemy::getHealth(){
-			return health;
-		}
+	int Enemy::getHealth(){
+		return health;
+	}
+	
+	void Enemy::moveLeft() {
+		time_since_move = SDL_GetTicks() - last_move;
+		xPos -= (double) (maxXVelo * time_since_move) / 1000;
+		last_move = SDL_GetTicks();
+	}
