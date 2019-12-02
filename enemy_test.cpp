@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include "Enemy.h"
 #include "bullet.h"
+#include "Boss.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -114,13 +115,8 @@ int main() {
 		// SDL_Rect dummy = {x,y,50,50};
 		// SDL_RenderFillRect(gRenderer, &dummy);
 		// //put it on the screen
+
 		
-		
-		if(shootOnce)
-		{
-			en->shoot();
-			shootOnce = false;
-		}
 
 		en->renderEnemy(gRenderer);
 		SDL_RenderPresent(gRenderer);
