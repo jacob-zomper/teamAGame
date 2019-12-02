@@ -220,9 +220,9 @@ class Explosion
 public:
 
 	// Variables needed to control the size of the explosion and make it disappear at the right time
-	static const int INITIAL_EXPLOSION_SIZE = 30;
-	static const int FINAL_EXPLOSION_SIZE = 100;
-	static const int EXPLOSION_SPEED = 100;
+	int initial_explosion_size;
+	int final_explosion_size;
+	int explosion_speed;
 	int explosion_time;
 	double current_size;
 
@@ -237,11 +237,15 @@ public:
 	// Location relative to the camera
 	double rel_x;
 	double rel_y;
+	
+	// True if the explosion stays in constant position relative to the camera, false otherwise
+	bool stationary;
 
     //0 for explosion, 1 for dust cloud
     int type;
 
 	Explosion();
+	Explosion(int x, int y, int size);
 	Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer);
 
 	//defines the explosion
@@ -334,6 +338,9 @@ public:
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
+	
+	// Sounds
+	Mix_Chunk *explosion_sound;
 };
 
 class BossBlocks
@@ -365,8 +372,10 @@ public:
 	void moveBlocks(double camShift);
 	void createPowerups();
 	void addExplosion(int x, int y, int w, int h, int type);
+	void addExplosion(int x, int y, int size);
 	void checkCollision(Player *p);
-	void render(SDL_Renderer* gRenderer);
+	void renderPowerups(SDL_Renderer* gRenderer);
+	void renderExplosions(SDL_Renderer* gRenderer);
 	
 private:
 	
@@ -379,6 +388,9 @@ private:
 	int screen_width;
 	int screen_height;
 	int difficulty;
+	
+	// Sounds
+	Mix_Chunk *explosion_sound;
 };
 
 #endif

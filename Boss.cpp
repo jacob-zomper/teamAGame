@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <string>
 #include <vector>
 #include <SDL.h>
@@ -46,43 +47,74 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   maxYVelo = 200;
   last_pattern = 0;
   if(diff == 3){
-	health = 2000;
+	max_health = 2000;
   }
   else if(diff == 2){
-	health = 1500;
+	max_health = 1500;
   }
   else{
-	health = 1000;
+	max_health = 1000;
   }
+  health = max_health;
   difficulty = diff;
+  damaged = false;
+  time_damaged = 0;
+  tier2 = false;
+  destroyed = false;
+  time_destroyed = 0;
   //sprite1 = loadImage(name, gRenderer);
+  exclamation_point = loadImage("sprites/ExclamationPoint.png", gRenderer);
+  hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
 }
 
 // IF YOU CREATE ANY POINTERS, DELETE THEM IN THIS METHOD
 Boss::~Boss() {
-
+	Mix_FreeChunk(hit_sound);
+	SDL_DestroyTexture(exclamation_point);
 }
 
 
 void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
-    if(xPos<SCREEN_WIDTH){
-      //SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
-      SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-      SDL_RenderFillRect(gRenderer, &boss_hitbox_top);
-      SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-      SDL_RenderFillRect(gRenderer, &boss_hitbox_bottom);
-      boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
-      boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
-    }
+	if (destroyed && SDL_GetTicks() - time_destroyed > 4000) return;
+	//SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+	SDL_RenderFillRect(gRenderer, &boss_hitbox_top);
+	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+	SDL_RenderFillRect(gRenderer, &boss_hitbox_bottom);
+	boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
+	boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
+	// Render the warning exclamation point if in the proper phase
+	if (pattern == 4 && phase == 2) {
+		int time_since_phase = SDL_GetTicks() - phase_time;
+		if (time_since_phase > 400 && (time_since_phase / ANIMATION_FREQ) % 2 == 0) {
+			int x = xPos + WIDTH/2 - 21;
+			SDL_Rect location = {x, 100, 42, 129};
+			SDL_RenderCopyEx(gRenderer, exclamation_point, nullptr, &location, 0, nullptr, SDL_FLIP_NONE);
+		}
+	}
 }
 
 void Boss::move(int SCREEN_WIDTH){
+	if (destroyed) return;
+	if (damaged) {
+		int time_since_damaged = SDL_GetTicks() - time_damaged;
+		if (time_since_damaged > 4000) {
+			tier2 = true;
+		}
+	}
+	if (damaged && !tier2) {
+		last_move = SDL_GetTicks();
+		return;
+	}
 	xVelo = 0;
 	time_since_pattern = SDL_GetTicks() - last_pattern;
 	if (time_since_pattern >= PATTERN_DELAY && pattern == 0){
 		pattern = (rand() % NUM_PATTERNS) + 1;
 	}
-	if (pattern == 1) {
+	if (tier2 && pattern == -1) {
+		backToCenter(SCREEN_WIDTH);
+	}
+	else if (pattern == 1) {
 		patternOne(SCREEN_WIDTH);
   }
 	else if (pattern == 2) {
@@ -91,6 +123,9 @@ void Boss::move(int SCREEN_WIDTH){
   else if (pattern == 3){
     patternThree(SCREEN_WIDTH);
   }
+	else if (pattern == 4) {
+		patternFour(SCREEN_WIDTH);
+	}
 	else{
 		if (yVelo == 0) {
 			yVelo = maxYVelo;
@@ -111,8 +146,20 @@ void Boss::move(int SCREEN_WIDTH){
 	last_move = SDL_GetTicks();
 }
 
-bool Boss::checkCollisionBullet(int bullX, int bullY, int bullW, int bullH) {
-	return checkCollide(bullX, bullY, bullW, bullH, xPos, yPos, WIDTH, HEIGHT);
+bool Boss::checkCollision(int x, int y, int w, int h) {
+	if (destroyed) return false;
+	if (damaged && !tier2) return false;
+	// Check collision with the top part
+	if (checkCollide(x, y, w, h, xPos, yPos + HEIGHT/2, WIDTH, HEIGHT/2)) {
+		return true;
+	}
+	// Check collision with the bottom part
+	else if (checkCollide(x, y, w, h, xPos + WIDTH/4, yPos, WIDTH/2, HEIGHT)) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 bool Boss::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -125,6 +172,8 @@ bool Boss::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTw
 }
 
 std::vector<Missile*> Boss::handleFiringMissile(std::vector<Missile*> missiles ,int x, int y, SDL_Renderer* gRenderer){
+  if (destroyed) return missiles;
+  if (damaged && !tier2) return missiles;
   time_since_shot_missile = SDL_GetTicks() - last_shot_missile;
   if(pattern == 1){
 	  missiles = handleFiringMissilePatternOne(missiles, x, y, gRenderer);
@@ -135,6 +184,7 @@ std::vector<Missile*> Boss::handleFiringMissile(std::vector<Missile*> missiles ,
   if (pattern == 3){
     missiles = handleFiringMissilePatternThree(missiles, x, y, gRenderer);
   }
+  // No missiles get fired for pattern 4 - the boss attacks by trying to hit the player
   return missiles;
 }
 
@@ -186,7 +236,7 @@ std::vector<Missile*> Boss::handleFiringMissilePatternTwo(std::vector<Missile*> 
     double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
     double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
 	// Fire a missile to the left if in phases 2 or 3
-	if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_ONE_FIRING_FREQ){
+	if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_TWO_FIRING_FREQ){
 		Missile * m = new Missile(damage, blast_radius, xPos, yPos+(HEIGHT/2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
 		missiles.push_back(m);
 		last_shot_missile = SDL_GetTicks();
@@ -203,7 +253,7 @@ std::vector<Missile*> Boss::handleFiringMissilePatternThree(std::vector<Missile*
   double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
   double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
   // Fire a missile to the left if in phases 2 or 3
-  if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_ONE_FIRING_FREQ)
+  if ((phase == 2 || phase == 3) && time_since_shot_missile >= PATTERN_TWO_FIRING_FREQ)
   {
     Missile *m = new Missile(damage, blast_radius, xPos, yPos + (HEIGHT / 2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
     missiles.push_back(m);
@@ -222,10 +272,26 @@ Bullet* Boss::handleFiringDown(){
 }
 
 void Boss::hit(int d){
-  if (health - d < 0)
-    health = 0;
-  else
-    health -= d;
+	if (destroyed) return;
+	if (damaged && !tier2) return;
+    Mix_PlayChannel(-1, hit_sound, 0);
+	if (health - d < 0)
+		health = 0;
+	else
+		health -= d;
+	// Reaching 0 health for the first time = damaged
+	if (!damaged && health == 0) {
+		health = max_health;
+		damaged = true;
+		time_damaged = SDL_GetTicks();
+		pattern = -1;
+		phase = 1;
+	}
+	// Reaching 0 health later = destroyed
+	else if (health == 0) {
+		destroyed = true;
+		time_destroyed = SDL_GetTicks();
+	}
 }
 
 int Boss::getX(){
@@ -248,10 +314,31 @@ int Boss::getHealth(){
   return health;
 }
 
+double Boss::getHealthPercentage() {
+	return 100.0 * health / max_health;
+}
+
+bool Boss::isDamaged() {
+	return damaged;
+}
+
 void Boss::moveLeft() {
 	time_since_move = SDL_GetTicks() - last_move;
 	xPos -= (double) (maxXVelo * time_since_move) / 1000;
 	last_move = SDL_GetTicks();
+}
+
+// Moving back to center
+void Boss::backToCenter(int SCREEN_WIDTH) {
+	xVelo = 0;
+	yVelo = 0;
+	int x_dist_to_start = SCREEN_WIDTH - 50 - WIDTH - xPos;
+	int y_dist_to_start = 360 - yPos;
+	xVelo = maxXVelo * ((double)x_dist_to_start / (abs(x_dist_to_start) + abs(y_dist_to_start)));
+	yVelo = maxYVelo * ((double)y_dist_to_start / (abs(x_dist_to_start) + abs(y_dist_to_start)));
+	if (abs(x_dist_to_start) < 5 && abs(y_dist_to_start) < 5) {
+		pattern = 0;
+	}
 }
 
 // Movement for pattern 1
@@ -434,4 +521,61 @@ void Boss::patternThree(int SCREEN_WIDTH)
     pattern = 0;
     numFired = 0;
   }
+}
+
+void Boss::patternFour(int SCREEN_WIDTH) {
+	xVelo = 0;
+	yVelo = 0;
+	
+	// Phase 1: fly off the screen
+	if (phase == 1) {
+		yVelo = -maxYVelo;
+		if (yPos < -HEIGHT - 50)
+		{
+			divebombs = 0;
+			xPos = (rand() % (SCREEN_WIDTH - WIDTH - 50)) + 50;
+			phase_time = SDL_GetTicks();
+			phase = 2;
+		}
+	}
+	// Phase 2: wait before divebombing
+	else if (phase == 2) {
+		if (phase_time + PATTERN_FOUR_DISAPPEAR_TIME < SDL_GetTicks()) {
+			phase = 3;
+		}
+	}
+	// Phase 3: divebomb the player
+	else if (phase == 3) {
+		yVelo = 5 * maxYVelo;		// Have to go really fast for this pattern to be a threat
+		if (yPos > 720) {
+			divebombs++;
+			// If we're done divebombing, move on to phase 4
+			if (divebombs == NUM_DIVEBOMBS) {
+				xPos = SCREEN_WIDTH + WIDTH + 300;
+				yPos = 360 - HEIGHT/2;
+				phase = 4;
+			}
+			// Otherwise, go back to the top of the screen
+			else {
+				xPos = (rand() % (SCREEN_WIDTH - WIDTH - 50)) + 50;
+				yPos = -HEIGHT - 50;
+				phase_time = SDL_GetTicks();
+				phase = 2;
+			}
+		}
+	}
+	// Phase 4: go back to starting position
+	else if (phase == 4) {
+		xVelo = -maxXVelo;
+		if (xPos < SCREEN_WIDTH - 50 - WIDTH) {
+			phase = 5;
+		}
+	}
+	// Phase 5: reset everything
+	if (phase == 5) {
+		phase = 1;
+		last_pattern = SDL_GetTicks();
+		pattern = 0;
+		numFired = 0;
+	}
 }

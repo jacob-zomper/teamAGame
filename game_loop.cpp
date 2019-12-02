@@ -64,9 +64,12 @@ bool prev_kam = false;
 SDL_Texture* gBackground;
 
 // Music stuff
-Mix_Music *trash_beat = NULL;
-Mix_Music* main_track = NULL;
-Mix_Music* start_track = NULL;
+Mix_Music* trash_beat = NULL;		// Track 1
+Mix_Music* main_track = NULL;		// Track 0
+Mix_Music* start_track = NULL;		// Track 2
+Mix_Music* boss_entry = NULL;		// Track 3
+Mix_Music* boss_track_1 = NULL;		// Track 4
+Mix_Music* boss_track_2 = NULL;		// Track 5
 int current_track = -1;
 
 // Variables to indicate that the player has been destroyed
@@ -89,6 +92,7 @@ std::string fps;//for onscreen fps
 std::string score; // for onscreen score
 std::string high_score_string;
 static TTF_Font *font_16;
+static TTF_Font *font_20;
 int high_score;
 
 bool init() {
@@ -169,6 +173,9 @@ void close() {
 	Mix_FreeMusic(trash_beat);
 	Mix_FreeMusic(main_track);
 	Mix_FreeMusic(start_track);
+	Mix_FreeMusic(boss_entry);
+	Mix_FreeMusic(boss_track_1);
+	Mix_FreeMusic(boss_track_2);
 
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -509,12 +516,37 @@ void bossBattle() {
 	delete en;
 	delete blocks;
 	bossBlocks = new BossBlocks(SCREEN_WIDTH, SCREEN_HEIGHT, gRenderer, difficulty);
+	Mix_PlayMusic(boss_entry, 0);
+	current_track = 3;
 	bool bossFight = true;
 	bool bossArrived = false;
 	bool bossEntered = false;
+	int arrivalTime = 0;
 	int start_time = SDL_GetTicks();
+	int player_hit_time = 0;
+	int time_since_hit_player = 0;
+	bool damaged = false;		// True when the boss' first health bar has been drained
+	int time_damaged = 0;
+	int time_since_damaged = 0;
+	bool tier2 = false;			// True when the boss has entered the second tier
+	int damageExplosions = 0;	// Number of explosions created so far in the enemy's damage or destruction animation
+	bool bossDestroyed = false;	// True when the boss has been destroyed
+	int time_destroyed = 0;
+	int time_since_destroyed = 0;
+	bool won = false;			// True when player wins
+	int time_won = 0;
 	while (bossFight) {
-
+		
+		if (current_track != 4 && bossEntered && !game_over->isGameOver && !damaged) {
+			current_track = 4;
+			Mix_PlayMusic(boss_track_1, -1);
+		}
+		
+		if (current_track != 5 && tier2 && !game_over->isGameOver && !bossDestroyed) {
+			current_track = 5;
+			Mix_PlayMusic(boss_track_2, -1);
+		}
+		
 		// Scroll to the side
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		bg_x += (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
@@ -601,13 +633,14 @@ void bossBattle() {
 		double camShift = (double) (SCROLL_SPEED * time_since_horiz_scroll) / 1000;
 		bossBlocks->moveBlocks(camShift);
 
-		// Wait half a second before bringing the boss in
-		if (SDL_GetTicks() - 500 > start_time && !bossArrived) {
+		// Wait a second before bringing the boss in
+		if (SDL_GetTicks() - 4000 > start_time && !bossArrived) {
 			// Bring in the boss
 			if (!bossEntered) {
 				std::cout << "Creating new boss..." << std::endl;
 				boss = new Boss(SCREEN_WIDTH, SCREEN_HEIGHT/2 - Boss::HEIGHT/2, 0, 0, difficulty, gRenderer);
 				bossEntered = true;
+				arrivalTime = SDL_GetTicks();
 			}
 			if (boss->getX() > SCREEN_WIDTH - Boss::WIDTH - 50) {
 				boss->moveLeft();
@@ -635,11 +668,83 @@ void bossBattle() {
 				destroyed = true;
 				player->hit(5);
 			}
+			if (bossEntered && boss->checkCollision(bullets[i]->getX(), bullets[i]->getY(), bullets[i]->getWidth(), bullets[i]->getHeight())) {
+				destroyed = true;
+				boss->hit(25);
+			}
 
 			if (destroyed) {
 				delete bullets[i];
 				bullets.erase(bullets.begin() + i);
 			}
+		}
+		
+		// Handle player/boss collisions
+		time_since_hit_player = SDL_GetTicks() - player_hit_time;
+		if (time_since_hit_player > 2000 && bossEntered && boss->checkCollision(player->getHitboxX(), player->getHitboxY(), player->getHurtWidth(), player->getHurtHeight())) {
+			player_hit_time = SDL_GetTicks();
+			player->hit(60);
+			boss->hit(20);
+		}
+		
+		// Create explosions relating to the damaging of the boss
+		time_since_damaged = SDL_GetTicks() - time_damaged;
+		if (damaged && time_since_damaged < 4000) {
+			if (damageExplosions == 0 && time_since_damaged > 250) {
+				bossBlocks->addExplosion(boss->getX() + 50, boss->getY() + boss->getHeight() - 50, 90);
+				damageExplosions++;
+			}
+			if (damageExplosions == 1 && time_since_damaged > 800) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 60, boss->getY() + 55, 105);
+				damageExplosions++;
+			}
+			if (damageExplosions == 2 && time_since_damaged > 1020) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() / 2 - 30, boss->getY() + boss->getHeight() - 35, 100);
+				damageExplosions++;
+			}
+			if (damageExplosions == 3 && time_since_damaged > 1450) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 40, boss->getY() + boss->getHeight() - 40, 103);
+				damageExplosions++;
+			}
+			if (damageExplosions == 4 && time_since_damaged > 2000) {
+				bossBlocks->addExplosion(boss->getX() + 55, boss->getY() + 40, 95);
+				damageExplosions++;
+			}
+		}
+		else if (damaged) {
+			tier2 = true;
+		}
+		// Create explosions relating to the destruction of the boss
+		time_since_destroyed = SDL_GetTicks() - time_destroyed;
+		if (bossDestroyed) {
+			if (damageExplosions == 0 && time_since_destroyed > 250) {
+				bossBlocks->addExplosion(boss->getX() + 50, boss->getY() + boss->getHeight() - 50, 90);
+				damageExplosions++;
+			}
+			if (damageExplosions == 1 && time_since_destroyed > 800) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 70, boss->getY() + 25, 105);
+				damageExplosions++;
+			}
+			if (damageExplosions == 2 && time_since_destroyed > 1020) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() / 2 - 30, boss->getY() + boss->getHeight() - 35, 100);
+				damageExplosions++;
+			}
+			if (damageExplosions == 3 && time_since_destroyed > 1450) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() - 40, boss->getY() + boss->getHeight() - 40, 103);
+				damageExplosions++;
+			}
+			if (damageExplosions == 4 && time_since_destroyed > 2000) {
+				bossBlocks->addExplosion(boss->getX() + 75, boss->getY() + 30, 95);
+				damageExplosions++;
+			}
+			if (damageExplosions == 5 && time_since_destroyed > 4000) {
+				bossBlocks->addExplosion(boss->getX() + boss->getWidth() / 2, boss->getY() + boss->getHeight() / 2, 275);
+				damageExplosions++;
+			}
+		}
+		else if (bossDestroyed) {
+			won = true;
+			time_won = SDL_GetTicks();
 		}
 		
 		// Handle player/powerup collisions
@@ -654,6 +759,9 @@ void bossBattle() {
 		bgRect.x += SCREEN_WIDTH;
 		SDL_RenderCopy(gRenderer, gBackground, nullptr, &bgRect);
 
+		// Draw the powerups
+		bossBlocks->renderPowerups(gRenderer);
+		
 		// Draw the boss if it exists
 		if (bossEntered) {
 			boss->renderBoss(SCREEN_WIDTH, gRenderer);
@@ -662,8 +770,8 @@ void bossBattle() {
 		// Draw the player
 		if (!playerDestroyed) player->render(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
 		
-		// Draw the powerups
-		bossBlocks->render(gRenderer);
+		// Draw the explosions
+		bossBlocks->renderExplosions(gRenderer);
 		
 		//draw the bullets
 		for (int i = 0; i < bullets.size(); i++) {
@@ -677,6 +785,40 @@ void bossBattle() {
 		}
 
 		renderTextAndHealth();
+		std::string boss_string = "Boss";
+		Text bossText(gRenderer, boss_string, {255, 255, 255, 255}, font_20);
+		bossText.render(gRenderer, 50, 60);
+
+		if (bossEntered) {
+			double health = boss->getHealthPercentage();
+			SDL_Rect outline = {99, 49, 1002, 52};
+			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+			SDL_RenderDrawRect(gRenderer, &outline);
+			if(arrivalTime > 0 && (SDL_GetTicks() - arrivalTime) / 2 < health * 10){
+				health = (SDL_GetTicks() - arrivalTime) / 20;
+			}
+			else if (damaged && !tier2) {
+				health = 0;
+			}
+			else if (tier2 && (SDL_GetTicks() - time_damaged - 4000) / 2 < health * 10){
+				health = (SDL_GetTicks() - time_damaged - 4000) / 20;
+			}
+			if (health > 75) {
+				SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
+			}
+			else if (health >= 50) {
+				SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
+			}
+			else if (health >= 20) {
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
+			}
+			else {
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
+			}
+			
+			SDL_Rect health_rect = {100, 50, 10*((int)health), 50};
+			SDL_RenderFillRect(gRenderer, &health_rect);
+		}
 
 		int health = player->getHealth();
 		if(health < 1 && !playerDestroyed){
@@ -697,6 +839,27 @@ void bossBattle() {
 			game_over->stopGame(player);
 			game_over->render(gRenderer);
 		}
+		
+		if (bossEntered) {
+			int enemyHealth = boss->getHealth();
+			if (!damaged && boss->isDamaged()) {
+				Mix_HaltMusic();
+				damaged = true;
+				time_damaged = SDL_GetTicks();
+			}
+			else if (damaged && !tier2) {
+				time_since_damaged = SDL_GetTicks() - time_damaged;
+				if (time_since_damaged > 4000) {
+					tier2 = true;
+				}
+			}
+			else if (tier2 && !bossDestroyed && enemyHealth == 0) {
+				Mix_HaltMusic();
+				damageExplosions = 0;
+				bossDestroyed = true;
+				time_destroyed = SDL_GetTicks();
+			}
+		}
 		SDL_RenderPresent(gRenderer);
 	}
 }
@@ -711,6 +874,9 @@ int main() {
 	trash_beat = loadMusic("sounds/lebron_trash_beat.wav");
 	main_track = loadMusic("sounds/track_2.wav");
 	start_track = loadMusic("sounds/game_track.wav");
+	boss_entry = loadMusic("sounds/boss_entry.wav");
+	boss_track_1 = loadMusic("sounds/boss_1.wav");
+	boss_track_2 = loadMusic("sounds/boss_2.wav");
 	gBackground = loadImage("sprites/cave.png");
 
 	srand(time(NULL));
@@ -756,7 +922,7 @@ int main() {
 
 	high_score = readHighScore(difficulty); // For onscreen high score
 
-	static TTF_Font *font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
+	font_20 = TTF_OpenFont("sprites/comic.ttf", 20);
 	font_16 = TTF_OpenFont("sprites/comic.ttf", 16);
 
 	blocks = new MapBlocks(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, CaveSystem::CAVE_SYSTEM_FREQ, CaveBlock::CAVE_SYSTEM_PIXEL_WIDTH, openAir, openAirLength, difficulty);
@@ -773,7 +939,7 @@ int main() {
 
 	while(gameon) {
 
-		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver) {
+		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver && camX < LEVEL_WIDTH) {
 			current_track = 0;
 			Mix_PlayMusic(main_track, 0);
 		}
@@ -910,6 +1076,7 @@ int main() {
 		}
 		// Have the enemy and kamikaze exit the screen if it's boss time.
 		if (camX > LEVEL_WIDTH && (en->getX() > -en->getWidth() || kam->getX() < SCREEN_WIDTH)) {
+			Mix_HaltMusic();
 			en->moveLeft();
 			kam->moveRight();
 			SDL_RenderPresent(gRenderer);

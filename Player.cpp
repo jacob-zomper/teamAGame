@@ -53,12 +53,15 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     autoFire=false;
     small = false;
     bullet_shot = Mix_LoadWAV("sounds/pew.wav");
+	hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
 }
 
 Player::~Player()
 {
 	SDL_DestroyTexture(sprite1);
 	SDL_DestroyTexture(sprite2);
+	Mix_FreeChunk(bullet_shot);
+	Mix_FreeChunk(hit_sound);
 }
 
 void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
@@ -347,7 +350,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 		return;
 	}
     if(small == false){
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), player_height};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), getHeight()};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -357,7 +360,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 	    }
     }
     else{
-        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), player_height};
+        SDL_Rect playerLocation = {(int) x_pos, (int) y_pos, getWidth(), getHeight()};
 	    // Alternates through the two sprites every ANIMATION_FREQ ticks
         if ((SDL_GetTicks() / ANIMATION_FREQ) % 2 == 1) {
 	    	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &playerLocation, tiltAngle, nullptr, SDL_FLIP_NONE);
@@ -373,6 +376,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
 	if(!invincePower){
+        Mix_PlayChannel(-1, hit_sound, 0);
         if(this->difficulty == 2){
             damage /= 1.5;
         }
@@ -538,6 +542,16 @@ int Player::getHeight() {
         return player_height / 1.5; 
     }
 }
+ 
+int Player::getHitboxX() {
+	if (small) return x_pos + 9;
+	else return x_pos + 12;
+}
+
+int Player::getHitboxY() {
+	if (small) return y_pos + 9;
+	else return y_pos + 12;
+};
 
 int Player::getHurtWidth() { 
     if(small == false){

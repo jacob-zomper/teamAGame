@@ -6,6 +6,7 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "missile.h"
 #include "bullet.h"
 
@@ -17,7 +18,7 @@ public:
   ~Boss();
   void renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer);
   bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
-  bool checkCollisionBullet(int x, int y, int w, int h);
+  bool checkCollision(int x, int y, int w, int h);
   void move(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissile(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
   Missile* MissleLoc(int x, int y);
@@ -34,10 +35,17 @@ public:
   int getWidth();
   int getHeight();
   int getHealth();
+  double getHealthPercentage();
+  bool isDamaged();
 
   void moveLeft();
+  void backToCenter(int SCREEN_WIDTH);
 
   SDL_Texture* sprite1;
+  SDL_Texture* exclamation_point;
+  
+  // Sounds
+  Mix_Chunk *hit_sound;
 
 private:
   //Boss sprite and hitboxes
@@ -61,15 +69,16 @@ private:
 
 
   //Pattern functions and variables
-  static const int NUM_PATTERNS = 3;
+  static const int NUM_PATTERNS = 4;
   static const int PATTERN_DELAY = 1000;	// Amount of delay between patterns
   int time_since_pattern;		// Time since a pattern finished
   int last_pattern;				// Time when last pattern finished
   int pattern;					// Current pattern number (0 for no pattern)
   int phase;					// Current phase of a pattern (varies by pattern)	
+  int phase_time;				// Time the current phase was reached (not needed for all patterns)
   bool needsFiring;				// True when it's time to fire
   int numFired;					// Number of missiles fired in pattern so far
-
+  
   // Pattern one methods and variables
   void patternOne(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissilePatternOne(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
@@ -78,10 +87,17 @@ private:
   // Pattern two methods and variables
   void patternTwo(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissilePatternTwo(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
-  static const int PATTERN_ONE_FIRING_FREQ = 500;
+  static const int PATTERN_TWO_FIRING_FREQ = 500;
 
   void patternThree(int SCREEN_WIDTH);
   std::vector<Missile *> handleFiringMissilePatternThree(std::vector<Missile *> missiles, int x, int y, SDL_Renderer *gRenderer);
+
+  void patternFour(int SCREEN_WIDTH);
+  static const int PATTERN_FOUR_DISAPPEAR_TIME = 2000;
+  static const int ANIMATION_FREQ = 200;
+  static const int NUM_DIVEBOMBS = 3;
+  int divebombs;
+
 
   //Shooting variables
   static const int FIRING_FREQ = 2000;
@@ -94,7 +110,15 @@ private:
 
   //Health variables
   int health;
+  int max_health;
   int difficulty;
+  
+  // Variables relating to being damaged and destroyed
+  bool damaged;
+  int time_damaged;
+  bool tier2;
+  bool destroyed;
+  int time_destroyed;
 
 };
 #endif

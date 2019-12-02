@@ -299,13 +299,31 @@ Explosion::Explosion()
 Explosion::Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer)
 {
 	// Initialize all necessary variables
-	current_size = (double) INITIAL_EXPLOSION_SIZE;
+	initial_explosion_size = 30;
+	current_size = 30;
+	final_explosion_size = 100;
+	explosion_speed = 100;
 	center_x = x_loc;
 	center_y = y_loc;
 	abs_x = center_x - current_size / 2;
 	abs_y = center_y - current_size / 2;
 	explosion_time = SDL_GetTicks();
     type = t;
+	stationary = false;			// Explosion should move with the camera
+}
+
+Explosion::Explosion(int x, int y, int size) {
+	initial_explosion_size = size / 5;
+	current_size = size / 5;
+	final_explosion_size = size;
+	explosion_speed = size;
+	center_x = x;
+	center_y = y;
+	abs_x = center_x - current_size / 2;
+	abs_y = center_y - current_size / 2;
+	explosion_time = SDL_GetTicks();
+    type = 0;
+	stationary = true;			// Boss explosion shouldn't move over time
 }
 
 MapBlocks::MapBlocks()
@@ -337,6 +355,8 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     autofireSprite=loadImage("sprites/autofire.png", gRenderer);
     smallSprite=loadImage("sprites/small.png", gRenderer);
     allySprite=loadImage("sprites/plus_ally_ai.png", gRenderer);
+	
+	explosion_sound = Mix_LoadWAV("sounds/explosion.wav");
 
 
     if(diff == 3){
@@ -444,6 +464,7 @@ MapBlocks::~MapBlocks()
     SDL_DestroyTexture(autofireSprite);
     SDL_DestroyTexture(smallSprite);
     SDL_DestroyTexture(allySprite);
+	Mix_FreeChunk(explosion_sound);
 }
 
 bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -528,14 +549,14 @@ void MapBlocks::moveBlocks(int camX, int camY)
     }
 	for (i = explosion_arr.size() - 1; i >= 0; i--)
 	{
-		explosion_arr[i].current_size = (double) explosion_arr[i].INITIAL_EXPLOSION_SIZE + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].EXPLOSION_SPEED) / 1000;
+		explosion_arr[i].current_size = (double) explosion_arr[i].initial_explosion_size + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].explosion_speed) / 1000;
 		explosion_arr[i].abs_x = explosion_arr[i].center_x - explosion_arr[i].current_size / 2;
 		explosion_arr[i].abs_y = explosion_arr[i].center_y - explosion_arr[i].current_size / 2;
 		explosion_arr[i].rel_x = explosion_arr[i].abs_x - camX;
 		explosion_arr[i].rel_y = explosion_arr[i].abs_y - camY;
 		explosion_arr[i].hitbox = {(int)explosion_arr[i].rel_x, (int)explosion_arr[i].rel_y, (int)explosion_arr[i].current_size, (int)explosion_arr[i].current_size};
 		// If the explosion has reached its maximum size, get rid of it
-		if (explosion_arr[i].current_size >= explosion_arr[i].FINAL_EXPLOSION_SIZE) {
+		if (explosion_arr[i].current_size >= explosion_arr[i].final_explosion_size) {
 			explosion_arr.erase(explosion_arr.begin() + i);
 		}
 	}
@@ -1010,6 +1031,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 
 // Add an explosion at the given location
 void MapBlocks::addExplosion(int x, int y, int w, int h, int type) {
+	if (type == 0) Mix_PlayChannel(-1, explosion_sound, 0);
 	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
 }
 
@@ -1040,6 +1062,9 @@ BossBlocks::BossBlocks(int w, int h, SDL_Renderer *gr, int diff)
     autofireSprite=loadImage("sprites/autofire.png", gRenderer);
     smallSprite=loadImage("sprites/small.png", gRenderer);
     allySprite=loadImage("sprites/plus_ally_ai.png", gRenderer);
+	
+	explosion_sound = Mix_LoadWAV("sounds/explosion.wav");
+	
 	currentX = w;
 }
 
@@ -1053,6 +1078,7 @@ BossBlocks::~BossBlocks()
     SDL_DestroyTexture(autofireSprite);
     SDL_DestroyTexture(smallSprite);
     SDL_DestroyTexture(allySprite);
+	Mix_FreeChunk(explosion_sound);
 }
 
 bool BossBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -1106,13 +1132,15 @@ void BossBlocks::moveBlocks(double camShift)
 	
 	for (i = explosion_arr.size() - 1; i >= 0; i--)
 	{
-		explosion_arr[i].current_size = (double) explosion_arr[i].INITIAL_EXPLOSION_SIZE + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].EXPLOSION_SPEED) / 1000;
-		explosion_arr[i].center_x -= camShift;
+		explosion_arr[i].current_size = (double) explosion_arr[i].initial_explosion_size + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].explosion_speed) / 1000;
+		if (!explosion_arr[i].stationary) {
+			explosion_arr[i].center_x -= camShift;
+		}
 		explosion_arr[i].rel_x = explosion_arr[i].center_x - explosion_arr[i].current_size / 2;
 		explosion_arr[i].rel_y = explosion_arr[i].center_y - explosion_arr[i].current_size / 2;
 		explosion_arr[i].hitbox = {(int)explosion_arr[i].rel_x, (int)explosion_arr[i].rel_y, (int)explosion_arr[i].current_size, (int)explosion_arr[i].current_size};
 		// If the explosion has reached its maximum size, get rid of it
-		if (explosion_arr[i].current_size >= explosion_arr[i].FINAL_EXPLOSION_SIZE) {
+		if (explosion_arr[i].current_size >= explosion_arr[i].final_explosion_size) {
 			explosion_arr.erase(explosion_arr.begin() + i);
 		}
 	}
@@ -1173,7 +1201,14 @@ void BossBlocks::createPowerups()
 
 // Add an explosion at the given location
 void BossBlocks::addExplosion(int x, int y, int w, int h, int type) {
+    if (type == 0) Mix_PlayChannel(-1, explosion_sound, 0);
 	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
+}
+
+// Add an explosion at given x and y with given size
+void BossBlocks::addExplosion(int x, int y, int size) {
+	Mix_PlayChannel(-1, explosion_sound, 0);
+	explosion_arr.push_back(Explosion(x, y, size));
 }
 
 // Handle collisions between player and powerups
@@ -1235,7 +1270,7 @@ void BossBlocks::checkCollision(Player *p)
     }
 }
 
-void BossBlocks::render(SDL_Renderer* gRenderer)
+void BossBlocks::renderPowerups(SDL_Renderer* gRenderer)
 {
     int i;
 	
@@ -1306,7 +1341,10 @@ void BossBlocks::render(SDL_Renderer* gRenderer)
             SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
+}
 
+void BossBlocks::renderExplosions(SDL_Renderer* gRenderer) {
+	int i;
 	for (i = explosion_arr.size() - 1; i >= 0; i--) {
         if(explosion_arr[i].type == 0){
 		    SDL_RenderCopyEx(gRenderer, explosionSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);

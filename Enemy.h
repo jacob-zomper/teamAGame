@@ -6,6 +6,7 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "bullet.h"
 #include <vector>
 using std::vector;
@@ -56,6 +57,9 @@ class Enemy
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
+		
+		// Sounds
+		Mix_Chunk *hit_sound;
 
     private:
 

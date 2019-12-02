@@ -84,6 +84,7 @@ public:
 
 	// Sounds
 	Mix_Chunk *bullet_shot;
+	Mix_Chunk *hit_sound;
 
 	// Used to load sprites
 	SDL_Texture* loadImage(std::string fname, SDL_Renderer *gRenderer);
@@ -129,6 +130,8 @@ public:
     void setPosY(int y);
 	int getWidth();
 	int getHeight();
+	int getHitboxX();
+	int getHitboxY();
 	int getHurtWidth();
 	int getHurtHeight();
 	int getHealth();
