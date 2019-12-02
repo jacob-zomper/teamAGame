@@ -69,6 +69,7 @@ Mix_Music* main_track = NULL;		// Track 0
 Mix_Music* start_track = NULL;		// Track 2
 Mix_Music* boss_entry = NULL;		// Track 3
 Mix_Music* boss_track_1 = NULL;		// Track 4
+Mix_Music* boss_track_2 = NULL;		// Track 5
 int current_track = -1;
 
 // Variables to indicate that the player has been destroyed
@@ -174,6 +175,7 @@ void close() {
 	Mix_FreeMusic(start_track);
 	Mix_FreeMusic(boss_entry);
 	Mix_FreeMusic(boss_track_1);
+	Mix_FreeMusic(boss_track_2);
 
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -540,6 +542,11 @@ void bossBattle() {
 			Mix_PlayMusic(boss_track_1, -1);
 		}
 		
+		if (current_track != 5 && tier2 && !game_over->isGameOver && !bossDestroyed) {
+			current_track = 5;
+			Mix_PlayMusic(boss_track_2, -1);
+		}
+		
 		// Scroll to the side
 		time_since_horiz_scroll = SDL_GetTicks() - last_horiz_scroll;
 		bg_x += (double) (BG_SCROLL_SPEED * time_since_horiz_scroll) / 1000;
@@ -847,6 +854,7 @@ void bossBattle() {
 				}
 			}
 			else if (tier2 && !bossDestroyed && enemyHealth == 0) {
+				Mix_HaltMusic();
 				damageExplosions = 0;
 				bossDestroyed = true;
 				time_destroyed = SDL_GetTicks();
@@ -868,6 +876,7 @@ int main() {
 	start_track = loadMusic("sounds/game_track.wav");
 	boss_entry = loadMusic("sounds/boss_entry.wav");
 	boss_track_1 = loadMusic("sounds/boss_1.wav");
+	boss_track_2 = loadMusic("sounds/boss_2.wav");
 	gBackground = loadImage("sprites/cave.png");
 
 	srand(time(NULL));
