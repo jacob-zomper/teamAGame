@@ -461,32 +461,34 @@ Bullet* Player::handleForwardFiring()
 {
 	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
 		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
-        if(!infiniteShooting || !autoFire){
+    }
+    if(!infiniteShooting || !autoFire){
     //std::cout << "entered firing handler" << std::endl;
     //std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
     double bulletAngle = tiltAngle*PI/180;
-	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
-        //std::cout << "Firing new bullet"<< std::endl;
-        Mix_PlayChannel(-1, bullet_shot, 0);
+        if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
+                //std::cout << "Firing new bullet"<< std::endl;
+            Mix_PlayChannel(-1, bullet_shot, 0);
 
-        Bullet *b;
-        if(small == false){
-            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            Bullet *b;
+            if(small == false){
+                b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            }
+            else{
+                b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            }
+            if(!infiniteShooting){
+        		fshot_heat += SHOOT_COST;
+        		if (fshot_heat > MAX_SHOOT_HEAT) {
+        			fshot_maxed = true;
+        			fshot_heat = MAX_SHOOT_HEAT;
+        			fshot_max_time = SDL_GetTicks();
+        		}
+            }
+            time_since_f_shot = SDL_GetTicks();
+    		return b;
         }
-        else{
-            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
-        }
-        if(!infiniteShooting){
-    		fshot_heat += SHOOT_COST;
-    		if (fshot_heat > MAX_SHOOT_HEAT) {
-    			fshot_maxed = true;
-    			fshot_heat = MAX_SHOOT_HEAT;
-    			fshot_max_time = SDL_GetTicks();
-    		}
-        }
-        time_since_f_shot = SDL_GetTicks();
-		return b;
-	}
+    }
     return nullptr;
 }
 
