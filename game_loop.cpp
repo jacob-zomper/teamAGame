@@ -1075,13 +1075,13 @@ int main() {
 			bullets[i]->move();
 		}
 		// Have the enemy and kamikaze exit the screen if it's boss time.
-		if (camX > LEVEL_WIDTH && (en->getX() > -en->getWidth() || kam->getX() < SCREEN_WIDTH)) {
+		if (camX > LEVEL_WIDTH && (en->getX() > -en->getWidth() || kam->getX() < SCREEN_WIDTH) && !game_over->isGameOver) {
 			Mix_HaltMusic();
 			en->moveLeft();
 			kam->moveRight();
 			SDL_RenderPresent(gRenderer);
 		}
-		else if (camX > LEVEL_WIDTH + SCREEN_WIDTH) {
+		else if (camX > LEVEL_WIDTH + SCREEN_WIDTH && !game_over->isGameOver) {
 			bossBattle();
 		}
 

@@ -375,7 +375,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 // Damages the player if they've been hit
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
-	if(!invincePower){
+	if(!invincePower && health > 0){
         Mix_PlayChannel(-1, hit_sound, 0);
         if(this->difficulty == 2){
             damage /= 1.5;
