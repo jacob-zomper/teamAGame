@@ -101,7 +101,7 @@ private:
   void patternFive(int SCREEN_WIDTH);
   std::vector<Missile*> handleFiringMissilePatternFive(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
   static const int NUM_BLINKS = 5;
-  static const int PATTERN_FIVE_DISAPEAR_TIME = 5000;
+  static const int PATTERN_FIVE_DISAPEAR_TIME = 2500;
   static const int PATTERN_FIVE_FIRING_FREQ = 1000;
   int blinks;
 

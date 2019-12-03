@@ -188,7 +188,7 @@ std::vector<Missile*> Boss::handleFiringMissile(std::vector<Missile*> missiles ,
   if (pattern == 3){
     missiles = handleFiringMissilePatternThree(missiles, x, y, gRenderer);
   }
-  if(pattern =5){
+  if(pattern == 5){
   	missiles = handleFiringMissilePatternFive(missiles, x, y, gRenderer);
   }
   // No missiles get fired for pattern 4 - the boss attacks by trying to hit the player
@@ -642,6 +642,8 @@ void Boss::patternFive(int SCREEN_WIDTH)
 
 	//Phase 4: reset
 	else if(phase ==4){
+		xPos = SCREEN_WIDTH - WIDTH - 50;
+		yPos = SCREEN_HEIGHT - HEIGHT/2;
 		phase =1;
 		last_pattern = SDL_GetTicks();
 		pattern =0;
