@@ -84,13 +84,12 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
             case 1:
                 sprite1 = loadImage("sprites/a10.png", gRenderer);
                 sprite2 = loadImage("sprites/a10.png", gRenderer);
-
                 player_width = 178;
                 player_height = 47;
                 break;
             case 2:
                 sprite1 = loadImage("sprites/f16.png", gRenderer);
-                sprite2 = loadImage("sprites/f16.png", gRenderer);
+                sprite2 = loadImage("sprites/f16a.png", gRenderer);
                 player_width = 124;
                 player_height = 37;
                 break;
@@ -126,19 +125,19 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
                 break;
             case 8:
                 sprite1 = loadImage("sprites/mig31.png", gRenderer);
-                sprite2 = loadImage("sprites/mig31.png", gRenderer);
+                sprite2 = loadImage("sprites/mig31a.png", gRenderer);
                 player_width = 209;
                 player_height = 38;
                 break;
             case 9:
                 sprite1 = loadImage("sprites/mig29.png", gRenderer);
-                sprite2 = loadImage("sprites/mig29.png", gRenderer);
+                sprite2 = loadImage("sprites/mig29a.png", gRenderer);
                 player_width = 148;
                 player_height = 42;
                 break;
             case 10:
                 sprite1 = loadImage("sprites/su24.png", gRenderer);
-                sprite2 = loadImage("sprites/su24.png", gRenderer);
+                sprite2 = loadImage("sprites/su24a.png", gRenderer);
                 player_width = 176;
                 player_height = 50;
                 break;
