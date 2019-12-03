@@ -19,13 +19,29 @@ public:
     int FLOOR_ABS_X;
     int FLOOR_ABS_Y;
 
-    int CEILING_REL_X;
-    int CEILING_REL_Y;
-    int FLOOR_REL_X;
-    int FLOOR_REL_Y;
+    double CEILING_REL_X;
+    double CEILING_REL_Y;
+    double FLOOR_REL_X;
+    double FLOOR_REL_Y;
 
     WallBlock();
     WallBlock(int num);
+};
+
+class AllyPlaneBlock
+{
+public:
+    int ALLY_PLANE_ABS_Y;
+    int ALLY_PLANE_ABS_X;
+
+    double ALLY_PLANE_REL_Y;
+    double ALLY_PLANE_REL_X;
+
+    int ALLY_PLANE_HEIGHT;
+    int ALLY_PLANE_WIDTH;
+
+    AllyPlaneBlock();
+    AllyPlaneBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
 
 class HealthBlock
@@ -34,13 +50,11 @@ public:
     int HEALTH_ABS_Y;
     int HEALTH_ABS_X;
 
-    int HEALTH_REL_Y;
-    int HEALTH_REL_X;
+    double HEALTH_REL_Y;
+    double HEALTH_REL_X;
 
     int HEALTH_HEIGHT;
     int HEALTH_WIDTH;
-
-    bool enabled;
 
     HealthBlock();
     HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -52,13 +66,11 @@ public:
     int INF_FIRE_ABS_Y;
     int INF_FIRE_ABS_X;
 
-    int INF_FIRE_REL_Y;
-    int INF_FIRE_REL_X;
+    double INF_FIRE_REL_Y;
+    double INF_FIRE_REL_X;
 
     int INF_FIRE_HEIGHT;
     int INF_FIRE_WIDTH;
-
-    bool enabled;
 
     InfFireBlock();
     InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -69,13 +81,11 @@ public:
     int AUTOFIRE_ABS_Y;
     int AUTOFIRE_ABS_X;
 
-    int AUTOFIRE_REL_Y;
-    int AUTOFIRE_REL_X;
+    double AUTOFIRE_REL_Y;
+    double AUTOFIRE_REL_X;
 
     int AUTOFIRE_HEIGHT;
     int AUTOFIRE_WIDTH;
-
-    bool enabled;
 
     AutoFireBlock();
     AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
@@ -87,16 +97,30 @@ public:
     int INVINCE_ABS_Y;
     int INVINCE_ABS_X;
 
-    int INVINCE_REL_Y;
-    int INVINCE_REL_X;
+    double INVINCE_REL_Y;
+    double INVINCE_REL_X;
 
     int INVINCE_HEIGHT;
     int INVINCE_WIDTH;
 
-    bool enabled;
-
     InvincBlock();
     InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
+};
+
+class SmallBlock
+{
+public:
+    int SMALL_ABS_Y;
+    int SMALL_ABS_X;
+
+    double SMALL_REL_Y;
+    double SMALL_REL_X;
+
+    int SMALL_HEIGHT;
+    int SMALL_WIDTH;
+
+    SmallBlock();
+    SmallBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength);
 };
 
 
@@ -106,8 +130,8 @@ public:
     int STALAG_ABS_Y;
     int STALAG_ABS_X;
 
-    int STALAG_REL_Y;
-    int STALAG_REL_X;
+    double STALAG_REL_Y;
+    double STALAG_REL_X;
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
@@ -127,8 +151,8 @@ public:
     int STALAG_ABS_Y;
     int STALAG_ABS_X;
 
-    int STALAG_REL_Y;
-    int STALAG_REL_X;
+    double STALAG_REL_Y;
+    double STALAG_REL_X;
 
     int STALAG_HEIGHT;
     int STALAG_WIDTH;
@@ -160,8 +184,8 @@ public:
     int BLOCK_ABS_Y;
 
     // coordinates of each Turret relative to camera
-    int BLOCK_REL_X;
-    int BLOCK_REL_Y;
+    double BLOCK_REL_X;
+    double BLOCK_REL_Y;
 
     int BLOCK_HEIGHT;
     int BLOCK_WIDTH;
@@ -196,15 +220,15 @@ class Explosion
 public:
 
 	// Variables needed to control the size of the explosion and make it disappear at the right time
-	static const int INITIAL_EXPLOSION_SIZE = 30;
-	static const int FINAL_EXPLOSION_SIZE = 100;
-	static const int EXPLOSION_SPEED = 100;
+	int initial_explosion_size;
+	int final_explosion_size;
+	int explosion_speed;
 	int explosion_time;
 	double current_size;
 
 	// Absolute location of the explosion's center
-	int center_x;
-	int center_y;
+	double center_x;
+	double center_y;
 
 	// Absolute location of the explosion's top left corner
 	double abs_x;
@@ -213,11 +237,15 @@ public:
 	// Location relative to the camera
 	double rel_x;
 	double rel_y;
+	
+	// True if the explosion stays in constant position relative to the camera, false otherwise
+	bool stationary;
 
     //0 for explosion, 1 for dust cloud
     int type;
 
 	Explosion();
+	Explosion(int x, int y, int size);
 	Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer);
 
 	//defines the explosion
@@ -240,10 +268,14 @@ public:
 
     int AUTOFIRE_N;
 
+    int SMALL_N;
+
+    int ALLY_N;
+
     static const int BLOCK_HEIGHT = 100;
     static const int BLOCK_WIDTH = 100;
-
-    static const int CEILING_N = 100000/72;
+	
+	int CEILING_N;
 
     SDL_Renderer *gRenderer;
 
@@ -265,9 +297,8 @@ public:
     SDL_Texture* infFireSprite;
     SDL_Texture* invinceSprite;
     SDL_Texture* autofireSprite;
-
-
-
+    SDL_Texture *smallSprite;
+    SDL_Texture *allySprite;
 
     std::vector<Turret> blocks_arr;
     std::vector<Stalagmite> stalagm_arr;
@@ -279,6 +310,8 @@ public:
     std::vector<InfFireBlock> infFire_arr;
     std::vector<InvincBlock> invince_arr;
     std::vector<AutoFireBlock> autofire_arr;
+    std::vector<SmallBlock> small_arr;
+    std::vector<AllyPlaneBlock> ally_arr;
 
     MapBlocks();
 	~MapBlocks();
@@ -291,7 +324,7 @@ public:
 	void checkCollision(Enemy *e);
     bool checkCollision(Kamikaze *kam);
 	bool checkCollision(Missile* m);
-    bool checkCollision(Bullet *b);
+    int checkCollision(Bullet *b);
 
 	std::vector<Missile*> handleFiring(std::vector<Missile*> missiles, int posX, int posY);
 
@@ -305,6 +338,59 @@ public:
 private:
     //Animation frequency
     static const int ANIMATION_FREQ = 100;
+	
+	// Sounds
+	Mix_Chunk *explosion_sound;
+};
+
+class BossBlocks
+{
+public:
+    std::vector<Explosion> explosion_arr;
+    std::vector<HealthBlock> health_arr;
+    std::vector<InfFireBlock> infFire_arr;
+    std::vector<InvincBlock> invince_arr;
+    std::vector<AutoFireBlock> autofire_arr;
+    std::vector<SmallBlock> small_arr;
+    std::vector<AllyPlaneBlock> ally_arr;
+	
+    SDL_Renderer *gRenderer;
+
+    SDL_Texture* explosionSprite;
+    SDL_Texture* dustCloudSprite;
+    SDL_Texture* healthSprite;
+    SDL_Texture* infFireSprite;
+    SDL_Texture* invinceSprite;
+    SDL_Texture* autofireSprite;
+    SDL_Texture *smallSprite;
+    SDL_Texture *allySprite;
+	
+	BossBlocks(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gr, int diff);
+	~BossBlocks();
+	
+	bool checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight);
+	void moveBlocks(double camShift);
+	void createPowerups();
+	void addExplosion(int x, int y, int w, int h, int type);
+	void addExplosion(int x, int y, int size);
+	void checkCollision(Player *p);
+	void renderPowerups(SDL_Renderer* gRenderer);
+	void renderExplosions(SDL_Renderer* gRenderer);
+	
+private:
+	
+	// Margin is the minimum distance between powerups and the edge of the screen
+	static const int MARGIN = 100;	
+	
+	// Tracks the x position so that new powerups can be made every SCREEN_WIDTH pixels
+	double currentX;
+	
+	int screen_width;
+	int screen_height;
+	int difficulty;
+	
+	// Sounds
+	Mix_Chunk *explosion_sound;
 };
 
 #endif

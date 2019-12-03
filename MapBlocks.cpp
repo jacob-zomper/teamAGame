@@ -39,8 +39,8 @@ WallBlock::WallBlock(int num){
     FLOOR_REL_Y = FLOOR_ABS_Y;
 }
 HealthBlock::HealthBlock(){
-    SDL_Renderer *gRenderer= nullptr;
-    HealthBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+    HEALTH_HEIGHT=20;
+    HEALTH_WIDTH=20;
 }
 HealthBlock::HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     HEALTH_HEIGHT=20;
@@ -48,25 +48,17 @@ HealthBlock::HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRender
     HEALTH_ABS_X = rand() % LEVEL_WIDTH;
     HEALTH_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
-    while ((HEALTH_ABS_X - 1280) % cave_freq <= cave_width) {
+    while ((HEALTH_ABS_X - 1280) % cave_freq <= cave_width || (HEALTH_ABS_X>(openAir*72) && HEALTH_ABS_X+HEALTH_WIDTH<(openAir+openAirLength)*72)) {
         HEALTH_ABS_X = rand() % LEVEL_WIDTH;
     }
 
     HEALTH_REL_X=HEALTH_ABS_X;
     HEALTH_REL_Y=HEALTH_ABS_Y;
-
-    if(HEALTH_ABS_X>(openAir*72) && HEALTH_ABS_X+HEALTH_WIDTH<(openAir+openAirLength)*72){
-        enabled=false;
-    }else{
-        enabled=true;
-    }
-
-
 }
 
 InfFireBlock::InfFireBlock(){
-    SDL_Renderer *gRenderer= nullptr;
-    InfFireBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+    INF_FIRE_HEIGHT=35;
+    INF_FIRE_WIDTH=35;
 }
 InfFireBlock::InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     INF_FIRE_HEIGHT=35;
@@ -74,23 +66,39 @@ InfFireBlock::InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRend
     INF_FIRE_ABS_X = rand() % LEVEL_WIDTH;
     INF_FIRE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
-    while ((INF_FIRE_ABS_X - 1280) % cave_freq <= cave_width) {
+    while ((INF_FIRE_ABS_X - 1280) % cave_freq <= cave_width || (INF_FIRE_ABS_X>(openAir*72) && INF_FIRE_ABS_X+INF_FIRE_WIDTH<(openAir+openAirLength)*72)) {
         INF_FIRE_ABS_X = rand() % LEVEL_WIDTH;
     }
 
     INF_FIRE_REL_X=INF_FIRE_ABS_X;
     INF_FIRE_REL_Y=INF_FIRE_ABS_Y;
+}
 
-    if(INF_FIRE_ABS_X>(openAir*72) && INF_FIRE_ABS_X+INF_FIRE_WIDTH<(openAir+openAirLength)*72){
-        enabled=false;
-    }else{
-        enabled=true;
+AllyPlaneBlock::AllyPlaneBlock(){
+    ALLY_PLANE_HEIGHT = 35;
+    ALLY_PLANE_WIDTH = 35;
+}
+
+
+AllyPlaneBlock::AllyPlaneBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength)
+{
+    ALLY_PLANE_HEIGHT = 35;
+    ALLY_PLANE_WIDTH = 35;
+
+    ALLY_PLANE_ABS_X = rand() % LEVEL_WIDTH;
+    ALLY_PLANE_ABS_Y = LEVEL_HEIGHT - 600 + rand() % 500;
+
+    while ((ALLY_PLANE_ABS_X - 1280) % cave_freq <= cave_width || (ALLY_PLANE_ABS_X>(openAir*72) && ALLY_PLANE_ABS_X+ALLY_PLANE_WIDTH<(openAir+openAirLength)*72)) {
+        ALLY_PLANE_ABS_X = rand() % LEVEL_WIDTH;
     }
+
+    ALLY_PLANE_REL_X=ALLY_PLANE_ABS_X;
+    ALLY_PLANE_REL_Y=ALLY_PLANE_ABS_Y;
 }
 
 AutoFireBlock::AutoFireBlock(){
-    SDL_Renderer *gRenderer= nullptr;
-    AutoFireBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+    AUTOFIRE_HEIGHT=35;
+    AUTOFIRE_WIDTH=35;
 }
 AutoFireBlock::AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     AUTOFIRE_HEIGHT=35;
@@ -98,23 +106,17 @@ AutoFireBlock::AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRe
     AUTOFIRE_ABS_X = rand() % LEVEL_WIDTH;
     AUTOFIRE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
-    while ((AUTOFIRE_ABS_X - 1280) % cave_freq <= cave_width) {
+    while ((AUTOFIRE_ABS_X - 1280) % cave_freq <= cave_width || (AUTOFIRE_ABS_X>(openAir*72) && AUTOFIRE_ABS_X+AUTOFIRE_WIDTH<(openAir+openAirLength)*72)) {
         AUTOFIRE_ABS_X = rand() % LEVEL_WIDTH;
     }
 
     AUTOFIRE_REL_X=AUTOFIRE_ABS_X;
     AUTOFIRE_REL_Y=AUTOFIRE_ABS_Y;
-
-    if(AUTOFIRE_ABS_X>(openAir*72) && AUTOFIRE_ABS_X+AUTOFIRE_WIDTH<(openAir+openAirLength)*72){
-        enabled=false;
-    }else{
-        enabled=true;
-    }
 }
 
 InvincBlock::InvincBlock(){
-    SDL_Renderer *gRenderer= nullptr;
-    InvincBlock(1,1,gRenderer, 5500, 2000, 0, 0);
+    INVINCE_HEIGHT=35;
+    INVINCE_WIDTH=35;
 }
 InvincBlock::InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     INVINCE_HEIGHT=35;
@@ -122,18 +124,30 @@ InvincBlock::InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRender
     INVINCE_ABS_X = rand() % LEVEL_WIDTH;
     INVINCE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
-    while ((INVINCE_ABS_X - 1280) % cave_freq <= cave_width) {
+    while ((INVINCE_ABS_X - 1280) % cave_freq <= cave_width || (INVINCE_ABS_X>(openAir*72) && INVINCE_ABS_X+INVINCE_WIDTH<(openAir+openAirLength)*72)) {
         INVINCE_ABS_X = rand() % LEVEL_WIDTH;
     }
 
     INVINCE_REL_X=INVINCE_ABS_X;
     INVINCE_REL_Y=INVINCE_ABS_Y;
+}
 
-    if(INVINCE_ABS_X>(openAir*72) && INVINCE_ABS_X+INVINCE_WIDTH<(openAir+openAirLength)*72){
-        enabled=false;
-    }else{
-        enabled=true;
+SmallBlock::SmallBlock(){
+    SMALL_HEIGHT=35;
+    SMALL_WIDTH=35;
+}
+SmallBlock::SmallBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
+    SMALL_HEIGHT=35;
+    SMALL_WIDTH=35;
+    SMALL_ABS_X = rand() % LEVEL_WIDTH;
+    SMALL_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
+
+    while ((SMALL_ABS_X - 1280) % cave_freq <= cave_width || (SMALL_ABS_X>(openAir*72) && SMALL_ABS_X+SMALL_WIDTH<(openAir+openAirLength)*72)) {
+        SMALL_ABS_X = rand() % LEVEL_WIDTH;
     }
+
+    SMALL_REL_X=SMALL_ABS_X;
+    SMALL_REL_Y=SMALL_ABS_Y;
 }
 
 Stalagmite::Stalagmite()
@@ -204,6 +218,7 @@ Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int c
 {
     BLOCK_ABS_X = rand() % LEVEL_WIDTH;
 	BLOCK_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT;
+
 	if (rand() % 2 == 1) {
 		BLOCK_ABS_Y = LEVEL_HEIGHT - 720 + WallBlock::block_side;
 	}
@@ -263,7 +278,7 @@ Missile * Turret::handleFiring(int posX, int posY) {
 		}
 		else {
             int missType = rand()%5;//1 in 5 chance of missile being red
-	        SDL_Texture* missSprite; 
+	        SDL_Texture* missSprite;
             if(missType < 4){
 		        m = new Missile(damage, blast_radius, BLOCK_REL_X + BLOCK_WIDTH / 2, BLOCK_REL_Y + 5 + BLOCK_HEIGHT, ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, missileSprite1, gRenderer);
 	        }
@@ -284,13 +299,31 @@ Explosion::Explosion()
 Explosion::Explosion(int x_loc, int y_loc, int t, SDL_Renderer *gRenderer)
 {
 	// Initialize all necessary variables
-	current_size = (double) INITIAL_EXPLOSION_SIZE;
+	initial_explosion_size = 30;
+	current_size = 30;
+	final_explosion_size = 100;
+	explosion_speed = 100;
 	center_x = x_loc;
 	center_y = y_loc;
 	abs_x = center_x - current_size / 2;
 	abs_y = center_y - current_size / 2;
 	explosion_time = SDL_GetTicks();
     type = t;
+	stationary = false;			// Explosion should move with the camera
+}
+
+Explosion::Explosion(int x, int y, int size) {
+	initial_explosion_size = size / 5;
+	current_size = size / 5;
+	final_explosion_size = size;
+	explosion_speed = size;
+	center_x = x;
+	center_y = y;
+	abs_x = center_x - current_size / 2;
+	abs_y = center_y - current_size / 2;
+	explosion_time = SDL_GetTicks();
+    type = 0;
+	stationary = true;			// Boss explosion shouldn't move over time
 }
 
 MapBlocks::MapBlocks()
@@ -320,31 +353,40 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     infFireSprite=loadImage("sprites/infFire.png", gRenderer);
     invinceSprite=loadImage("sprites/invince.png", gRenderer);
     autofireSprite=loadImage("sprites/autofire.png", gRenderer);
+    smallSprite=loadImage("sprites/small.png", gRenderer);
+    allySprite=loadImage("sprites/plus_ally_ai.png", gRenderer);
+	
+	explosion_sound = Mix_LoadWAV("sounds/explosion.wav");
 
 
     if(diff == 3){
-        BLOCKS_N = 50;
-        HEALTH_N = 20;
-        INF_FIRE_N = 5;
-        INVINCE_N = 5;
-        AUTOFIRE_N=3;
+        BLOCKS_N = LEVEL_WIDTH/2000;
+        HEALTH_N = LEVEL_WIDTH/5000;
+        INF_FIRE_N = LEVEL_WIDTH/20000;
+        INVINCE_N = LEVEL_WIDTH/20000;
+        AUTOFIRE_N=LEVEL_WIDTH/30000;
+        SMALL_N = LEVEL_WIDTH/10000;
+        ALLY_N = LEVEL_WIDTH/3000;
     }
     else if (diff == 2){
-        BLOCKS_N = 40;
-        HEALTH_N = 30;
-        INF_FIRE_N = 10;
-        INVINCE_N = 7;
-        AUTOFIRE_N=5;
-
+        BLOCKS_N = LEVEL_WIDTH/2500;
+        HEALTH_N = LEVEL_WIDTH/3300;
+        INF_FIRE_N = LEVEL_WIDTH/10000;
+        INVINCE_N = LEVEL_WIDTH/15000;
+        AUTOFIRE_N = LEVEL_WIDTH/20000;
+        SMALL_N = LEVEL_WIDTH/8000;
+        ALLY_N = LEVEL_WIDTH/3000;
     }
     else{
-        BLOCKS_N = 20;
-        HEALTH_N = 40;
-        INF_FIRE_N = 15;
-        INVINCE_N = 10;
-        AUTOFIRE_N=10;
+        BLOCKS_N = LEVEL_WIDTH/5000;
+        HEALTH_N = LEVEL_WIDTH/2500;
+        INF_FIRE_N = LEVEL_WIDTH/7000;
+        INVINCE_N = LEVEL_WIDTH/10000;
+        AUTOFIRE_N = LEVEL_WIDTH/10000;
+        SMALL_N = LEVEL_WIDTH/6700;
+        ALLY_N = LEVEL_WIDTH/3000;    }
 
-    }
+	CEILING_N = LEVEL_WIDTH / WallBlock::block_side;
 
     int i;
     for(i = 0; i<CEILING_N; i++){
@@ -381,6 +423,11 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
         autofire_arr.push_back(AutoFireBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the shooting powerup
     }
 
+    for (i=0; i < SMALL_N; i++)
+    {
+        small_arr.push_back(SmallBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the small powerup
+    }
+
     for (i=0; i < STALAG_N; i++)
     {
         stalagm_arr.push_back(Stalagmite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the stalagmites
@@ -388,6 +435,10 @@ MapBlocks::MapBlocks(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gr, int ca
     for (i=0; i < STALAG_N; i++)
     {
         stalagt_arr.push_back(Stalagtite(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));//Initiate the stalagtites
+    }
+    for(i = 0; i < ALLY_N; i++)
+    {
+        ally_arr.push_back(AllyPlaneBlock(LEVEL_WIDTH, LEVEL_HEIGHT, gRenderer, cave_freq, cave_width, openAir, openAirLength));
     }
 }
 
@@ -411,6 +462,9 @@ MapBlocks::~MapBlocks()
     SDL_DestroyTexture(infFireSprite);
     SDL_DestroyTexture(invinceSprite);
     SDL_DestroyTexture(autofireSprite);
+    SDL_DestroyTexture(smallSprite);
+    SDL_DestroyTexture(allySprite);
+	Mix_FreeChunk(explosion_sound);
 }
 
 bool MapBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
@@ -463,10 +517,21 @@ void MapBlocks::moveBlocks(int camX, int camY)
         autofire_arr[i].AUTOFIRE_REL_Y = autofire_arr[i].AUTOFIRE_ABS_Y-camY;
     }
 
+    for (i = 0; i < small_arr.size(); i++)
+    {
+        small_arr[i].SMALL_REL_X = small_arr[i].SMALL_ABS_X - camX;
+        small_arr[i].SMALL_REL_Y = small_arr[i].SMALL_ABS_Y-camY;
+    }
+
     for (i = 0; i < stalagm_arr.size(); i++)
     {
         stalagm_arr[i].STALAG_REL_X = stalagm_arr[i].STALAG_ABS_X - camX;
         stalagm_arr[i].STALAG_REL_Y = stalagm_arr[i].STALAG_ABS_Y-camY;
+    }
+    for(i = 0; i < ally_arr.size(); i++)
+    {
+        ally_arr[i].ALLY_PLANE_REL_X = ally_arr[i].ALLY_PLANE_ABS_X - camX;
+        ally_arr[i].ALLY_PLANE_REL_Y = ally_arr[i].ALLY_PLANE_ABS_Y - camY;
     }
     for (i = 0; i < stalagt_arr.size(); i++)
     {
@@ -484,14 +549,14 @@ void MapBlocks::moveBlocks(int camX, int camY)
     }
 	for (i = explosion_arr.size() - 1; i >= 0; i--)
 	{
-		explosion_arr[i].current_size = (double) explosion_arr[i].INITIAL_EXPLOSION_SIZE + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].EXPLOSION_SPEED) / 1000;
+		explosion_arr[i].current_size = (double) explosion_arr[i].initial_explosion_size + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].explosion_speed) / 1000;
 		explosion_arr[i].abs_x = explosion_arr[i].center_x - explosion_arr[i].current_size / 2;
 		explosion_arr[i].abs_y = explosion_arr[i].center_y - explosion_arr[i].current_size / 2;
 		explosion_arr[i].rel_x = explosion_arr[i].abs_x - camX;
 		explosion_arr[i].rel_y = explosion_arr[i].abs_y - camY;
 		explosion_arr[i].hitbox = {(int)explosion_arr[i].rel_x, (int)explosion_arr[i].rel_y, (int)explosion_arr[i].current_size, (int)explosion_arr[i].current_size};
 		// If the explosion has reached its maximum size, get rid of it
-		if (explosion_arr[i].current_size >= explosion_arr[i].FINAL_EXPLOSION_SIZE) {
+		if (explosion_arr[i].current_size >= explosion_arr[i].final_explosion_size) {
 			explosion_arr.erase(explosion_arr.begin() + i);
 		}
 	}
@@ -547,12 +612,12 @@ bool MapBlocks::checkCollision(Kamikaze *kam){
 
 void MapBlocks::checkCollision(Player *p)
 {
-
+    if(p->health <= 0) return;
 	int i;
     for (i = blocks_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, damage the player and blow up the turret
-		if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
+		if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
@@ -563,7 +628,7 @@ void MapBlocks::checkCollision(Player *p)
     for (i = health_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, heal the player and delete health powerup
-        if (health_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT))
         {
             p->heal(20);
             health_arr.erase(health_arr.begin() + i);
@@ -572,7 +637,7 @@ void MapBlocks::checkCollision(Player *p)
 
     for (i = infFire_arr.size() - 1; i >= 0; i--)
     {
-        if (infFire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT))
         {
             //turn off player overheats
             p->setInfiniteVal(true);
@@ -583,27 +648,42 @@ void MapBlocks::checkCollision(Player *p)
 
     for (i = invince_arr.size() - 1; i >= 0; i--)
     {
-        if (invince_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT))
         {
             p->setInvinceVal(true);
             invince_arr.erase(invince_arr.begin()+i);
         }
     }
+    for (i = ally_arr.size() - 1; i >= 0; i--)
+    {
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), ally_arr[i].ALLY_PLANE_REL_X, ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT))
+        {
+            // p->setInvinceVal(true);
+            ally_arr.erase(ally_arr.begin() + i);
+        }
+    }
     for (i = autofire_arr.size() - 1; i >= 0; i--)
     {
-        if (autofire_arr[i].enabled==true && checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT))
         {
             p->setAutoFire(true);
             autofire_arr.erase(autofire_arr.begin()+i);
         }
     }
 
-
+    for (i = small_arr.size() - 1; i >= 0; i--)
+    {
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), small_arr[i].SMALL_REL_X, small_arr[i].SMALL_REL_Y, small_arr[i].SMALL_WIDTH, small_arr[i].SMALL_HEIGHT))
+        {
+            p->setSmall(true);
+            small_arr.erase(small_arr.begin()+i);
+        }
+    }
 
     for (i = stalagm_arr.size() - 1; i >= 0; i--)
     {
         // If there's a collision, damage the player and blow up the stalagmite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagm_arr[i].STALAG_REL_X + stalagm_arr[i].STALAG_WIDTH / 4, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].hitboxWidth, stalagm_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), stalagm_arr[i].STALAG_REL_X + stalagm_arr[i].STALAG_WIDTH / 4, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].hitboxWidth, stalagm_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagm_arr[i].STALAG_ABS_X + stalagm_arr[i].STALAG_WIDTH / 2, stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
@@ -614,7 +694,7 @@ void MapBlocks::checkCollision(Player *p)
 	for (i = stalagt_arr.size() - 1; i >= 0; i--)
 	{
 		// If there's a collision, damage the player and blow up the stalactite
-        if (checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, stalagt_arr[i].STALAG_REL_X + stalagt_arr[i].STALAG_WIDTH / 4, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].hitboxWidth, stalagt_arr[i].STALAG_HEIGHT))
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), stalagt_arr[i].STALAG_REL_X + stalagt_arr[i].STALAG_WIDTH / 4, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].hitboxWidth, stalagt_arr[i].STALAG_HEIGHT))
         {
             p->hit(5);
 			explosion_arr.push_back(Explosion(stalagt_arr[i].STALAG_ABS_X + stalagt_arr[i].STALAG_WIDTH / 2, stalagt_arr[i].STALAG_ABS_Y + stalagt_arr[i].STALAG_HEIGHT / 2, 1, gRenderer));
@@ -623,14 +703,14 @@ void MapBlocks::checkCollision(Player *p)
     }
     //ceiling and floor
     for(i = 0; i < ceiling_arr.size(); i++){
-        if((checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        if((checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
             p->undoXMove();
             p->undoYMove();
 
-            if(checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT,ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side))
+            if(checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(),ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side))
             {
-                p->setPosX(std::max(ceiling_arr[i].CEILING_REL_X - p->PLAYER_WIDTH, 0));
+                p->setPosX(std::max(ceiling_arr[i].CEILING_REL_X - p->getWidth(), 0.0));
                 p->redoYMove();
             }
 
@@ -638,14 +718,14 @@ void MapBlocks::checkCollision(Player *p)
 	}
 	for (i = 0; i < floor_arr.size(); i++) {
 
-        if((checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT, floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        if((checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
         {
             p->undoXMove();
             p->undoYMove();
 
-            if(checkCollide(p->getPosX(), p->getPosY(), p->PLAYER_WIDTH, p->PLAYER_HEIGHT,floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side))
+            if(checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(),floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side))
             {
-                p->setPosX(std::max(floor_arr[i].FLOOR_REL_X - p->PLAYER_WIDTH, 0));
+                p->setPosX(std::max(floor_arr[i].FLOOR_REL_X - p->getWidth(), 0.0));
                 p->redoYMove();
             }
 
@@ -715,8 +795,8 @@ bool MapBlocks::checkCollision(Missile* m)
     return false;
 }
 
-// Returns true if the bullet hit something (and was therefore destroyed), and false otherwise
-bool MapBlocks::checkCollision(Bullet *b)
+// Returns 0 if the bullet hit nothing, 1 if it hit the ceiling, 2 if it hit the floor, 3 if it hit something else
+int MapBlocks::checkCollision(Bullet *b)
 {
     for (int i = blocks_arr.size() - 1; i >= 0; i--)
     {
@@ -725,7 +805,7 @@ bool MapBlocks::checkCollision(Bullet *b)
         {
 			explosion_arr.push_back(Explosion(blocks_arr[i].BLOCK_ABS_X + blocks_arr[i].BLOCK_WIDTH / 2, blocks_arr[i].BLOCK_ABS_Y + blocks_arr[i].BLOCK_HEIGHT / 2, 0, gRenderer));
             blocks_arr.erase(blocks_arr.begin() + i);
-            return true;
+            return 3;
         }
     }
     // If there's a collision with a stalagmite or a stalagtite, detroy the bullet. The stalag will be fine; stalags are strong.
@@ -737,7 +817,7 @@ bool MapBlocks::checkCollision(Bullet *b)
             int y = stalagm_arr[i].STALAG_ABS_Y + stalagm_arr[i].STALAG_HEIGHT / 2;
             explosion_arr.push_back(Explosion(x, y, 1, gRenderer));
 			stalagm_arr.erase(stalagm_arr.begin() + i);
-            return true;
+            return 3;
         }
 	}
 	for (int i = 0; i < stalagt_arr.size(); i++)
@@ -746,11 +826,24 @@ bool MapBlocks::checkCollision(Bullet *b)
         {
             stalagt_arr[i].beenShot = 1;
             stalagt_arr[i].last_move = SDL_GetTicks();
-            return true;
+            return 3;
+        }
+    }
+	//ceiling and floor
+    for(int i = 0; i < ceiling_arr.size(); i++) {
+        if((checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        {
+            return 1;
+        }
+	}
+	for (int i = 0; i < floor_arr.size(); i++) {
+        if((checkCollide(b->getX(), b->getY(), b->getWidth(), b->getHeight(), floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side)))
+        {
+            return 2;
         }
     }
 	// Otherwise, the bullet didn't collide with anything and will survive
-	return false;
+	return 0;
 }
 
 
@@ -783,7 +876,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         // Only render the Turret if will be screen
         if (blocks_arr[i].BLOCK_REL_X < SCREEN_WIDTH && blocks_arr[i].BLOCK_REL_Y < SCREEN_HEIGHT && blocks_arr[i].BLOCK_REL_Y >= WallBlock::block_side)
         {
-            SDL_Rect fillRect = {blocks_arr[i].BLOCK_REL_X, blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
+            SDL_Rect fillRect = {(int)blocks_arr[i].BLOCK_REL_X, (int)blocks_arr[i].BLOCK_REL_Y, blocks_arr[i].BLOCK_WIDTH, blocks_arr[i].BLOCK_HEIGHT};
             if (blocks_arr[i].bottom == 1) {
 				SDL_RenderCopyEx(gRenderer, bottomTurretSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
 			}
@@ -793,30 +886,12 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         }
     }
 
-    // Render floor
-    // for(i = 0; i < SCREEN_WIDTH; i+= WallBlock::block_side)
-    // {
-    //     SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-    //     SDL_Rect border1 = { i, SCREEN_HEIGHT - WallBlock::block_side - WallBlock::border, WallBlock::block_side, WallBlock::block_side - WallBlock::border};
-    //     SDL_RenderFillRect(gRenderer, &border1);
-
-    //    // SDL_Rect border2 = {i, 0, WallBlock::block_side, WallBlock::block_side + WallBlock::border};
-    //    // SDL_RenderFillRect(gRenderer, &border2);
-
-    //     SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
-    //     SDL_Rect fillRectWall1 = { i, SCREEN_HEIGHT - WallBlock::block_side, WallBlock::block_side, WallBlock::block_side };
-    //     SDL_RenderFillRect(gRenderer, &fillRectWall1);
-
-    //    // SDL_Rect fillRectWall2 = {i, 0, WallBlock::block_side, WallBlock::block_side};
-    //    // SDL_RenderFillRect(gRenderer, &fillRectWall);
-    // }
-
     //Render Ceiling and floor
     for(i = 0; i < ceiling_arr.size(); i++)
 	{
         if(ceiling_arr[i].CEILING_REL_X < SCREEN_WIDTH && ceiling_arr[i].CEILING_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_Rect fillRect = {ceiling_arr[i].CEILING_REL_X, ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side};
+            SDL_Rect fillRect = {(int)ceiling_arr[i].CEILING_REL_X, (int)ceiling_arr[i].CEILING_REL_Y, WallBlock::block_side, WallBlock::block_side};
             SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
@@ -826,7 +901,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 	{
         if(floor_arr[i].FLOOR_REL_X < SCREEN_WIDTH && floor_arr[i].FLOOR_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_Rect fillRect = {floor_arr[i].FLOOR_REL_X, floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side};
+            SDL_Rect fillRect = {(int)floor_arr[i].FLOOR_REL_X, (int)floor_arr[i].FLOOR_REL_Y, WallBlock::block_side, WallBlock::block_side};
             SDL_SetRenderDrawColor(gRenderer, 0x7F, 0x33, 0x00, 0xFF);
             SDL_RenderFillRect(gRenderer, &fillRect);
         }
@@ -835,9 +910,9 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < health_arr.size(); i++)
     {
         // Only render the health powerup if it will be screen
-        if (health_arr[i].HEALTH_REL_X < SCREEN_WIDTH && health_arr[i].HEALTH_REL_Y < SCREEN_HEIGHT&& health_arr[i].enabled)
+        if (health_arr[i].HEALTH_REL_X < SCREEN_WIDTH && health_arr[i].HEALTH_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_Rect fillRect = {health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT};
+            SDL_Rect fillRect = {(int)health_arr[i].HEALTH_REL_X, (int)health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT};
             SDL_RenderCopyEx(gRenderer, healthSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
@@ -845,9 +920,9 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < infFire_arr.size(); i++)
     {
         // Only render the shooting powerup if it will be screen
-        if (infFire_arr[i].INF_FIRE_REL_X < SCREEN_WIDTH && infFire_arr[i].INF_FIRE_REL_Y < SCREEN_HEIGHT&& infFire_arr[i].enabled)
+        if (infFire_arr[i].INF_FIRE_REL_X < SCREEN_WIDTH && infFire_arr[i].INF_FIRE_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_Rect fillRect = {infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT};
+            SDL_Rect fillRect = {(int)infFire_arr[i].INF_FIRE_REL_X, (int)infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT};
             SDL_RenderCopyEx(gRenderer, infFireSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
@@ -855,22 +930,44 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     for (i = 0; i < invince_arr.size(); i++)
     {
         // Only render the invince powerup if it will be screen
-        if (invince_arr[i].INVINCE_REL_X < SCREEN_WIDTH && invince_arr[i].INVINCE_REL_Y < SCREEN_HEIGHT&& invince_arr[i].enabled)
+        if (invince_arr[i].INVINCE_REL_X < SCREEN_WIDTH && invince_arr[i].INVINCE_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_Rect fillRect = {invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT};
+            SDL_Rect fillRect = {(int)invince_arr[i].INVINCE_REL_X, (int)invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT};
             SDL_RenderCopyEx(gRenderer, invinceSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
 
-     for (i = 0; i < autofire_arr.size(); i++)
+    for (i = 0; i < autofire_arr.size(); i++)
     {
         // Only render the invince powerup if it will be screen
-        if (autofire_arr[i].AUTOFIRE_REL_X < SCREEN_WIDTH && autofire_arr[i].AUTOFIRE_REL_Y < SCREEN_HEIGHT&& autofire_arr[i].enabled)
+        if (autofire_arr[i].AUTOFIRE_REL_X < SCREEN_WIDTH && autofire_arr[i].AUTOFIRE_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_Rect fillRect = {autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT};
+            SDL_Rect fillRect = {(int)autofire_arr[i].AUTOFIRE_REL_X, (int)autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT};
             SDL_RenderCopyEx(gRenderer, autofireSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
         }
     }
+
+    for (i = 0; i < small_arr.size(); i++)
+    {
+        // Only render the invince powerup if it will be screen
+        if (small_arr[i].SMALL_REL_X < SCREEN_WIDTH && small_arr[i].SMALL_REL_Y < SCREEN_HEIGHT)
+        {
+            SDL_Rect fillRect = {(int)small_arr[i].SMALL_REL_X, (int)small_arr[i].SMALL_REL_Y, small_arr[i].SMALL_WIDTH, small_arr[i].SMALL_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, smallSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+
+    // for (i = 0; i < ally_arr.size(); i++)
+    // {
+    //     // Only render the invince powerup if it will be screen
+    //     if (ally_arr[i].ALLY_PLANE_REL_X < SCREEN_WIDTH && ally_arr[i].ALLY_PLANE_REL_Y < SCREEN_HEIGHT)
+    //     {
+    //         SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
+    //         SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //     }
+    // }
+
 
 
     for (i = 0; i < stalagm_arr.size(); i++)
@@ -878,7 +975,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         // Only render the Stalag if will be screen
         if (stalagm_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_HEIGHT && stalagm_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_WIDTH && stalagm_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagm_arr[i].STALAG_REL_Y < SCREEN_HEIGHT)
         {
-            SDL_Rect fillRect = {stalagm_arr[i].STALAG_REL_X, stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT};
+            SDL_Rect fillRect = {(int)stalagm_arr[i].STALAG_REL_X, (int)stalagm_arr[i].STALAG_REL_Y, stalagm_arr[i].STALAG_WIDTH, stalagm_arr[i].STALAG_HEIGHT};
             if (stalagm_arr[i].stalagShapeNum == 1) {
 				SDL_RenderCopyEx(gRenderer, stalagmiteSprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
 			}
@@ -899,7 +996,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
         // Only render the Stalag if will be screen
         if (stalagt_arr[i].STALAG_REL_X >= -stalagt_arr[i].STALAG_WIDTH && stalagt_arr[i].STALAG_REL_Y >= -stalagt_arr[i].STALAG_HEIGHT && stalagt_arr[i].STALAG_REL_X < SCREEN_WIDTH && stalagt_arr[i].STALAG_REL_Y < SCREEN_HEIGHT && stalagt_arr[i].STALAG_REL_Y + stalagt_arr[i].STALAG_HEIGHT < SCREEN_HEIGHT + 35 - WallBlock::block_side){ // + 35 to have the stalags stick around a little after hittig the floor
 
-			SDL_Rect fillRect = {stalagt_arr[i].STALAG_REL_X, stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT};
+			SDL_Rect fillRect = {(int)stalagt_arr[i].STALAG_REL_X, (int)stalagt_arr[i].STALAG_REL_Y, stalagt_arr[i].STALAG_WIDTH, stalagt_arr[i].STALAG_HEIGHT};
             if (stalagt_arr[i].stalagShapeNum == 1) {
 				SDL_RenderCopyEx(gRenderer, stalactiteSprite1, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
 			}
@@ -934,6 +1031,7 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
 
 // Add an explosion at the given location
 void MapBlocks::addExplosion(int x, int y, int w, int h, int type) {
+	if (type == 0) Mix_PlayChannel(-1, explosion_sound, 0);
 	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
 }
 
@@ -947,4 +1045,312 @@ std::vector<Stalagtite> MapBlocks::getStalagtites() {
 
 std::vector<Turret> MapBlocks::getTurrets() {
 	return blocks_arr;
+}
+
+// Special version of MapBlocks optimized for the boss section
+BossBlocks::BossBlocks(int w, int h, SDL_Renderer *gr, int diff)
+{
+	screen_width = w;
+	screen_height = h;
+	difficulty = diff;
+	gRenderer = gr;
+	explosionSprite = loadImage("sprites/Explosion.png", gRenderer);
+	dustCloudSprite = loadImage("sprites/dustCloud.png", gRenderer);
+    healthSprite=loadImage("sprites/health.png", gRenderer);
+    infFireSprite=loadImage("sprites/infFire.png", gRenderer);
+    invinceSprite=loadImage("sprites/invince.png", gRenderer);
+    autofireSprite=loadImage("sprites/autofire.png", gRenderer);
+    smallSprite=loadImage("sprites/small.png", gRenderer);
+    allySprite=loadImage("sprites/plus_ally_ai.png", gRenderer);
+	
+	explosion_sound = Mix_LoadWAV("sounds/explosion.wav");
+	
+	currentX = w;
+}
+
+BossBlocks::~BossBlocks()
+{
+	SDL_DestroyTexture(explosionSprite);
+	SDL_DestroyTexture(dustCloudSprite);
+	SDL_DestroyTexture(healthSprite);
+    SDL_DestroyTexture(infFireSprite);
+    SDL_DestroyTexture(invinceSprite);
+    SDL_DestroyTexture(autofireSprite);
+    SDL_DestroyTexture(smallSprite);
+    SDL_DestroyTexture(allySprite);
+	Mix_FreeChunk(explosion_sound);
+}
+
+bool BossBlocks::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int yTwo, int pTwoWidth, int pTwoHeight)
+{
+    if (x + pWidth < xTwo || x > xTwo + pTwoWidth)
+        return false;
+    if (y + pHeight < yTwo || y > yTwo + pTwoHeight)
+        return false;
+    return true;
+}
+
+void BossBlocks::moveBlocks(double camShift)
+{
+	// Make new powerups if a screen has passed
+	currentX += camShift;
+	if (currentX > screen_width) {
+		currentX = 0;
+		createPowerups();
+	}
+	
+	int i;
+	// Move everything left based on how much the camera has shifted
+    for (i = 0; i < health_arr.size(); i++)
+    {
+        health_arr[i].HEALTH_REL_X -= camShift;
+    }
+
+    for (i = 0; i < infFire_arr.size(); i++)
+    {
+        infFire_arr[i].INF_FIRE_REL_X -= camShift;
+    }
+
+    for (i = 0; i < invince_arr.size(); i++)
+    {
+        invince_arr[i].INVINCE_REL_X -= camShift;
+    }
+    for (i = 0; i < autofire_arr.size(); i++)
+    {
+        autofire_arr[i].AUTOFIRE_REL_X -= camShift;
+    }
+
+    for (i = 0; i < small_arr.size(); i++)
+    {
+        small_arr[i].SMALL_REL_X -= camShift;
+    }
+	
+    for(i = 0; i < ally_arr.size(); i++)
+    {
+        ally_arr[i].ALLY_PLANE_REL_X -= camShift;
+    }
+	
+	for (i = explosion_arr.size() - 1; i >= 0; i--)
+	{
+		explosion_arr[i].current_size = (double) explosion_arr[i].initial_explosion_size + ((SDL_GetTicks() - explosion_arr[i].explosion_time) * explosion_arr[i].explosion_speed) / 1000;
+		if (!explosion_arr[i].stationary) {
+			explosion_arr[i].center_x -= camShift;
+		}
+		explosion_arr[i].rel_x = explosion_arr[i].center_x - explosion_arr[i].current_size / 2;
+		explosion_arr[i].rel_y = explosion_arr[i].center_y - explosion_arr[i].current_size / 2;
+		explosion_arr[i].hitbox = {(int)explosion_arr[i].rel_x, (int)explosion_arr[i].rel_y, (int)explosion_arr[i].current_size, (int)explosion_arr[i].current_size};
+		// If the explosion has reached its maximum size, get rid of it
+		if (explosion_arr[i].current_size >= explosion_arr[i].final_explosion_size) {
+			explosion_arr.erase(explosion_arr.begin() + i);
+		}
+	}
+}
+
+// Every screen_width pixels, create new powerups
+void BossBlocks::createPowerups()
+{
+	// Set the number of powerups according to the difficulty
+	int powerupCount;
+	if (difficulty == 1) powerupCount = 4;
+	if (difficulty == 2) powerupCount = 3;
+	if (difficulty == 3) powerupCount = 2;
+	
+	// Randomly choose from the 6 powerups to add
+	int powerupNum;
+	for (int i = 0; i < powerupCount; i++)
+	{
+		powerupNum = rand() % 6;
+		if (powerupNum == 0) {
+			HealthBlock newHealthBlock = HealthBlock();
+			newHealthBlock.HEALTH_REL_X = (rand() % (screen_width - newHealthBlock.HEALTH_WIDTH)) + screen_width;
+			newHealthBlock.HEALTH_REL_Y = rand() % (screen_height - MARGIN - newHealthBlock.HEALTH_HEIGHT) + MARGIN;
+			health_arr.push_back(newHealthBlock);
+		}
+		else if (powerupNum == 1) {
+			InfFireBlock newInfFireBlock = InfFireBlock();
+			newInfFireBlock.INF_FIRE_REL_X = (rand() % (screen_width - newInfFireBlock.INF_FIRE_WIDTH)) + screen_width;
+			newInfFireBlock.INF_FIRE_REL_Y = rand() % (screen_height - MARGIN - newInfFireBlock.INF_FIRE_HEIGHT) + MARGIN;
+			infFire_arr.push_back(newInfFireBlock);
+		}
+		else if (powerupNum == 2) {
+			AllyPlaneBlock newAllyPlaneBlock = AllyPlaneBlock();
+			newAllyPlaneBlock.ALLY_PLANE_REL_X = (rand() % (screen_width - newAllyPlaneBlock.ALLY_PLANE_WIDTH)) + screen_width;
+			newAllyPlaneBlock.ALLY_PLANE_REL_Y = rand() % (screen_height - MARGIN - newAllyPlaneBlock.ALLY_PLANE_HEIGHT) + MARGIN;
+			ally_arr.push_back(newAllyPlaneBlock);
+		}
+		else if (powerupNum == 3) {
+			AutoFireBlock newAutoFireBlock = AutoFireBlock();
+			newAutoFireBlock.AUTOFIRE_REL_X = (rand() % (screen_width - newAutoFireBlock.AUTOFIRE_WIDTH)) + screen_width;
+			newAutoFireBlock.AUTOFIRE_REL_Y = rand() % (screen_height - MARGIN - newAutoFireBlock.AUTOFIRE_HEIGHT) + MARGIN;
+			autofire_arr.push_back(newAutoFireBlock);
+		}
+		else if (powerupNum == 4) {
+			InvincBlock newInvincBlock = InvincBlock();
+			newInvincBlock.INVINCE_REL_X = (rand() % (screen_width - newInvincBlock.INVINCE_WIDTH)) + screen_width;
+			newInvincBlock.INVINCE_REL_Y = rand() % (screen_height - MARGIN - newInvincBlock.INVINCE_HEIGHT) + MARGIN;
+			invince_arr.push_back(newInvincBlock);
+		}
+		else {
+			SmallBlock newSmallBlock = SmallBlock();
+			newSmallBlock.SMALL_REL_X = (rand() % (screen_width - newSmallBlock.SMALL_WIDTH)) + screen_width;
+			newSmallBlock.SMALL_REL_Y = rand() % (screen_height - MARGIN - newSmallBlock.SMALL_HEIGHT) + MARGIN;
+			small_arr.push_back(newSmallBlock);
+		}
+	}
+}
+
+// Add an explosion at the given location
+void BossBlocks::addExplosion(int x, int y, int w, int h, int type) {
+    if (type == 0) Mix_PlayChannel(-1, explosion_sound, 0);
+	explosion_arr.push_back(Explosion(x + w / 2, y + h / 2, type, gRenderer));
+}
+
+// Add an explosion at given x and y with given size
+void BossBlocks::addExplosion(int x, int y, int size) {
+	Mix_PlayChannel(-1, explosion_sound, 0);
+	explosion_arr.push_back(Explosion(x, y, size));
+}
+
+// Handle collisions between player and powerups
+void BossBlocks::checkCollision(Player *p)
+{
+    if(p->health <= 0) return;
+	int i;
+	
+    for (i = health_arr.size() - 1; i >= 0; i--)
+    {
+        // If there's a collision, heal the player and delete health powerup
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), health_arr[i].HEALTH_REL_X, health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT))
+        {
+            p->heal(20);
+            health_arr.erase(health_arr.begin() + i);
+        }
+    }
+    for (i = infFire_arr.size() - 1; i >= 0; i--)
+    {
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), infFire_arr[i].INF_FIRE_REL_X, infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT))
+        {
+            //turn off player overheats
+            p->setInfiniteVal(true);
+            p->resetHeatVals();
+            infFire_arr.erase(infFire_arr.begin()+i);
+        }
+    }
+    for (i = invince_arr.size() - 1; i >= 0; i--)
+    {
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), invince_arr[i].INVINCE_REL_X, invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT))
+        {
+            p->setInvinceVal(true);
+            invince_arr.erase(invince_arr.begin()+i);
+        }
+    }
+    for (i = ally_arr.size() - 1; i >= 0; i--)
+    {
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), ally_arr[i].ALLY_PLANE_REL_X, ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT))
+        {
+            // p->setInvinceVal(true);
+            ally_arr.erase(ally_arr.begin() + i);
+        }
+    }
+    for (i = autofire_arr.size() - 1; i >= 0; i--)
+    {
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), autofire_arr[i].AUTOFIRE_REL_X, autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT))
+        {
+            p->setAutoFire(true);
+            autofire_arr.erase(autofire_arr.begin()+i);
+        }
+    }
+    for (i = small_arr.size() - 1; i >= 0; i--)
+    {
+        if (checkCollide(p->getPosX(), p->getPosY(), p->getWidth(), p->getHeight(), small_arr[i].SMALL_REL_X, small_arr[i].SMALL_REL_Y, small_arr[i].SMALL_WIDTH, small_arr[i].SMALL_HEIGHT))
+        {
+            p->setSmall(true);
+            small_arr.erase(small_arr.begin()+i);
+        }
+    }
+}
+
+void BossBlocks::renderPowerups(SDL_Renderer* gRenderer)
+{
+    int i;
+	
+	// Render all of the powerups, deleting anything that is no longer needed
+    for (i = health_arr.size() - 1; i >= 0; i--)
+    {
+		if (health_arr[i].HEALTH_REL_X < -health_arr[i].HEALTH_WIDTH) {
+			health_arr.erase(health_arr.begin() + i);
+		}
+		else {
+			SDL_Rect fillRect = {(int)health_arr[i].HEALTH_REL_X, (int)health_arr[i].HEALTH_REL_Y, health_arr[i].HEALTH_WIDTH, health_arr[i].HEALTH_HEIGHT};
+			SDL_RenderCopyEx(gRenderer, healthSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+		}
+	}
+
+    for (i = infFire_arr.size() - 1; i >= 0; i--)
+    {
+        if (infFire_arr[i].INF_FIRE_REL_X < -infFire_arr[i].INF_FIRE_WIDTH) {
+			infFire_arr.erase(infFire_arr.begin() + i);
+		}
+		else {
+            SDL_Rect fillRect = {(int)infFire_arr[i].INF_FIRE_REL_X, (int)infFire_arr[i].INF_FIRE_REL_Y, infFire_arr[i].INF_FIRE_WIDTH, infFire_arr[i].INF_FIRE_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, infFireSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+    for (i = invince_arr.size() - 1; i >= 0; i--)
+    {
+        if (invince_arr[i].INVINCE_REL_X < -invince_arr[i].INVINCE_WIDTH) {
+			invince_arr.erase(invince_arr.begin() + i);
+		}
+		else {
+            SDL_Rect fillRect = {(int)invince_arr[i].INVINCE_REL_X, (int)invince_arr[i].INVINCE_REL_Y, invince_arr[i].INVINCE_WIDTH, invince_arr[i].INVINCE_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, invinceSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+    for (i = autofire_arr.size() - 1; i >= 0; i--)
+    {
+        if (autofire_arr[i].AUTOFIRE_REL_X < -autofire_arr[i].AUTOFIRE_WIDTH) {
+			autofire_arr.erase(autofire_arr.begin() + i);
+		}
+		else {
+            SDL_Rect fillRect = {(int)autofire_arr[i].AUTOFIRE_REL_X, (int)autofire_arr[i].AUTOFIRE_REL_Y, autofire_arr[i].AUTOFIRE_WIDTH, autofire_arr[i].AUTOFIRE_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, autofireSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+    for (i = small_arr.size() - 1; i >= 0; i--)
+    {
+        if (small_arr[i].SMALL_REL_X < -small_arr[i].SMALL_WIDTH) {
+			small_arr.erase(small_arr.begin() + i);
+		}
+		else {
+            SDL_Rect fillRect = {(int)small_arr[i].SMALL_REL_X, (int)small_arr[i].SMALL_REL_Y, small_arr[i].SMALL_WIDTH, small_arr[i].SMALL_HEIGHT};
+            SDL_RenderCopyEx(gRenderer, smallSprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
+
+
+    // for (i = ally_arr.size() - 1; i >= 0; i--)
+    // {
+    //     if (ally_arr[i].ALLY_PLANE_REL_X < -ally_arr[i].ALLY_PLANE_WIDTH) {
+	// 		ally_arr.erase(ally_arr.begin() + i);
+	// 	}
+	// 	else {
+    //         SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
+    //         SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //     }
+    // }
+}
+
+void BossBlocks::renderExplosions(SDL_Renderer* gRenderer) {
+	int i;
+	for (i = explosion_arr.size() - 1; i >= 0; i--) {
+        if(explosion_arr[i].type == 0){
+		    SDL_RenderCopyEx(gRenderer, explosionSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+        else{
+            SDL_RenderCopyEx(gRenderer, dustCloudSprite, nullptr, &explosion_arr[i].hitbox, 0.0, nullptr, SDL_FLIP_NONE);
+        }
+    }
 }

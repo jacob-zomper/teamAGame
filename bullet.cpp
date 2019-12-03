@@ -45,17 +45,21 @@ bool Bullet::ricochetFloor(){
 		return true; // destroyed
 	}
 	yPos = FLOOR_BOTTOM - 3;
-	yVel /= -1.5;
+	pitch *= -0.7;
+	velocity_magnitude *= 0.7;
+	yVel *= 0.7;
 	
 	return false; // ricocheted
 }
 
 bool Bullet::ricochetRoof(){
-	if(((rand() % 100) + (yVel/20)) > 80){ // about 20-40% chance of destruction, higher Velocity = less likely to ricochet
+	if(((rand() % 100) + abs(yVel/20)) > 80){ // about 20-40% chance of destruction, higher Velocity = less likely to ricochet
 		return true; // destroyed
 	}
 	yPos = ROOF_TOP + 3;
-	yVel /= -1.5;
+	pitch *= -0.7;
+	velocity_magnitude *= 0.7;
+	yVel *= 0.7;
 	
 	return false; // ricocheted
 }
