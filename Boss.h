@@ -27,7 +27,7 @@ public:
   void hit(int d);
 
   // Boss width and height
-  static const int WIDTH = 250;
+  static const int WIDTH = 343;
   static const int HEIGHT = 106;
 
   int getX();
