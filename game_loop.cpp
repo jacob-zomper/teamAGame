@@ -19,6 +19,7 @@
 #include "Text.h"
 #include "Kamikaze.h"
 #include "Boss.h"
+#include "InfoScreen.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
@@ -50,6 +51,7 @@ MapBlocks *blocks;
 BossBlocks * bossBlocks;
 GameOver *game_over;
 StartScreen *start_screen;
+InfoScreen *info_screen;
 DifficultySelectionScreen *diff_sel_screen;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
@@ -863,6 +865,20 @@ void bossBattle() {
 		SDL_RenderPresent(gRenderer);
 	}
 }
+//todo load image 
+void handleInfoMenu(){
+	while(info_screen->show){
+		while(SDL_PollEvent(&e)) {
+			if(e.type==SDL_QUIT){
+				close();
+			}
+			info_screen->handleEvent(e);
+		}
+		info_screen->render(gRenderer);
+		SDL_RenderPresent(gRenderer);
+	}
+info_screen->show=true;
+}
 
 int main() {
 	if (!init()) {
@@ -886,7 +902,8 @@ int main() {
 	int openAirLength = (rand() % (LEVEL_WIDTH / (4 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
 
 	cave_system = new CaveSystem();
-	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
+	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"),loadImage("sprites/info_button.png"));
+	info_screen= new InfoScreen(loadImage("sprites/InfoScreen.png"),loadImage("sprites/back_button.png"));
 	diff_sel_screen = new DifficultySelectionScreen(loadImage("sprites/DiffScreen.png"), loadImage("sprites/easy_button.png"), loadImage("sprites/med_button.png"), loadImage("sprites/hard_button.png"));
 	game_over = new GameOver(loadImage("sprites/cred_button.png"), loadImage("sprites/restart_button.png"));
 
@@ -900,8 +917,13 @@ int main() {
 			if(e.type==SDL_QUIT){
 				start_screen->notStarted=false;
 				gameon=false;
+				close();
 			}
 			start_screen->handleEvent(e);
+		}
+		if(start_screen->infoMenu){
+			handleInfoMenu();
+			start_screen->infoMenu=false;
 		}
 		start_screen->render(gRenderer);
 		SDL_RenderPresent(gRenderer);
@@ -913,6 +935,7 @@ int main() {
 			if(e.type==SDL_QUIT){
 				difficulty=4;
 				gameon=false;
+				close();
 			}
 			difficulty = diff_sel_screen->handleEvent(e);
 		}
