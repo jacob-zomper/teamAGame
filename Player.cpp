@@ -232,9 +232,10 @@ void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int cam
     double accelerate_by = 0.003*time_since_move;
     double decelerate_factor = 4.0;
     acceleration(moveDown, moveUp, y_accel, accelerate_by, decelerate_factor, y_vel);
-    if(!moveDown && !moveUp && y_vel > 0) tiltAngle = 180 * sin(y_accel / 12) > 0 ? 180 * sin(y_accel / 12) : 0;
-    else if(!moveDown && !moveUp && y_vel < 0) tiltAngle = -180 * sin(y_accel / 12) < 0 ? -180 * sin(y_accel / 12) : 0;
-    else tiltAngle = 180 * sin(y_accel / 12);
+    double accelAngle = y_accel/6;
+    if(!moveDown && !moveUp && y_vel > 0) tiltAngle = 90*sin(accelAngle) > 0 ? 90*sin(accelAngle) : 0;
+    else if(!moveDown && !moveUp && y_vel < 0) tiltAngle = 90 * sin(accelAngle) < 0 ? 90 * sin(accelAngle) : 0;
+    else tiltAngle = 90*sin(accelAngle);
     acceleration(moveForward, moveBackward, x_accel, accelerate_by, decelerate_factor, x_vel);
 
     if (y_vel > MAX_PLAYER_VEL)
