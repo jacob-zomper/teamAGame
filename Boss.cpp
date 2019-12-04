@@ -47,13 +47,13 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   maxYVelo = 200;
   last_pattern = 0;
   if(diff == 3){
-	max_health = 2000;
-  }
-  else if(diff == 2){
 	max_health = 1500;
   }
-  else{
+  else if(diff == 2){
 	max_health = 1000;
+  }
+  else{
+	max_health = 500;
   }
   health = max_health;
   difficulty = diff;
