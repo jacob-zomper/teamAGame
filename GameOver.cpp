@@ -185,51 +185,63 @@ void GameOver::displayCredits(SDL_Renderer* gRenderer){
 	SDL_RenderCopy(gRenderer, gTex[0], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 1 << std::endl;
 
 	SDL_RenderCopy(gRenderer, gTex[1], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 2 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[2], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 3 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[3], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 4 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[4], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 5 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[5], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 6 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[6], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 7 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[7], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 8 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[8], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 9 << std::endl;
 
     SDL_RenderCopy(gRenderer, gTex[9], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
 	SDL_Delay(3000);
+	std::cout << 10 << std::endl;
 
 	for (auto i : gTex) {
 		SDL_DestroyTexture(i);
 		i = nullptr;
 	}
+	std::cout << 11 << std::endl;
 
 	SDL_DestroyRenderer(gRenderer);
 	gRenderer = nullptr;
 
+	std::cout << 12 << std::endl;
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
