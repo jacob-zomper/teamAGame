@@ -76,7 +76,6 @@ public:
     bool moveDown;
     bool moveForward;
     bool moveBackward;
-	double thrust;
 
 	// Sprites for the player
 	SDL_Texture* sprite1;

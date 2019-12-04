@@ -39,7 +39,6 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     moveDown = false;
     moveForward = false;
     moveBackward = false;
-    thrust = 0;
 	fshot_heat = 0;
 	bshot_heat = 0;
 	fshot_maxed = false;
@@ -227,103 +226,13 @@ void Player::acceleration(bool &increasing, bool &decreasing, float &accel, floa
 //Moves the player
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
-    /*float accelerate_by = 0.003*time_since_move;
+    float accelerate_by = 0.003*time_since_move;
     float deccelerate_factor = 4.0;
-    acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
-    if(!yp_decel && !yn_decel && y_vel > 0) tiltAngle = 180 * sin(y_accel / 12) > 0 ? 180 * sin(y_accel / 12) : 0;
-    else if(!yp_decel && !yn_decel && y_vel < 0) tiltAngle = -180 * sin(y_accel / 12) < 0 ? -180 * sin(y_accel / 12) : 0;
+    acceleration(moveDown, moveUp, y_accel, accelerate_by, deccelerate_factor, y_vel);
+    if(!moveDown && !moveUp && y_vel > 0) tiltAngle = 180 * sin(y_accel / 12) > 0 ? 180 * sin(y_accel / 12) : 0;
+    else if(!moveDown && !moveUp && y_vel < 0) tiltAngle = -180 * sin(y_accel / 12) < 0 ? -180 * sin(y_accel / 12) : 0;
     else tiltAngle = 180 * sin(y_accel / 12);
-    acceleration(xp_decel, xn_decel, x_accel, accelerate_by, deccelerate_factor, x_vel);*/
-
-    double previousTiltAngle = tiltAngle;
-    double angleIncrement = 0.06*time_since_move;
-    if(moveUp != moveDown) angleIncrement = 1.5*angleIncrement; // untilt faster
-    if(moveUp) tiltAngle -= angleIncrement;
-    if(moveDown) tiltAngle += angleIncrement;
-    if(!moveUp && !moveDown){
-        angleIncrement = 1.5*angleIncrement; // untilt faster
-        if(tiltAngle > 0) tiltAngle -= angleIncrement;
-        else if(tiltAngle < 0) tiltAngle += angleIncrement;
-        if(fabs(tiltAngle) < angleIncrement) tiltAngle = 0;
-    }
-    if(tiltAngle > 45) tiltAngle = 45;
-    if(tiltAngle < -45) tiltAngle = -45;
-    
-    double thrustIncrement = 3;
-    //double thrustIncrement = 0.03*time_since_move;
-    if(moveForward) thrust += thrustIncrement; // if 0 -> moving, give intial thrust value
-    if(moveBackward) thrust -= thrustIncrement;
-    if(!moveForward && !moveBackward){
-        double deThrustAmount = 1.5*thrustIncrement;
-        if(thrust > 0) thrust -= deThrustAmount;
-        else if(thrust < 0) thrust += deThrustAmount;
-        if(fabs(thrust) < thrustIncrement) thrust = 0;
-    }
-    if(thrust > 3) thrust = 3;
-    else if(thrust < -3) thrust = -3;
-
-    if(!thrust){
-        //double yAccelIncrement = tiltAngle != 0 ? sin(tiltAngle*PI/180)*time_since_move*0.003 : time_since_move*0.003;
-        //double xAccelIncrement = cos(tiltAngle*PI/180)*time_since_move*0.003;
-        double yAccelIncrement = tiltAngle != 0 ? sin(tiltAngle*PI/180)*time_since_move*0.03 : time_since_move*0.03;
-        double xAccelIncrement = cos(tiltAngle*PI/180)*time_since_move*0.03;
-        
-        //acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
-        //acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
-
-        if(y_vel < 0) y_accel += 4*yAccelIncrement;
-        else if(y_vel > 0) y_accel -= 4*yAccelIncrement;
-        if(x_vel < 0) x_accel += 4*xAccelIncrement;
-        else if(x_vel > 0) x_accel -= 4*xAccelIncrement;
-
-        if(y_accel > 3) y_accel = 3;
-        else if(y_accel < -3) y_accel = -3;
-        if(x_accel > 3) x_accel = 3;
-        else if(x_accel < -3) x_accel = -3;
-        
-        //double yVelIncrement = y_accel*time_since_move;
-        //double xVelIncrement = x_accel*time_since_move;
-        double yVelIncrement = yAccelIncrement*time_since_move;
-        double xVelIncrement = xAccelIncrement*time_since_move;
-        y_vel += 2*yVelIncrement;
-        x_vel += 2*xVelIncrement;
-        //if(y_vel != 0 && y_vel <= abs((int) (deccelerate_factor*vel_increment)) && y_vel >= -abs((int) (deccelerate_factor*vel_increment))){
-        /*if(y_vel != 0 && fabs(y_vel) < fabs(4*yVelIncrement)){
-            y_accel = 0;
-            y_vel = 0;
-        }
-        if(x_vel != 0 && fabs(x_vel) < fabs(4*xVelIncrement)){
-            x_accel = 0;
-            x_vel = 0;
-        }*/
-        if(y_vel != 0 && fabs(y_vel) < fabs(4*yVelIncrement) || x_vel != 0 && fabs(x_vel) < fabs(4*xVelIncrement)){
-            y_accel = 0;
-            y_vel = 0;
-            x_accel = 0;
-            x_vel = 0;
-        }
-    } else{
-        //double yAccelIncrement = thrust*sin(tiltAngle*PI/180)*time_since_move*0.003;
-        //double xAccelIncrement = thrust*cos(tiltAngle*PI/180)*time_since_move*0.003;
-        double yAccelIncrement = thrust*sin(tiltAngle*PI/180)*time_since_move*0.03;
-        double xAccelIncrement = thrust*cos(tiltAngle*PI/180)*time_since_move*0.03;
-        y_accel += yAccelIncrement;
-        x_accel += xAccelIncrement;
-        if(fabs(y_accel) < yAccelIncrement) y_accel = 0;
-        if(fabs(x_accel) < xAccelIncrement) x_accel = 0;
-        
-        //double yVelIncrement = y_accel*time_since_move;
-        //double xVelIncrement = x_accel*time_since_move;
-        double yVelIncrement = yAccelIncrement*time_since_move;
-        double xVelIncrement = xAccelIncrement*time_since_move;
-        y_vel += yVelIncrement;
-        x_vel += xVelIncrement;
-    }
-
-    if(!tiltAngle && previousTiltAngle){
-        y_vel = 0;
-        x_vel = 0;
-    }
+    acceleration(moveForward, moveBackward, x_accel, accelerate_by, deccelerate_factor, x_vel);
 
     if (y_vel > MAX_PLAYER_VEL)
         y_vel = MAX_PLAYER_VEL;
