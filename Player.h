@@ -98,7 +98,7 @@ public:
     void handleEvent(SDL_Event &e);
 	void handleMute();
     //Moves the player
-    void acceleration(bool &increasing, bool &decreasing, float &accel, float &accelerate_by, float &deccelerate_factor, int &vel);
+    void acceleration(bool &increasing, bool &decreasing, double &accel, double &accelerate_by, double &deccelerate_factor, double &vel);
     void move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY);
 
     //Shows the player on the screen relative to the camera

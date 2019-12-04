@@ -203,7 +203,7 @@ void Player::handleEvent(SDL_Event &e)
     }
 }
 
-void Player::acceleration(bool &increasing, bool &decreasing, float &accel, float &accelerate_by, float &deccelerate_factor, int &vel){
+void Player::acceleration(bool &increasing, bool &decreasing, double &accel, double &accelerate_by, double &deccelerate_factor, double &vel){
     if(decreasing) accel -= accelerate_by;
     if(increasing) accel += accelerate_by;
     if(!decreasing && !increasing){
@@ -226,8 +226,8 @@ void Player::acceleration(bool &increasing, bool &decreasing, float &accel, floa
 //Moves the player
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
-    float accelerate_by = 0.003*time_since_move;
-    float deccelerate_factor = 4.0;
+    double accelerate_by = 0.003*time_since_move;
+    double deccelerate_factor = 4.0;
     acceleration(moveDown, moveUp, y_accel, accelerate_by, deccelerate_factor, y_vel);
     if(!moveDown && !moveUp && y_vel > 0) tiltAngle = 180 * sin(y_accel / 12) > 0 ? 180 * sin(y_accel / 12) : 0;
     else if(!moveDown && !moveUp && y_vel < 0) tiltAngle = -180 * sin(y_accel / 12) < 0 ? -180 * sin(y_accel / 12) : 0;
