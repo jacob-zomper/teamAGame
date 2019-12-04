@@ -635,6 +635,7 @@ void bossBattle() {
 				}
 				// If the game is restarted, reset some things
 				if (!game_over->isGameOver) {
+					difficulty = game_over->diff;
 					if (game_over->diff == 1) LEVEL_WIDTH = 20000;
 					else if (game_over->diff == 2) LEVEL_WIDTH = 50000;
 					else if (game_over->diff == 3) LEVEL_WIDTH = 75000;
@@ -836,11 +837,12 @@ void bossBattle() {
 		}
 
 		renderTextAndHealth();
-		std::string boss_string = "Boss";
-		Text bossText(gRenderer, boss_string, {255, 255, 255, 255}, font_20);
-		bossText.render(gRenderer, 50, 60);
 
 		if (bossEntered) {
+			std::string boss_string = "Boss";
+			Text bossText(gRenderer, boss_string, {255, 255, 255, 255}, font_20);
+			bossText.render(gRenderer, 50, 60);
+			
 			double health = boss->getHealthPercentage();
 			SDL_Rect outline = {99, 49, 1002, 52};
 			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
@@ -1017,7 +1019,7 @@ int main() {
 
 		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver && camX < LEVEL_WIDTH) {
 			current_track = 0;
-			Mix_PlayMusic(main_track, 0);
+			Mix_PlayMusic(main_track, -1);
 		}
 
 
@@ -1073,6 +1075,7 @@ int main() {
 				}
 				// If the game is restarted, reset some things
 				if (!game_over->isGameOver) {
+					difficulty = game_over->diff;
 					if (game_over->diff == 1) LEVEL_WIDTH = 20000;
 					else if (game_over->diff == 2) LEVEL_WIDTH = 50000;
 					else if (game_over->diff == 3) LEVEL_WIDTH = 75000;
