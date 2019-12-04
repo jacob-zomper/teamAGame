@@ -204,6 +204,8 @@ void Player::handleEvent(SDL_Event &e)
 }
 
 void Player::acceleration(bool &increasing, bool &decreasing, double &accel, double &accelerate_by, double &deccelerate_factor, double &vel){
+    if(!accel && decreasing && !increasing) accel = -1;
+    if(!accel && !decreasing && increasing) accel = 1;
     if(decreasing) accel -= accelerate_by;
     if(increasing) accel += accelerate_by;
     if(!decreasing && !increasing){
