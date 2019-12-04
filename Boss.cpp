@@ -62,7 +62,7 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   tier2 = false;
   destroyed = false;
   time_destroyed = 0;
-  //sprite1 = loadImage(name, gRenderer);
+  sprite1 = loadImage("sprites/ufo1.png", gRenderer);
   exclamation_point = loadImage("sprites/ExclamationPoint.png", gRenderer);
   hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
 }
@@ -76,11 +76,7 @@ Boss::~Boss() {
 
 void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
 	if (destroyed && SDL_GetTicks() - time_destroyed > 4000) return;
-	//SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-	SDL_RenderFillRect(gRenderer, &boss_hitbox_top);
-	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-	SDL_RenderFillRect(gRenderer, &boss_hitbox_bottom);
+	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
 	boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
 	boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
 	// Render the warning exclamation point if in the proper phase
