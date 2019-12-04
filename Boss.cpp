@@ -76,6 +76,7 @@ Boss::~Boss() {
 
 void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
 	if (destroyed && SDL_GetTicks() - time_destroyed > 4000) return;
+	boss_sprite = {(int)xPos,(int)yPos,WIDTH,HEIGHT};
 	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
 	boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
 	boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
@@ -140,7 +141,6 @@ void Boss::move(int SCREEN_WIDTH){
 	time_since_move = SDL_GetTicks() - last_move;
 	xPos += (double) (xVelo * time_since_move)/1000;
 	yPos += (double) (yVelo * time_since_move)/1000;
-	boss_sprite = {(int)xPos,(int)yPos,WIDTH,HEIGHT};
 	boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
 	boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
 	last_move = SDL_GetTicks();
