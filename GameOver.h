@@ -26,12 +26,12 @@ public:
     static const int CRED_BUTTON_X = (int)(1280/2) - 100;
     static const int CRED_BUTTON_Y = (int)(720/1.5) + 50;
 
-    void stopGame(Player*, MapBlocks*);
+    void stopGame(Player*);
     int handleEvent(SDL_Event &e, SDL_Renderer *gRenderer);
     void render(SDL_Renderer *gRenderer);
+    void displayCredits(SDL_Renderer* gRenderer);
 private:
     void restart(SDL_Renderer *gRenderer);
-    void displayCredits(SDL_Renderer* gRenderer);
     int LEVEL_WIDTH = 100000;
     int LEVEL_HEIGHT = 2000;
 };

@@ -11,11 +11,10 @@ GameOver::GameOver(SDL_Texture *cred, SDL_Texture *rest){
     btn_credits = cred;
 };
 
-void GameOver::stopGame(Player *player, MapBlocks *map_blocks)
+void GameOver::stopGame(Player *player)
 {
     player->setVelX(0);
     player->setVelY(0);
-    map_blocks->BLOCKS_N = 0;
 }
 
 int GameOver::handleEvent(SDL_Event &e, SDL_Renderer *gRenderer)
@@ -185,43 +184,73 @@ void GameOver::displayCredits(SDL_Renderer* gRenderer){
 
 	SDL_RenderCopy(gRenderer, gTex[0], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	int time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
 	SDL_RenderCopy(gRenderer, gTex[1], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[2], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[3], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[4], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[5], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[6], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[7], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[8], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[9], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(3000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 3000) {
+		SDL_PumpEvents();
+	}
 
 	for (auto i : gTex) {
 		SDL_DestroyTexture(i);

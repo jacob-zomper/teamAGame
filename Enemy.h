@@ -6,6 +6,7 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "bullet.h"
 #include <vector>
 using std::vector;
@@ -51,10 +52,14 @@ class Enemy
         Bullet* handleFiring();
 		int chooseDirection();
 		void calculateRiskscores(int playerX, int playerY, std::vector<int> bulletX, std::vector<int> bulletY, std::vector<int> bulletVelX, std::vector<int> bulletVelY, int kamiX, int kamiY, std::vector<int> stalagmX, std::vector<int> stalagmH, std::vector<int> stalagtX, std::vector<int> stalagtH, std::vector<int> turretX, std::vector<int> turretH, std::vector<int> turretBottom);
-
+		void moveLeft();
+		
 		// Sprites for the enemy
 		SDL_Texture* sprite1;
 		SDL_Texture* sprite2;
+		
+		// Sounds
+		Mix_Chunk *hit_sound;
 
     private:
 
