@@ -35,10 +35,10 @@ Player::Player(int xPos, int yPos, int diff, SDL_Renderer *gRenderer)
     bg_X = 0;
     tiltAngle = 0;
 	last_move = SDL_GetTicks();
-    xp_decel = false;
-    xn_decel = false;
-    yp_decel = false;
-    yn_decel = false;
+    moveUp = false;
+    moveDown = false;
+    moveForward = false;
+    moveBackward = false;
 	fshot_heat = 0;
 	bshot_heat = 0;
 	fshot_maxed = false;
@@ -84,13 +84,12 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
             case 1:
                 sprite1 = loadImage("sprites/a10.png", gRenderer);
                 sprite2 = loadImage("sprites/a10.png", gRenderer);
-
                 player_width = 178;
                 player_height = 47;
                 break;
             case 2:
                 sprite1 = loadImage("sprites/f16.png", gRenderer);
-                sprite2 = loadImage("sprites/f16.png", gRenderer);
+                sprite2 = loadImage("sprites/f16a.png", gRenderer);
                 player_width = 124;
                 player_height = 37;
                 break;
@@ -126,19 +125,19 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
                 break;
             case 8:
                 sprite1 = loadImage("sprites/mig31.png", gRenderer);
-                sprite2 = loadImage("sprites/mig31.png", gRenderer);
+                sprite2 = loadImage("sprites/mig31a.png", gRenderer);
                 player_width = 209;
                 player_height = 38;
                 break;
             case 9:
                 sprite1 = loadImage("sprites/mig29.png", gRenderer);
-                sprite2 = loadImage("sprites/mig29.png", gRenderer);
+                sprite2 = loadImage("sprites/mig29a.png", gRenderer);
                 player_width = 148;
                 player_height = 42;
                 break;
             case 10:
                 sprite1 = loadImage("sprites/su24.png", gRenderer);
-                sprite2 = loadImage("sprites/su24.png", gRenderer);
+                sprite2 = loadImage("sprites/su24a.png", gRenderer);
                 player_width = 176;
                 player_height = 50;
                 break;
@@ -164,19 +163,19 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            yn_decel = true;
+            moveUp = true;
             break;
 
         case SDLK_a:
-            xn_decel = true;
+            moveBackward = true;
             break;
 
         case SDLK_s:
-            yp_decel = true;
+            moveDown = true;
             break;
 
         case SDLK_d:
-            xp_decel = true;
+            moveForward = true;
             break;
         }
     }
@@ -185,37 +184,40 @@ void Player::handleEvent(SDL_Event &e)
         switch (e.key.keysym.sym)
         {
         case SDLK_w:
-            yn_decel = false;
+            moveUp = false;
             break;
 
         case SDLK_a:
-            xn_decel = false;
+            moveBackward = false;
             break;
 
         case SDLK_s:
-            yp_decel = false;
+            moveDown = false;
             break;
 
         case SDLK_d:
-            xp_decel = false;
+            moveForward = false;
             break;
         }
     }
 }
 
-void Player::acceleration(bool &increasing, bool &decreasing, float &accel, float &accelerate_by, float &deccelerate_factor, int &vel){
+void Player::acceleration(bool &increasing, bool &decreasing, double &accel, double &accelerate_by, double &decelerate_factor, double &vel){
+    if(!accel && decreasing && !increasing) accel = -1;
+    if(!accel && !decreasing && increasing) accel = 1;
+    if(increasing != decreasing && (decreasing && accel > 0 || increasing && accel < 0)) accelerate_by *= decelerate_factor; // manually change direction faster
     if(decreasing) accel -= accelerate_by;
     if(increasing) accel += accelerate_by;
-    if(!decreasing && !increasing){
-        if(vel < 0) accel += deccelerate_factor*accelerate_by;
-        else if(vel > 0) accel -= deccelerate_factor*accelerate_by;
+    if(!decreasing && !increasing){ // automatically decelerate faster
+        if(vel < 0) accel += decelerate_factor*accelerate_by;
+        else if(vel > 0) accel -= decelerate_factor*accelerate_by;
         float vel_increment = accel*time_since_move;
         vel += vel_increment * 2;
-        if(vel != 0 && vel <= abs((int) (deccelerate_factor*vel_increment)) && vel >= -abs((int) (deccelerate_factor*vel_increment))){
+        if(vel != 0 && vel <= fabs((int) (decelerate_factor*vel_increment)) && vel >= -fabs((int) (decelerate_factor*vel_increment))){
             accel = 0;
             vel = 0;
         }
-    } else{
+    } else{ // normal movement
         float vel_increment = accel*time_since_move;
         vel += vel_increment * 2;
     }
@@ -226,13 +228,14 @@ void Player::acceleration(bool &increasing, bool &decreasing, float &accel, floa
 //Moves the player
 void Player::move(int SCREEN_WIDTH, int SCREEN_HEIGHT, int LEVEL_HEIGHT, int camY)
 {
-    float accelerate_by = 0.003*time_since_move;
-    float deccelerate_factor = 4.0;
-    acceleration(yp_decel, yn_decel, y_accel, accelerate_by, deccelerate_factor, y_vel);
-    if(!yp_decel && !yn_decel && y_vel > 0) tiltAngle = 180 * sin(y_accel / 12) > 0 ? 180 * sin(y_accel / 12) : 0;
-    else if(!yp_decel && !yn_decel && y_vel < 0) tiltAngle = -180 * sin(y_accel / 12) < 0 ? -180 * sin(y_accel / 12) : 0;
-    else tiltAngle = 180 * sin(y_accel / 12);
-    acceleration(xp_decel, xn_decel, x_accel, accelerate_by, deccelerate_factor, x_vel);
+    double accelerate_by = 0.003*time_since_move;
+    double decelerate_factor = 4.0;
+    acceleration(moveDown, moveUp, y_accel, accelerate_by, decelerate_factor, y_vel);
+    double accelAngle = y_accel/6;
+    if(!moveDown && !moveUp && y_vel > 0) tiltAngle = 90*sin(accelAngle) > 0 ? 90*sin(accelAngle) : 0;
+    else if(!moveDown && !moveUp && y_vel < 0) tiltAngle = 90 * sin(accelAngle) < 0 ? 90 * sin(accelAngle) : 0;
+    else tiltAngle = 90*sin(accelAngle);
+    acceleration(moveForward, moveBackward, x_accel, accelerate_by, decelerate_factor, x_vel);
 
     if (y_vel > MAX_PLAYER_VEL)
         y_vel = MAX_PLAYER_VEL;
@@ -459,31 +462,36 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
+	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
+		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
+    }
+    if(!infiniteShooting || !autoFire){
     //std::cout << "entered firing handler" << std::endl;
     //std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
     double bulletAngle = tiltAngle*PI/180;
-	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
-        //std::cout << "Firing new bullet"<< std::endl;
-        Mix_PlayChannel(-1, bullet_shot, 0);
+        if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
+                //std::cout << "Firing new bullet"<< std::endl;
+            Mix_PlayChannel(-1, bullet_shot, 0);
 
-        Bullet *b;
-        if(small == false){
-            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            Bullet *b;
+            if(small == false){
+                b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            }
+            else{
+                b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            }
+            if(!infiniteShooting){
+        		fshot_heat += SHOOT_COST;
+        		if (fshot_heat > MAX_SHOOT_HEAT) {
+        			fshot_maxed = true;
+        			fshot_heat = MAX_SHOOT_HEAT;
+        			fshot_max_time = SDL_GetTicks();
+        		}
+            }
+            time_since_f_shot = SDL_GetTicks();
+    		return b;
         }
-        else{
-            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
-        }
-        if(!infiniteShooting){
-    		fshot_heat += SHOOT_COST;
-    		if (fshot_heat > MAX_SHOOT_HEAT) {
-    			fshot_maxed = true;
-    			fshot_heat = MAX_SHOOT_HEAT;
-    			fshot_max_time = SDL_GetTicks();
-    		}
-        }
-        time_since_f_shot = SDL_GetTicks();
-		return b;
-	}
+    }
     return nullptr;
 }
 

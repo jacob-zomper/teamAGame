@@ -958,15 +958,15 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     }
 
 
-    for (i = 0; i < ally_arr.size(); i++)
-    {
-        // Only render the invince powerup if it will be screen
-        if (ally_arr[i].ALLY_PLANE_REL_X < SCREEN_WIDTH && ally_arr[i].ALLY_PLANE_REL_Y < SCREEN_HEIGHT)
-        {
-            SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
-            SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-        }
-    }
+    // for (i = 0; i < ally_arr.size(); i++)
+    // {
+    //     // Only render the invince powerup if it will be screen
+    //     if (ally_arr[i].ALLY_PLANE_REL_X < SCREEN_WIDTH && ally_arr[i].ALLY_PLANE_REL_Y < SCREEN_HEIGHT)
+    //     {
+    //         SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
+    //         SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //     }
+    // }
 
 
 
@@ -1331,16 +1331,16 @@ void BossBlocks::renderPowerups(SDL_Renderer* gRenderer)
     }
 
 
-    for (i = ally_arr.size() - 1; i >= 0; i--)
-    {
-        if (ally_arr[i].ALLY_PLANE_REL_X < -ally_arr[i].ALLY_PLANE_WIDTH) {
-			ally_arr.erase(ally_arr.begin() + i);
-		}
-		else {
-            SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
-            SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-        }
-    }
+    // for (i = ally_arr.size() - 1; i >= 0; i--)
+    // {
+    //     if (ally_arr[i].ALLY_PLANE_REL_X < -ally_arr[i].ALLY_PLANE_WIDTH) {
+	// 		ally_arr.erase(ally_arr.begin() + i);
+	// 	}
+	// 	else {
+    //         SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
+    //         SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //     }
+    // }
 }
 
 void BossBlocks::renderExplosions(SDL_Renderer* gRenderer) {
